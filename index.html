@@ -130,6 +130,141 @@
             box-shadow: 0 2px 12px rgba(59, 130, 246, 0.4);
         }
 
+        #detailsBtn {
+            padding: 8px 16px;
+            background: rgba(59, 130, 246, 0.1);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            cursor: pointer;
+            border-radius: 7px;
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.25s ease;
+            margin-left: 12px;
+        }
+
+        #detailsBtn:hover {
+            background: rgba(59, 130, 246, 0.2);
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        /* ===== Modal Overlay ===== */
+        #modalOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(10, 14, 23, 0.85);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        #modalOverlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        #modalContent {
+            width: 80%;
+            max-width: 1000px;
+            height: 85vh;
+            background: #111827;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        #modalHeader {
+            padding: 20px 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(17, 24, 39, 0.95);
+        }
+
+        #modalHeader h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+
+        #closeModal {
+            font-size: 24px;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        #closeModal:hover {
+            color: #f8fafc;
+        }
+
+        #modalBody {
+            padding: 30px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .modal-section {
+            margin-bottom: 40px;
+        }
+
+        .modal-section h3 {
+            font-size: 16px;
+            color: #3b82f6;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .modal-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 25px;
+            align-items: start;
+        }
+
+        .modal-image {
+            width: 100%;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-text {
+            color: #94a3b8;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .modal-text p {
+            margin-bottom: 15px;
+        }
+
+        .highlight-box {
+            background: rgba(59, 130, 246, 0.05);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
 
 
         /* ===== Stats Bar ===== */
@@ -486,7 +621,64 @@
             <button id="btn2d" onclick="setMode('2d')">2D View</button>
             <button id="btnHeat" onclick="setMode('heat')">Heatmap</button>
             <button id="btnHotspot" onclick="setMode('hotspot')">Hotspots</button>
+            <button id="detailsBtn" onclick="toggleModal(true)">Project Details</button>
         </div>
+    </div>
+
+    <!-- Project Modal -->
+    <div id="modalOverlay" onclick="if(event.target === this) toggleModal(false)">
+        <div id="modalContent">
+            <div id="modalHeader">
+                <h2>Project Overview & GeoAI Methodology</h2>
+                <div id="closeModal" onclick="toggleModal(false)">×</div>
+            </div>
+            <div id="modalBody">
+                <!-- Section 1: Framework -->
+                <div class="modal-section">
+                    <h3><span>⚙️</span> Methodology Framework</h3>
+                    <div class="modal-grid">
+                        <img src="geoai_framework.png" alt="Framework" class="modal-image">
+                        <div class="modal-text">
+                            <p>The proposed <b>GeoAI framework</b> integrates satellite data, deep learning segmentation
+                                (UNet), spatial risk modeling, and high-resolution 3D visualization to predict
+                                deforestation risk across the Amazon Basin.</p>
+                            <div class="highlight-box">
+                                <b>Key Cycle:</b> Satellite Data → UNet Segmentation → Risk Calculation → Spatial
+                                Validation.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: Validation -->
+                <div class="modal-section">
+                    <h3><span>📊</span> Analysis & Validation</h3>
+                    <div class="modal-grid">
+                        <div class="modal-text">
+                            <p>The model reached an <b>AUC score of 0.82</b>, indicating strong predictive performance.
+                                Spatial validation was performed by correlating high-risk predictions with active fire
+                                events and historical hotspots.</p>
+                            <div class="highlight-box">
+                                <b style="color:#ef4444">Risk Factors:</b> Road proximity (30%), Fire history (15%),
+                                Population density (15%), and environmental variables.
+                            </div>
+                        </div>
+                        <img src="model_validation_results.png" alt="Analysis" class="modal-image">
+                    </div>
+                </div>
+
+                <!-- Section 3: Study Area -->
+                <div class="modal-section">
+                    <h3><span>🌍</span> Study Area: Rondônia, Brazil</h3>
+                    <div class="modal-text">
+                        <p>Focusing on the "Arc of Deforestation", the model analyzes 150,000 spatial samples from 2001
+                            to 2022 to predict future trends up to 2030. High-risk areas are concentrated along
+                            expanding agricultural frontiers and illegal logging roads.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     </div>
 
 
@@ -561,6 +753,17 @@
         let isPlaying = false
         let playInterval
         let riskChartInstance
+
+        function toggleModal(show) {
+            const modal = document.getElementById("modalOverlay");
+            if (show) {
+                modal.style.display = 'flex';
+                setTimeout(() => modal.classList.add("active"), 10);
+            } else {
+                modal.classList.remove("active");
+                setTimeout(() => modal.style.display = 'none', 400);
+            }
+        }
 
         // Dark basemap
         const DARK_MAP = "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
