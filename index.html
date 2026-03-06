@@ -398,78 +398,109 @@
             opacity: 1;
         }
 
-        /* ===== AI Tech Panel (Left) ===== */
-        .tech-panel {
-            position: absolute;
-            top: 100px;
-            left: 25px;
-            width: 320px;
-            max-height: calc(100vh - 140px);
-            background: rgba(10, 14, 23, 0.75);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(59, 130, 246, 0.2);
+        /* ===== Modal Overlay ===== */
+        #modalOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(10, 14, 23, 0.85);
+            backdrop-filter: blur(10px);
+            z-index: 5000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        #modalOverlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        #modalContent {
+            width: 80%;
+            max-width: 1000px;
+            height: 85vh;
+            background: #111827;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 20px;
-            padding: 24px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        #modalHeader {
+            padding: 20px 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(17, 24, 39, 0.95);
+        }
+
+        #modalHeader h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+
+        #closeModal {
+            font-size: 24px;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        #closeModal:hover {
+            color: #f8fafc;
+        }
+
+        #modalBody {
+            padding: 30px;
             overflow-y: auto;
-            z-index: 1000;
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
-            scrollbar-width: thin;
-            scrollbar-color: rgba(59, 130, 246, 0.3) transparent;
+            flex: 1;
         }
 
-        .tech-panel::-webkit-scrollbar {
-            width: 5px;
+        .modal-section {
+            margin-bottom: 40px;
         }
 
-        .tech-panel::-webkit-scrollbar-thumb {
-            background: rgba(59, 130, 246, 0.3);
-            border-radius: 10px;
-        }
-
-        .tech-section {
-            margin-bottom: 25px;
-        }
-
-        .tech-section h2 {
-            font-size: 13px;
+        .modal-section h3 {
+            font-size: 16px;
             color: #3b82f6;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
+            letter-spacing: 1px;
             margin-bottom: 15px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
-        .tech-badge {
-            background: rgba(59, 130, 246, 0.2);
-            color: #60a5fa;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 10px;
-            font-weight: 700;
-            margin-bottom: 10px;
-            display: inline-block;
+        .modal-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 25px;
+            align-items: start;
         }
 
-        /* Re-adjusting other elements */
         #titleBar {
-            justify-content: center;
-            gap: 40px;
+            justify-content: space-between;
         }
 
         #analysisSidebar {
-            right: 25px;
-            top: 100px;
-            height: auto;
-            max-height: calc(100vh - 140px);
+            right: 30px;
+            top: 110px;
+            height: calc(100vh - 220px);
         }
 
         #mapControls {
-            top: auto;
-            bottom: 100px;
-            right: 25px;
+            top: 130px;
+            right: 30px;
         }
 
         .modal-image {
@@ -1027,90 +1058,59 @@
             <div id="titleIcon">🌿</div>
             <div id="titleText">
                 <h1>AI-Based Deforestation Risk Prediction Model – Amazon Basin</h1>
-                <p>Elite v3.0 | AI Command Center | AUC = 0.82</p>
+                <p>Elite v2.1 | Neural-Prophet Engine | AUC = 0.82</p>
             </div>
         </div>
 
         <div id="modeSwitcher">
-            <button id="btn3d" class="active" onclick="setMode('3d')">3D Surface</button>
+            <button id="btn3d" class="active" onclick="setMode('3d')">3D Columns</button>
             <button id="btn2d" onclick="setMode('2d')">2D View</button>
             <button id="btnHeat" onclick="setMode('heat')">Heatmap</button>
             <button id="btnHotspot" onclick="setMode('hotspot')">Hotspots</button>
+            <button id="detailsBtn" onclick="toggleModal(true)">Project Details</button>
         </div>
     </div>
 
-    <!-- AI Command Panel (New for v3.0) -->
-    <div class="tech-panel">
-        <div class="tech-section">
-            <h2><span>🧠</span> AI Engine Status</h2>
-            <span class="tech-badge">U-NET SEGMENTATION</span>
-            <div class="equation-box" style="font-size: 10px; margin: 10px 0;">
-                Risk = 0.30(FL) + 0.20(DR) + 0.15(PD) + 0.15(FH)
+    <!-- Project Modal Overlay -->
+    <div id="modalOverlay" onclick="if(event.target === this) toggleModal(false)">
+        <div id="modalContent">
+            <div id="modalHeader">
+                <h2>Project Overview & GeoAI Methodology</h2>
+                <div id="closeModal" onclick="toggleModal(false)">×</div>
             </div>
-
-            <div class="nn-viz" style="padding: 10px; margin: 15px 0; scale: 0.8;">
-                <div class="nn-layer">
-                    <div class="nn-node"></div>
-                    <div class="nn-node"></div>
-                </div>
-                <div class="nn-arrow">→</div>
-                <div class="nn-layer">
-                    <div class="nn-node hidden"></div>
-                    <div class="nn-node hidden"></div>
-                    <div class="nn-node hidden"></div>
-                </div>
-                <div class="nn-arrow">→</div>
-                <div class="nn-node output"></div>
-            </div>
-        </div>
-
-        <div class="tech-section">
-            <h2><span>📊</span> Feature Importance</h2>
-            <div class="shap-container">
-                <div class="shap-bar-group">
-                    <div class="shap-label"><span>Forest Loss (Temporal)</span><span>35%</span></div>
-                    <div class="shap-bar-bg">
-                        <div class="shap-bar-fill" style="width: 35%"></div>
-                    </div>
-                </div>
-                <div class="shap-bar-group">
-                    <div class="shap-label"><span>Road Proximity</span><span>22%</span></div>
-                    <div class="shap-bar-bg">
-                        <div class="shap-bar-fill" style="width: 22%"></div>
-                    </div>
-                </div>
-                <div class="shap-bar-group">
-                    <div class="shap-label"><span>Historical Hotspots</span><span>18%</span></div>
-                    <div class="shap-bar-bg">
-                        <div class="shap-bar-fill" style="width: 18%"></div>
+            <div id="modalBody">
+                <div class="modal-section">
+                    <h3><span>🧠</span> Deep Learning & AI Architecture</h3>
+                    <div class="modal-grid">
+                        <div class="modal-text">
+                            <span class="ai-badge">Semantic Segmentation</span>
+                            <p>The model leverages a <b>U-Net architecture</b> for pixel-level segmentation of satellite
+                                data, trained on 150,000 spatial records.</p>
+                            <div class="equation-box">
+                                Risk Index = 0.30(FL) + 0.20(DR) + 0.15(PD) + 0.15(FH)
+                            </div>
+                        </div>
+                        <div class="modal-text">
+                            <h4 style="font-size:12px; color:#3b82f6; margin-bottom:10px;">FEATURE IMPORTANCE</h4>
+                            <div class="importance-bar-container">
+                                <div class="importance-row">
+                                    <div class="importance-label"><span>Forest Loss</span><span>35%</span></div>
+                                    <div class="importance-track">
+                                        <div class="importance-fill" style="width: 35%"></div>
+                                    </div>
+                                </div>
+                                <div class="importance-row">
+                                    <div class="importance-label"><span>Road Proximity</span><span>22%</span></div>
+                                    <div class="importance-track">
+                                        <div class="importance-fill" style="width: 22%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        <div class="tech-section">
-            <h2><span>⚙️</span> Technical Specs</h2>
-            <div class="specs-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;">
-                <div class="spec-card" style="padding: 8px;">
-                    <div class="spec-label">AUC Score</div>
-                    <div class="spec-value" style="font-size: 14px; color: #10b981;">0.82</div>
-                </div>
-                <div class="spec-card" style="padding: 8px;">
-                    <div class="spec-label">Optimizer</div>
-                    <div class="spec-value" style="font-size: 14px;">Adam</div>
-                </div>
-                <div class="spec-card" style="padding: 8px;">
-                    <div class="spec-label">Resolution</div>
-                    <div class="spec-value" style="font-size: 14px;">10m/px</div>
-                </div>
-                <div class="spec-card" style="padding: 8px;">
-                    <div class="spec-label">Validation</div>
-                    <div class="spec-value" style="font-size: 14px;">Cross-Val</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     </div>
 
 
@@ -1296,9 +1296,9 @@
                     id: "risk-layer-3d",
                     data: activeData,
                     getPosition: d => [d.lon, d.lat],
-                    getElevation: d => (d.risk_score - 140) * 200, // Increase height for 'jabar' feel
+                    getElevation: d => (d.risk_score - 140) * 150,
                     getFillColor: d => d.color,
-                    radius: 250, // Larger radius for more continuous surface look
+                    radius: 120,
                     extruded: true,
                     elevationScale: heightScale >= 1.2 ? 1.2 : heightScale,
                     pickable: true,
@@ -1306,7 +1306,7 @@
                         if (info.object) toggleSidebar(true, info.object);
                     },
                     updateTriggers: { getFillColor: currentYear },
-                    material: { ambient: 0.4, diffuse: 0.9, shininess: 80 } // High shininess for tech look
+                    material: { ambient: 0.6, diffuse: 0.7, shininess: 40 }
                 });
             } else if (currentMode === "2d") {
                 layer = new deck.ScatterplotLayer({
