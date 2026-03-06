@@ -265,6 +265,43 @@
             margin-top: 10px;
         }
 
+        .equation-box {
+            background: #0f172a;
+            border: 1px solid #334155;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            color: #f8fafc;
+            margin: 20px 0;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .equation-box span {
+            color: #3b82f6;
+            font-weight: 700;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 13px;
+        }
+
+        th {
+            text-align: left;
+            color: #64748b;
+            padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        td {
+            padding: 10px;
+            color: #cbd5e1;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
         .ai-badge {
             display: inline-block;
             padding: 2px 8px;
@@ -699,37 +736,66 @@
                                 Spatial validation was performed by correlating high-risk predictions with active fire
                                 events and historical hotspots.</p>
                             <div class="highlight-box">
-                                <b style="color:#ef4444">Risk Factors:</b> Road proximity (30%), Fire history (15%),
-                                Population density (15%), and environmental variables.
+                                <b style="color:#ef4444">Hotspot Clusters:</b> Identified using DBSCAN clustering to
+                                correlate fire intensity with predicted risk zones.
                             </div>
                         </div>
                         <img src="model_validation_results.png" alt="Analysis" class="modal-image">
                     </div>
                 </div>
 
-                <!-- Section 3: AI Architecture -->
+                <!-- Section 3: AI Architecture & Equation -->
                 <div class="modal-section">
-                    <h3><span>🧠</span> Deep Learning Architecture (U-Net)</h3>
+                    <h3><span>🧠</span> Deep Learning & Mathematical Model</h3>
                     <div class="modal-grid">
                         <div class="modal-text">
                             <span class="ai-badge">Semantic Segmentation</span>
-                            <p>To identify forest patterns from satellite imagery, we employed a <b>U-Net
-                                    architecture</b>. The model consists of an encoder path to capture context and a
-                                symmetric decoder path that enables precise localization.</p>
-                            <div class="highlight-box">
-                                <b>Training Specs:</b> 128x128 patches, Adam Optimizer, Binary Cross-Entropy Loss,
-                                implemented in <b>PyTorch/Keras</b>.
+                            <p>The core engine uses a <b>U-Net architecture</b> for binary segmentation. The resulting
+                                forest loss masks are fed into a normalized spatial risk equation:</p>
+                            <div class="equation-box">
+                                Risk Index = <span>0.30</span>(FL) + <span>0.20</span>(DR) + <span>0.15</span>(PD) +
+                                <span>0.15</span>(FH) + <span>0.10</span>(SL) + <span>0.10</span>(EL)
                             </div>
+                            <p style="font-size: 12px; color: #64748b;">* FL: Forest Loss, DR: Road Proximity, PD: Pop
+                                Density, FH: Fire History, SL: Slope, EL: Elevation.</p>
                         </div>
                         <div class="modal-text">
-                            <p style="font-style: italic; font-size: 13px;">The AI model transforms raw spectral data
-                                into binary forest/non-forest masks, which are then integrated into the spatial risk
-                                equation.</p>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Factor</th>
+                                        <th>Source</th>
+                                        <th>Weight</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Forest Loss</td>
+                                        <td>PRODES/Sat</td>
+                                        <td>30%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Road proximity</td>
+                                        <td>OpenStreetMap</td>
+                                        <td>20%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Active Fires</td>
+                                        <td>VIIRS / MODIS</td>
+                                        <td>15%</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Elevation</td>
+                                        <td>SRTM (NASA)</td>
+                                        <td>10%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
 
-                <!-- Section 4: Study Area -->
+                <!-- Section 4: Study Area & Decision Support -->
                 <div class="modal-section">
                     <h3><span>🌍</span> Study Area & Decision Support</h3>
                     <div class="modal-text">
@@ -742,10 +808,9 @@
 
                 <!-- Footer Assets -->
                 <div class="footer-links">
-                    <a href="#" class="link-chip"><span>📑</span> Research Paper (PDF)</a>
+                    <a href="report.pdf" class="link-chip"><span>📑</span> View Research Paper (PDF)</a>
                     <a href="#" class="link-chip"
-                        onclick="alert('Redirecting to Google Colab Notebook...')"><span>📓</span> Model Training
-                        (Colab)</a>
+                        onclick="alert('Redirecting to Google Colab Notebook...')"><span>📓</span> Code Notebook</a>
                     <a href="https://github.com/mamdouhAhmed1581/Amazon-Deforestation-Risk-3D"
                         class="link-chip"><span>💻</span> GitHub Repo</a>
                 </div>
