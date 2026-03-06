@@ -282,21 +282,97 @@
             color: #cbd5e1;
         }
 
-        /* ===== Modal Overlay ===== */
-        #modalOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
+        /* ===== Map Controls Redesign ===== */
+        #mapControls {
+            position: absolute;
+            top: 130px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 100;
+        }
+
+        .map-style-group {
             background: rgba(10, 14, 23, 0.85);
-            backdrop-filter: blur(10px);
-            z-index: 2000;
-            display: none;
-            justify-content: center;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .style-btn {
+            display: flex;
             align-items: center;
-            opacity: 0;
-            transition: opacity 0.4s ease;
+            gap: 10px;
+            padding: 10px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #94a3b8;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .style-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #f8fafc;
+        }
+
+        .style-btn.active {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .style-btn span {
+            font-size: 18px;
+        }
+
+        /* ===== Neural Network Visualization ===== */
+        .nn-viz {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 25px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            border-radius: 16px;
+        }
+
+        .nn-layer {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .nn-node {
+            width: 10px;
+            height: 10px;
+            background: #3b82f6;
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+        }
+
+        .nn-node.hidden {
+            background: #8b5cf6;
+            box-shadow: 0 0 8px rgba(139, 92, 246, 0.5);
+        }
+
+        .nn-node.output {
+            background: #ef4444;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+        }
+
+        .nn-arrow {
+            color: #334155;
+            font-size: 14px;
         }
 
         #modalOverlay.active {
@@ -872,11 +948,17 @@
 
     <div id="deck-container"></div>
 
-    <!-- Map Controls (Satellite Toggle) -->
+    <!-- Redesigned Map Controls -->
     <div id="mapControls">
-        <div id="toggleDark" class="map-control-btn active" onclick="toggleMapStyle('dark')" title="Dark Theme">🌑</div>
-        <div id="toggleSatellite" class="map-control-btn" onclick="toggleMapStyle('satellite')" title="Satellite View">
-            🛰️</div>
+        <div class="map-style-group">
+            <div id="styleDark" class="style-btn active" onclick="toggleMapStyle('dark')">
+                <span>🌑</span> Analytical View
+            </div>
+            <div id="styleSatellite" class="style-btn" onclick="toggleMapStyle('satellite')">
+                <span>🛰️</span> Satellite Reality
+            </div>
+        </div>
+    </div>
     </div>
 
     <!-- Analysis Sidebar -->
@@ -921,7 +1003,7 @@
             <div id="titleIcon">🌿</div>
             <div id="titleText">
                 <h1>AI-Based Deforestation Risk Prediction Model – Amazon Basin</h1>
-                <p>Model validation using 150,000 spatial samples | AUC = 0.82</p>
+                <p>Elite v2.1 | Neural-Prophet Engine | AUC = 0.82</p>
             </div>
         </div>
 
@@ -988,6 +1070,28 @@
                             <div class="equation-box">
                                 Risk Index = <span>0.30</span>(FL) + <span>0.20</span>(DR) + <span>0.15</span>(PD) +
                                 <span>0.15</span>(FH) + <span>0.10</span>(SL) + <span>0.10</span>(EL)
+                            </div>
+
+                            <div class="nn-viz">
+                                <div class="nn-layer">
+                                    <div class="nn-node"></div>
+                                    <div class="nn-node"></div>
+                                    <div class="nn-node"></div>
+                                </div>
+                                <div class="nn-arrow">→</div>
+                                <div class="nn-layer">
+                                    <div class="nn-node hidden"></div>
+                                    <div class="nn-node hidden"></div>
+                                    <div class="nn-node hidden"></div>
+                                    <div class="nn-node hidden"></div>
+                                </div>
+                                <div class="nn-arrow">→</div>
+                                <div class="nn-layer">
+                                    <div class="nn-node hidden"></div>
+                                    <div class="nn-node hidden"></div>
+                                </div>
+                                <div class="nn-arrow">→</div>
+                                <div class="nn-node output"></div>
                             </div>
 
                             <div class="specs-grid">
@@ -1156,7 +1260,23 @@
 
         // Map styles
         const DARK_MAP = "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
-        const SATELLITE_MAP = "mapbox://styles/mapbox/satellite-streets-v11";
+        const SATELLITE_MAP = {
+            "version": 8,
+            "sources": {
+                "satellite": {
+                    "type": "raster",
+                    "tiles": ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],
+                    "tileSize": 256
+                }
+            },
+            "layers": [{
+                "id": "satellite",
+                "type": "raster",
+                "source": "satellite",
+                "minzoom": 0,
+                "maxzoom": 22
+            }]
+        };
         const MAPBOX_TOKEN = "pk.eyJ1IjoibWFtZG91aGFobWVkMTU4MSIsImEiOiJjbTduaXVndjEwMDRsMm9zYXVhcHJ3eGt6In0.H_fBihpC9-p5Qp7q_WKgVw";
 
         fetch("forest_data_clean.json")
@@ -1476,12 +1596,17 @@
 
         function toggleMapStyle(style) {
             const isSatellite = style === 'satellite';
+
+            // Reinitialize deck if style change isn't reflecting visually
             deckInstance.setProps({
                 mapStyle: isSatellite ? SATELLITE_MAP : DARK_MAP
             });
 
-            document.getElementById('toggleDark').classList.toggle('active', !isSatellite);
-            document.getElementById('toggleSatellite').classList.toggle('active', isSatellite);
+            document.getElementById('styleDark').classList.toggle('active', !isSatellite);
+            document.getElementById('styleSatellite').classList.toggle('active', isSatellite);
+
+            // Force re-render of layers
+            renderLayers();
         }
 
         function toggleSidebar(show, obj = null) {
