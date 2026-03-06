@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>AI Forest Degradation Risk Model – Amazon Basin</title>
+    <meta name="description" content="AI-powered forest degradation risk analysis for the Amazon Basin using GeoAI">
+
+    <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v1.13.0/mapbox-gl.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v1.13.0/mapbox-gl.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/deck.gl@8.9.0/dist.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            overflow: hidden;
+            background: #0a0e17;
+            font-family: 'Inter', -apple-system, sans-serif;
+            color: #e6edf3;
+        }
+
+        #deck-container {
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* ===== Title Bar ===== */
+        #titleBar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 28px;
+            background: linear-gradient(180deg, rgba(10, 14, 23, 0.95) 0%, rgba(10, 14, 23, 0.75) 100%);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            z-index: 100;
+        }
+
+        #titleLeft {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        #titleIcon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
+            animation: pulse-glow 2.5s infinite alternate;
+        }
+
+        @keyframes pulse-glow {
+            0% {
+                box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
+            }
+
+            100% {
+                box-shadow: 0 0 30px rgba(34, 197, 94, 0.7);
+            }
+        }
+
+        #titleText h1 {
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+            background: linear-gradient(90deg, #ffffff, #e2e8f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        #titleText p {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 4px;
+            font-weight: 500;
+            letter-spacing: 0.2px;
+        }
+
+        /* ===== Mode Buttons ===== */
+        #modeSwitcher {
+            display: flex;
+            gap: 4px;
+            background: rgba(30, 41, 59, 0.8);
+            padding: 4px;
+            border-radius: 10px;
+            border: 1px solid rgba(71, 85, 105, 0.4);
+        }
+
+        #modeSwitcher button {
+            padding: 8px 16px;
+            background: transparent;
+            color: #94a3b8;
+            border: none;
+            cursor: pointer;
+            border-radius: 7px;
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.25s ease;
+            letter-spacing: 0.3px;
+        }
+
+        #modeSwitcher button:hover {
+            color: #e2e8f0;
+            background: rgba(59, 130, 246, 0.15);
+        }
+
+        #modeSwitcher button.active {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            box-shadow: 0 2px 12px rgba(59, 130, 246, 0.4);
+        }
+
+
+
+        /* ===== Stats Bar ===== */
+        #statsBar {
+            position: absolute;
+            top: 68px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(10, 14, 23, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 8px 24px;
+            border-radius: 100px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            z-index: 99;
+            opacity: 0;
+            animation: slideDown 0.8s ease forwards 0.3s;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 4px 8px;
+        }
+
+        .stat-value {
+            font-size: 15px;
+            font-weight: 700;
+            color: #f8fafc;
+            letter-spacing: -0.2px;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        .stat-divider {
+            width: 1px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 1px;
+        }
+
+        /* ===== Legend Panel ===== */
+        #legend {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            background: rgba(10, 14, 23, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 16px 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            z-index: 99;
+            min-width: 170px;
+            opacity: 0;
+            animation: slideUp 0.8s ease forwards 0.5s;
+        }
+
+        #legend h3 {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #94a3b8;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .legend-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .legend-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            box-shadow: 0 0 10px currentColor;
+        }
+
+        .legend-label {
+            font-size: 11px;
+            font-weight: 500;
+            color: #cbd5e1;
+            letter-spacing: 0.3px;
+        }
+
+        /* ===== Chart Panel ===== */
+        #chartContainer {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            width: 240px;
+            background: rgba(10, 14, 23, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 18px 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            z-index: 99;
+            opacity: 0;
+            animation: slideUp 0.8s ease forwards 0.6s;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        #chartTitle {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #94a3b8;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        #riskChart {
+            max-height: 200px;
+        }
+
+        /* ===== Tooltip ===== */
+        .deck-tooltip {
+            font-family: 'Inter', sans-serif !important;
+            background: rgba(15, 23, 42, 0.95) !important;
+            backdrop-filter: blur(8px) !important;
+            border: 1px solid rgba(59, 130, 246, 0.3) !important;
+            border-radius: 10px !important;
+            padding: 10px 14px !important;
+            font-size: 12px !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+        }
+
+        /* ===== Timeline Panel ===== */
+        #timelineContainer {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(10, 14, 23, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 16px 24px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            z-index: 99;
+            width: 380px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            opacity: 0;
+            animation: slideUp 0.8s ease forwards 0.4s;
+        }
+
+        #timelineHeader {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #timelineYear {
+            font-size: 24px;
+            font-weight: 700;
+            color: #f8fafc;
+            letter-spacing: -0.5px;
+        }
+
+        #playBtn {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        #playBtn:hover {
+            background: rgba(59, 130, 246, 0.3);
+            color: white;
+        }
+
+        #timeSlider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            outline: none;
+        }
+
+        #timeSlider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.6);
+            transition: transform 0.1s;
+        }
+
+        #timeSlider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        /* ===== Loading ===== */
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #0a0e17;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.6s ease;
+        }
+
+        #loadingOverlay.fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loader-ring {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(59, 130, 246, 0.15);
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        #loadingOverlay p {
+            margin-top: 16px;
+            color: #64748b;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 768px) {
+            #titleText h1 {
+                font-size: 14px;
+            }
+
+            #modeSwitcher button {
+                padding: 6px 10px;
+                font-size: 11px;
+            }
+
+            #statsBar {
+                flex-wrap: wrap;
+            }
+
+            #legend {
+                bottom: 15px;
+                left: 15px;
+            }
+
+            #timelineContainer {
+                width: 300px;
+                bottom: 80px;
+                /* above legend on mobile */
+            }
+
+            #chartContainer {
+                width: 180px;
+                bottom: 15px;
+                right: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Loading Screen -->
+    <div id="loadingOverlay">
+        <div class="loader-ring"></div>
+        <p>Loading Amazon Basin data...</p>
+    </div>
+
+    <div id="deck-container"></div>
+
+    <!-- Title Bar -->
+    <div id="titleBar">
+        <div id="titleLeft">
+            <div id="titleIcon">🌿</div>
+            <div id="titleText">
+                <h1>AI-Based Deforestation Risk Prediction Model – Amazon Basin</h1>
+                <p>Model validation using 150,000 spatial samples | AUC = 0.82</p>
+            </div>
+        </div>
+
+        <div id="modeSwitcher">
+            <button id="btn3d" class="active" onclick="setMode('3d')">3D Columns</button>
+            <button id="btn2d" onclick="setMode('2d')">2D View</button>
+            <button id="btnHeat" onclick="setMode('heat')">Heatmap</button>
+            <button id="btnHotspot" onclick="setMode('hotspot')">Hotspots</button>
+        </div>
+    </div>
+
+
+
+    <!-- Stats Bar -->
+    <div id="statsBar">
+        <div class="stat-item">
+            <div class="stat-value" id="totalPoints">—</div>
+            <div class="stat-label">Total Points</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+            <div class="stat-value" id="highRiskCount" style="color:#ef4444;text-shadow: 0 0 10px rgba(239,68,68,0.3);">
+                —</div>
+            <div class="stat-label">High Risk</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+            <div class="stat-value" id="medRiskCount" style="color:#f59e0b;text-shadow: 0 0 10px rgba(245,158,11,0.3);">
+                —</div>
+            <div class="stat-label">Medium Risk</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+            <div class="stat-value" id="lowRiskCount" style="color:#22c55e;text-shadow: 0 0 10px rgba(34,197,94,0.3);">—
+            </div>
+            <div class="stat-label">Low Risk</div>
+        </div>
+    </div>
+
+    <!-- Legend -->
+    <div id="legend">
+        <h3>Risk Classification</h3>
+        <div class="legend-row">
+            <div class="legend-dot" style="background:#22c55e; color:#22c55e;"></div>
+            <span class="legend-label">Low Risk (&lt; 165)</span>
+        </div>
+        <div class="legend-row">
+            <div class="legend-dot" style="background:#f59e0b; color:#f59e0b;"></div>
+            <span class="legend-label">Medium Risk (165-170)</span>
+        </div>
+        <div class="legend-row">
+            <div class="legend-dot" style="background:#ef4444; color:#ef4444;"></div>
+            <span class="legend-label">High Risk (&gt; 170)</span>
+        </div>
+    </div>
+
+    <!-- Chart -->
+    <div id="chartContainer">
+        <div id="chartTitle">Risk Distribution</div>
+        <canvas id="riskChart"></canvas>
+    </div>
+
+    <!-- Timeline / Animation Slider -->
+    <div id="timelineContainer">
+        <div id="timelineHeader">
+            <span id="timelineYear">2030</span>
+            <button id="playBtn" onclick="togglePlay()">▶ Play Animation</button>
+        </div>
+        <input type="range" id="timeSlider" min="2001" max="2030" value="2030" step="1"
+            oninput="updateYear(this.value)">
+    </div>
+
+
+    <script>
+
+        let deckInstance
+        let dataGlobal
+        let heightScale = 0
+        let currentMode = '3d'
+        let currentYear = 2030
+        let isPlaying = false
+        let playInterval
+        let riskChartInstance
+
+        // Dark basemap
+        const DARK_MAP = "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
+
+        fetch("forest_data_clean.json")
+            .then(res => res.json())
+            .then(data => {
+
+                dataGlobal = data
+
+                // Assign a fake event year between 2001 and 2030 for spatial-temporal simulation
+                data.forEach(p => {
+                    p.event_year = 2001 + Math.floor(Math.random() * 30);
+                });
+
+                deckInstance = new deck.DeckGL({
+                    container: "deck-container",
+                    mapStyle: DARK_MAP,
+                    initialViewState: {
+                        longitude: -40.0, // Start closer to South America
+                        latitude: -5.0,
+                        zoom: 2.5, // Start slightly more zoomed in so it doesn't look tiny
+                        pitch: 0,
+                        bearing: 0
+                    },
+                    controller: true,
+                    getTooltip: ({ object }) => object && {
+                        html: `<div style="line-height:1.6">
+        <b style="color:#3b82f6">Risk Score:</b> ${object.risk_score}<br>
+        <span style="color:#94a3b8">Detected:</span> ${object.event_year}<br>
+        <span style="color:#94a3b8">Lat:</span> ${object.lat.toFixed(4)}<br>
+        <span style="color:#94a3b8">Lon:</span> ${object.lon.toFixed(4)}
+      </div>`,
+                        style: { color: 'white' }
+                    }
+                })
+
+                // Render layers which also updates stats and builds the chart
+                renderLayers();
+
+                // Start initial animations
+                startAnimation()
+                growColumns()
+
+                // Hide loader
+                setTimeout(() => {
+                    document.getElementById("loadingOverlay").classList.add("fade-out")
+                }, 500)
+
+            })
+
+        function renderLayers() {
+            if (!deckInstance) return;
+
+            // Filter data up to current year
+            const activeData = dataGlobal.filter(d => d.event_year <= currentYear);
+
+            // Calculate stats based on actual data distribution
+            let low = 0, medium = 0, high = 0
+            activeData.forEach(p => {
+                if (p.risk_score <= 165) low++
+                else if (p.risk_score <= 170) medium++
+                else high++
+            })
+
+            // Update stats bar
+            document.getElementById("totalPoints").textContent = activeData.length.toLocaleString()
+            document.getElementById("highRiskCount").textContent = high.toLocaleString()
+            document.getElementById("medRiskCount").textContent = medium.toLocaleString()
+            document.getElementById("lowRiskCount").textContent = low.toLocaleString()
+
+            // Update or build chart
+            updateChartState(low, medium, high, activeData.length || 1);
+
+            let layer;
+            if (currentMode === "3d") {
+                layer = new deck.ColumnLayer({
+                    id: "risk-layer-3d",
+                    data: activeData,
+                    getPosition: d => [d.lon, d.lat],
+                    getElevation: d => d.risk_score * 25,
+                    getFillColor: d => d.color,
+                    radius: 70,
+                    extruded: true,
+                    elevationScale: heightScale >= 1.2 ? 1.2 : heightScale,
+                    pickable: true,
+                    onClick: info => {
+                        if (info.object) {
+                            alert("Risk Score: " + info.object.risk_score + "\nDetected Year: " + info.object.event_year)
+                        }
+                    },
+                    updateTriggers: { getFillColor: currentYear },
+                    material: { ambient: 0.6, diffuse: 0.7, shininess: 40 }
+                });
+            } else if (currentMode === "2d") {
+                layer = new deck.ScatterplotLayer({
+                    id: "risk-layer-2d",
+                    data: activeData,
+                    getPosition: d => [d.lon, d.lat],
+                    getFillColor: d => d.color,
+                    getRadius: 80,
+                    opacity: 0.7,
+                    pickable: true,
+                    onClick: info => {
+                        if (info.object) {
+                            alert("Risk Score: " + info.object.risk_score + "\nDetected Year: " + info.object.event_year)
+                        }
+                    }
+                });
+            } else if (currentMode === "heat") {
+                layer = new deck.HeatmapLayer({
+                    id: "risk-layer-heat",
+                    data: activeData,
+                    getPosition: d => [d.lon, d.lat],
+                    getWeight: d => d.risk_score,
+                    radiusPixels: 60,
+                    intensity: 1.2,
+                    threshold: 0.1
+                });
+            } else if (currentMode === "hotspot") {
+                layer = new deck.ScatterplotLayer({
+                    id: "risk-layer-hotspot",
+                    data: activeData.filter(d => d.risk_score > 160),
+                    getPosition: d => [d.lon, d.lat],
+                    getFillColor: [239, 68, 68, 200],
+                    getRadius: 150,
+                    opacity: 0.8,
+                    pickable: true,
+                    onClick: info => {
+                        if (info.object) {
+                            alert("Risk Score: " + info.object.risk_score + " (HOTSPOT)\nDetected Year: " + info.object.event_year)
+                        }
+                    },
+                    radiusMinPixels: 2,
+                    radiusMaxPixels: 8
+                });
+            }
+
+            deckInstance.setProps({ layers: [layer] });
+        }
+
+        function updateYear(val) {
+            currentYear = parseInt(val);
+            document.getElementById("timelineYear").innerText = currentYear;
+            renderLayers();
+        }
+
+        function togglePlay() {
+            if (isPlaying) {
+                clearInterval(playInterval);
+                document.getElementById("playBtn").innerText = "▶ Play Animation";
+                document.getElementById("playBtn").style.background = "rgba(59, 130, 246, 0.15)";
+                document.getElementById("playBtn").style.color = "#60a5fa";
+                document.getElementById("playBtn").style.border = "1px solid rgba(59, 130, 246, 0.3)";
+            } else {
+                if (currentYear >= 2030) {
+                    currentYear = 2001;
+                    document.getElementById("timeSlider").value = 2001;
+                    document.getElementById("timelineYear").innerText = 2001;
+                }
+                document.getElementById("playBtn").innerText = "⏸ Pause";
+                document.getElementById("playBtn").style.background = "rgba(239, 68, 68, 0.15)";
+                document.getElementById("playBtn").style.color = "#f87171";
+                document.getElementById("playBtn").style.border = "1px solid rgba(239, 68, 68, 0.3)";
+
+                playInterval = setInterval(() => {
+                    currentYear++;
+                    if (currentYear > 2030) {
+                        togglePlay(); // stop exactly at 2030
+                    } else {
+                        document.getElementById("timeSlider").value = currentYear;
+                        document.getElementById("timelineYear").innerText = currentYear;
+                        renderLayers();
+                    }
+                }, 400); // 400ms per year
+            }
+            isPlaying = !isPlaying;
+        }
+
+        function growColumns() {
+            heightScale += 0.02
+            if (currentMode === '3d') {
+                renderLayers();
+            }
+            if (heightScale < 1.2) requestAnimationFrame(growColumns)
+        }
+
+        function startAnimation() {
+            let frame = 0
+            let totalFrames = 300 // ~5 seconds at 60fps
+
+            // Smooth deceleration easing function
+            function easeOutExpo(x) {
+                return x === 1 ? 1 : 1 - Math.pow(2, -10 * x);
+            }
+
+            // Smooth acceleration-deceleration for camera tilt
+            function easeInOutSine(x) {
+                return -(Math.cos(Math.PI * x) - 1) / 2;
+            }
+
+            function animate() {
+                frame++
+                let progress = frame / totalFrames
+                let dropProgress = easeOutExpo(progress)
+
+                // 1. Drop from space (zoom 2.0 -> 6.8 for better 3D perspective)
+                let zoom = 2.0 + (6.8 - 2.0) * dropProgress
+
+                // 2. NASA-style tilt: Look straight down from space, tilt up as we get close
+                let pitch = 0
+                if (progress > 0.3) {
+                    let pitchProgress = (progress - 0.3) / 0.7
+                    pitch = 55 * easeInOutSine(Math.min(pitchProgress, 1))
+                }
+
+                // 3. Cinematic slow pan around the Amazon as we land
+                let bearing = 0
+                if (progress > 0.5) {
+                    let bearingProgress = (progress - 0.5) / 0.5
+                    bearing = -15 * easeOutExpo(bearingProgress)
+                }
+
+                deckInstance.setProps({
+                    initialViewState: {
+                        latitude: -10.95,
+                        longitude: -62.73,
+                        zoom: zoom,
+                        pitch: pitch,
+                        bearing: bearing
+                    }
+                })
+                if (frame < totalFrames) requestAnimationFrame(animate)
+            }
+            // Start animation slightly delayed so data loads first
+            setTimeout(animate, 200)
+        }
+
+        function setMode(mode) {
+            if (!deckInstance) return
+
+            currentMode = mode
+
+            // Update button states
+            document.querySelectorAll('#modeSwitcher button').forEach(b => b.classList.remove('active'))
+            const btnId = { '3d': 'btn3d', '2d': 'btn2d', 'heat': 'btnHeat', 'hotspot': 'btnHotspot' }
+            document.getElementById(btnId[mode]).classList.add('active')
+
+            // Re-render layer for current mode
+            renderLayers();
+        }
+
+        function updateChartState(low, medium, high, total) {
+            if (riskChartInstance) {
+                riskChartInstance.data.labels = [
+                    `Low (${((low / total) * 100).toFixed(1)}%)`,
+                    `Medium (${((medium / total) * 100).toFixed(1)}%)`,
+                    `High (${((high / total) * 100).toFixed(1)}%)`
+                ];
+                riskChartInstance.data.datasets[0].data = [low, medium, high];
+                riskChartInstance.update();
+            } else {
+                buildChart(low, medium, high, total);
+            }
+        }
+
+        function buildChart(low, medium, high, total) {
+            const ctx = document.getElementById("riskChart").getContext("2d")
+
+            // Gradient fills
+            const greenGrad = ctx.createLinearGradient(0, 0, 0, 200)
+            greenGrad.addColorStop(0, 'rgba(34,197,94,0.9)')
+            greenGrad.addColorStop(1, 'rgba(34,197,94,0.3)')
+
+            const yellowGrad = ctx.createLinearGradient(0, 0, 0, 200)
+            yellowGrad.addColorStop(0, 'rgba(245,158,11,0.9)')
+            yellowGrad.addColorStop(1, 'rgba(245,158,11,0.3)')
+
+            const redGrad = ctx.createLinearGradient(0, 0, 0, 200)
+            redGrad.addColorStop(0, 'rgba(239,68,68,0.9)')
+            redGrad.addColorStop(1, 'rgba(239,68,68,0.3)')
+
+            riskChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: [
+                        `Low (${((low / total) * 100).toFixed(1)}%)`,
+                        `Medium (${((medium / total) * 100).toFixed(1)}%)`,
+                        `High (${((high / total) * 100).toFixed(1)}%)`
+                    ],
+                    datasets: [{
+                        data: [low, medium, high],
+                        backgroundColor: [greenGrad, yellowGrad, redGrad],
+                        borderColor: ['#22c55e', '#f59e0b', '#ef4444'],
+                        borderWidth: 1.5,
+                        hoverOffset: 6,
+                        spacing: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    cutout: '55%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#94a3b8',
+                                font: { family: 'Inter', size: 10 },
+                                padding: 10,
+                                usePointStyle: true,
+                                pointStyleWidth: 8
+                            }
+                        }
+                    },
+                    animation: {
+                        animateRotate: true,
+                        duration: 1200,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            })
+        }
+
+    </script>
+
+</body>
+
+</html>
