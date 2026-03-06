@@ -1357,9 +1357,9 @@
                     id: "risk-layer-3d",
                     data: activeData,
                     getPosition: d => [d.lon, d.lat],
-                    getElevation: d => d.risk_score * 25,
+                    getElevation: d => (d.risk_score - 140) * 150,
                     getFillColor: d => d.color,
-                    radius: 70,
+                    radius: 120,
                     extruded: true,
                     elevationScale: heightScale >= 1.2 ? 1.2 : heightScale,
                     pickable: true,
@@ -1638,6 +1638,17 @@
 
             } else {
                 sidebar.classList.remove('active');
+            }
+        }
+
+        function toggleModal(show) {
+            const modal = document.getElementById('modalOverlay');
+            if (show) {
+                modal.style.display = 'flex';
+                setTimeout(() => modal.classList.add('active'), 10);
+            } else {
+                modal.classList.remove('active');
+                setTimeout(() => modal.style.display = 'none', 400);
             }
         }
 
