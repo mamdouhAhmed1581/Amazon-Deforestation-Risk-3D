@@ -46,7 +46,7 @@
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid rgba(59, 130, 246, 0.2);
-            z-index: 100;
+            z-index: 2000;
         }
 
         #titleLeft {
@@ -84,6 +84,7 @@
             letter-spacing: -0.3px;
             background: linear-gradient(90deg, #ffffff, #e2e8f0);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
@@ -373,6 +374,23 @@
         .nn-arrow {
             color: #334155;
             font-size: 14px;
+        }
+
+        /* ===== Modal Overlay ===== */
+        #modalOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(10, 14, 23, 0.85);
+            backdrop-filter: blur(10px);
+            z-index: 5000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.4s ease;
         }
 
         #modalOverlay.active {
@@ -847,6 +865,7 @@
         #timeSlider::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
+            outline: none;
             width: 16px;
             height: 16px;
             border-radius: 50%;
@@ -958,7 +977,6 @@
                 <span>🛰️</span> Satellite Reality
             </div>
         </div>
-    </div>
     </div>
 
     <!-- Analysis Sidebar -->
@@ -1642,6 +1660,7 @@
         }
 
         function toggleModal(show) {
+            console.log("toggleModal called with:", show);
             const modal = document.getElementById('modalOverlay');
             if (show) {
                 modal.style.display = 'flex';
