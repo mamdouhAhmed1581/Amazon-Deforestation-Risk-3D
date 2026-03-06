@@ -398,72 +398,78 @@
             opacity: 1;
         }
 
-        #modalContent {
-            width: 80%;
-            max-width: 1000px;
-            height: 85vh;
-            background: #111827;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        /* ===== AI Tech Panel (Left) ===== */
+        .tech-panel {
+            position: absolute;
+            top: 100px;
+            left: 25px;
+            width: 320px;
+            max-height: calc(100vh - 140px);
+            background: rgba(10, 14, 23, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
             border-radius: 20px;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-        }
-
-        #modalHeader {
-            padding: 20px 30px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(17, 24, 39, 0.95);
-        }
-
-        #modalHeader h2 {
-            font-size: 20px;
-            font-weight: 700;
-            color: #f8fafc;
-        }
-
-        #closeModal {
-            font-size: 24px;
-            color: #94a3b8;
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-
-        #closeModal:hover {
-            color: #f8fafc;
-        }
-
-        #modalBody {
-            padding: 30px;
+            padding: 24px;
             overflow-y: auto;
-            flex: 1;
+            z-index: 1000;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+            scrollbar-width: thin;
+            scrollbar-color: rgba(59, 130, 246, 0.3) transparent;
         }
 
-        .modal-section {
-            margin-bottom: 40px;
+        .tech-panel::-webkit-scrollbar {
+            width: 5px;
         }
 
-        .modal-section h3 {
-            font-size: 16px;
+        .tech-panel::-webkit-scrollbar-thumb {
+            background: rgba(59, 130, 246, 0.3);
+            border-radius: 10px;
+        }
+
+        .tech-section {
+            margin-bottom: 25px;
+        }
+
+        .tech-section h2 {
+            font-size: 13px;
             color: #3b82f6;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
             margin-bottom: 15px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
-        .modal-grid {
-            display: grid;
-            grid-template-columns: 1.2fr 1fr;
-            gap: 25px;
-            align-items: start;
+        .tech-badge {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+
+        /* Re-adjusting other elements */
+        #titleBar {
+            justify-content: center;
+            gap: 40px;
+        }
+
+        #analysisSidebar {
+            right: 25px;
+            top: 100px;
+            height: auto;
+            max-height: calc(100vh - 140px);
+        }
+
+        #mapControls {
+            top: auto;
+            bottom: 100px;
+            right: 25px;
         }
 
         .modal-image {
@@ -1021,175 +1027,90 @@
             <div id="titleIcon">🌿</div>
             <div id="titleText">
                 <h1>AI-Based Deforestation Risk Prediction Model – Amazon Basin</h1>
-                <p>Elite v2.1 | Neural-Prophet Engine | AUC = 0.82</p>
+                <p>Elite v3.0 | AI Command Center | AUC = 0.82</p>
             </div>
         </div>
 
         <div id="modeSwitcher">
-            <button id="btn3d" class="active" onclick="setMode('3d')">3D Columns</button>
+            <button id="btn3d" class="active" onclick="setMode('3d')">3D Surface</button>
             <button id="btn2d" onclick="setMode('2d')">2D View</button>
             <button id="btnHeat" onclick="setMode('heat')">Heatmap</button>
             <button id="btnHotspot" onclick="setMode('hotspot')">Hotspots</button>
-            <button id="detailsBtn" onclick="toggleModal(true)">Project Details</button>
         </div>
     </div>
 
-    <!-- Project Modal -->
-    <div id="modalOverlay" onclick="if(event.target === this) toggleModal(false)">
-        <div id="modalContent">
-            <div id="modalHeader">
-                <h2>Project Overview & GeoAI Methodology</h2>
-                <div id="closeModal" onclick="toggleModal(false)">×</div>
+    <!-- AI Command Panel (New for v3.0) -->
+    <div class="tech-panel">
+        <div class="tech-section">
+            <h2><span>🧠</span> AI Engine Status</h2>
+            <span class="tech-badge">U-NET SEGMENTATION</span>
+            <div class="equation-box" style="font-size: 10px; margin: 10px 0;">
+                Risk = 0.30(FL) + 0.20(DR) + 0.15(PD) + 0.15(FH)
             </div>
-            <div id="modalBody">
-                <!-- Section 1: Framework -->
-                <div class="modal-section">
-                    <h3><span>⚙️</span> Methodology Framework</h3>
-                    <div class="modal-grid">
-                        <img src="geoai_framework.png" alt="Framework" class="modal-image">
-                        <div class="modal-text">
-                            <p>The proposed <b>GeoAI framework</b> integrates satellite data, deep learning segmentation
-                                (UNet), spatial risk modeling, and high-resolution 3D visualization to predict
-                                deforestation risk across the Amazon Basin.</p>
-                            <div class="highlight-box">
-                                <b>Key Cycle:</b> Satellite Data → UNet Segmentation → Risk Calculation → Spatial
-                                Validation.
-                            </div>
-                        </div>
+
+            <div class="nn-viz" style="padding: 10px; margin: 15px 0; scale: 0.8;">
+                <div class="nn-layer">
+                    <div class="nn-node"></div>
+                    <div class="nn-node"></div>
+                </div>
+                <div class="nn-arrow">→</div>
+                <div class="nn-layer">
+                    <div class="nn-node hidden"></div>
+                    <div class="nn-node hidden"></div>
+                    <div class="nn-node hidden"></div>
+                </div>
+                <div class="nn-arrow">→</div>
+                <div class="nn-node output"></div>
+            </div>
+        </div>
+
+        <div class="tech-section">
+            <h2><span>📊</span> Feature Importance</h2>
+            <div class="shap-container">
+                <div class="shap-bar-group">
+                    <div class="shap-label"><span>Forest Loss (Temporal)</span><span>35%</span></div>
+                    <div class="shap-bar-bg">
+                        <div class="shap-bar-fill" style="width: 35%"></div>
                     </div>
                 </div>
-
-                <!-- Section 2: Validation -->
-                <div class="modal-section">
-                    <h3><span>📊</span> Analysis & Validation</h3>
-                    <div class="modal-grid">
-                        <div class="modal-text">
-                            <p>The model reached an <b>AUC score of 0.82</b>, indicating strong predictive performance.
-                                Spatial validation was performed by correlating high-risk predictions with active fire
-                                events and historical hotspots.</p>
-                            <div class="highlight-box">
-                                <b style="color:#ef4444">Hotspot Clusters:</b> Identified using DBSCAN clustering to
-                                correlate fire intensity with predicted risk zones.
-                            </div>
-                        </div>
-                        <img src="model_validation_results.png" alt="Analysis" class="modal-image">
+                <div class="shap-bar-group">
+                    <div class="shap-label"><span>Road Proximity</span><span>22%</span></div>
+                    <div class="shap-bar-bg">
+                        <div class="shap-bar-fill" style="width: 22%"></div>
                     </div>
                 </div>
-
-                <!-- Section 3: AI Architecture & Equation -->
-                <div class="modal-section">
-                    <h3><span>🧠</span> Deep Learning & Mathematical Model</h3>
-                    <div class="modal-grid">
-                        <div class="modal-text">
-                            <span class="ai-badge">Semantic Segmentation</span>
-                            <p>The core engine uses a <b>U-Net architecture</b> for binary segmentation. The model was
-                                trained using 150,000 spatial samples with multi-temporal features.</p>
-
-                            <div class="equation-box">
-                                Risk Index = <span>0.30</span>(FL) + <span>0.20</span>(DR) + <span>0.15</span>(PD) +
-                                <span>0.15</span>(FH) + <span>0.10</span>(SL) + <span>0.10</span>(EL)
-                            </div>
-
-                            <div class="nn-viz">
-                                <div class="nn-layer">
-                                    <div class="nn-node"></div>
-                                    <div class="nn-node"></div>
-                                    <div class="nn-node"></div>
-                                </div>
-                                <div class="nn-arrow">→</div>
-                                <div class="nn-layer">
-                                    <div class="nn-node hidden"></div>
-                                    <div class="nn-node hidden"></div>
-                                    <div class="nn-node hidden"></div>
-                                    <div class="nn-node hidden"></div>
-                                </div>
-                                <div class="nn-arrow">→</div>
-                                <div class="nn-layer">
-                                    <div class="nn-node hidden"></div>
-                                    <div class="nn-node hidden"></div>
-                                </div>
-                                <div class="nn-arrow">→</div>
-                                <div class="nn-node output"></div>
-                            </div>
-
-                            <div class="specs-grid">
-                                <div class="spec-card">
-                                    <div class="spec-label">Optimizer</div>
-                                    <div class="spec-value">Adam (lr=1e-4)</div>
-                                </div>
-                                <div class="spec-card">
-                                    <div class="spec-label">Loss Function</div>
-                                    <div class="spec-value">BCE + Dice</div>
-                                </div>
-                                <div class="spec-card">
-                                    <div class="spec-label">Resolution</div>
-                                    <div class="spec-value">10m / Pixel</div>
-                                </div>
-                                <div class="spec-card">
-                                    <div class="spec-label">Validation</div>
-                                    <div class="spec-value">K-Fold (k=5)</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="modal-text">
-                            <h4 style="font-size:12px; color:#3b82f6; margin-bottom:10px;">FEATURE IMPORTANCE (SHAP
-                                Values)</h4>
-                            <div class="importance-bar-container">
-                                <div class="importance-row">
-                                    <div class="importance-label"><span>Forest Loss (Temporal)</span><span>35%</span>
-                                    </div>
-                                    <div class="importance-track">
-                                        <div class="importance-fill" style="width: 35%"></div>
-                                    </div>
-                                </div>
-                                <div class="importance-row">
-                                    <div class="importance-label"><span>Road Proximity</span><span>22%</span></div>
-                                    <div class="importance-track">
-                                        <div class="importance-fill" style="width: 22%"></div>
-                                    </div>
-                                </div>
-                                <div class="importance-row">
-                                    <div class="importance-label"><span>Historical Hotspots</span><span>18%</span></div>
-                                    <div class="importance-track">
-                                        <div class="importance-fill" style="width: 18%"></div>
-                                    </div>
-                                </div>
-                                <div class="importance-row">
-                                    <div class="importance-label"><span>Population Density</span><span>15%</span></div>
-                                    <div class="importance-track">
-                                        <div class="importance-fill" style="width: 15%"></div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <p style="font-size: 11px; margin-top:20px; font-style: italic;">* The model prioritizes
-                                temporal forest degradation as the primary indicator for future deforestation risk.</p>
-                        </div>
+                <div class="shap-bar-group">
+                    <div class="shap-label"><span>Historical Hotspots</span><span>18%</span></div>
+                    <div class="shap-bar-bg">
+                        <div class="shap-bar-fill" style="width: 18%"></div>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <!-- Section 4: Study Area & Decision Support -->
-                <div class="modal-section">
-                    <h3><span>🌍</span> Study Area & Decision Support</h3>
-                    <div class="modal-text">
-                        <p>Focusing on the "Arc of Deforestation" in <b>Rondônia, Brazil</b>, the model analyzes 150,000
-                            spatial samples. Our findings pinpoint high-risk zones along <b>expanding agricultural
-                                frontiers</b> and undocumented logging roads, providing actionable data for
-                            environmental task forces.</p>
-                    </div>
+        <div class="tech-section">
+            <h2><span>⚙️</span> Technical Specs</h2>
+            <div class="specs-grid" style="grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div class="spec-card" style="padding: 8px;">
+                    <div class="spec-label">AUC Score</div>
+                    <div class="spec-value" style="font-size: 14px; color: #10b981;">0.82</div>
                 </div>
-
-                <!-- Footer Assets -->
-                <div class="footer-links">
-                    <a href="Graduation_Project_Report.md" class="link-chip"><span>📑</span> View Research Draft
-                        (.md)</a>
-                    <a href="https://github.com/mamdouhAhmed1581/Amazon-Deforestation-Risk-3D"
-                        class="link-chip"><span>💻</span> GitHub Repo</a>
+                <div class="spec-card" style="padding: 8px;">
+                    <div class="spec-label">Optimizer</div>
+                    <div class="spec-value" style="font-size: 14px;">Adam</div>
+                </div>
+                <div class="spec-card" style="padding: 8px;">
+                    <div class="spec-label">Resolution</div>
+                    <div class="spec-value" style="font-size: 14px;">10m/px</div>
+                </div>
+                <div class="spec-card" style="padding: 8px;">
+                    <div class="spec-label">Validation</div>
+                    <div class="spec-value" style="font-size: 14px;">Cross-Val</div>
                 </div>
             </div>
         </div>
     </div>
+
     </div>
 
 
@@ -1375,9 +1296,9 @@
                     id: "risk-layer-3d",
                     data: activeData,
                     getPosition: d => [d.lon, d.lat],
-                    getElevation: d => (d.risk_score - 140) * 150,
+                    getElevation: d => (d.risk_score - 140) * 200, // Increase height for 'jabar' feel
                     getFillColor: d => d.color,
-                    radius: 120,
+                    radius: 250, // Larger radius for more continuous surface look
                     extruded: true,
                     elevationScale: heightScale >= 1.2 ? 1.2 : heightScale,
                     pickable: true,
@@ -1385,7 +1306,7 @@
                         if (info.object) toggleSidebar(true, info.object);
                     },
                     updateTriggers: { getFillColor: currentYear },
-                    material: { ambient: 0.6, diffuse: 0.7, shininess: 40 }
+                    material: { ambient: 0.4, diffuse: 0.9, shininess: 80 } // High shininess for tech look
                 });
             } else if (currentMode === "2d") {
                 layer = new deck.ScatterplotLayer({
