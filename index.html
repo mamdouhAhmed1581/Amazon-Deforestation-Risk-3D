@@ -150,6 +150,138 @@
             border-color: #3b82f6;
         }
 
+        /* ===== Map Controls ===== */
+        #mapControls {
+            position: absolute;
+            top: 130px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 100;
+        }
+
+        .map-control-btn {
+            width: 44px;
+            height: 44px;
+            background: rgba(10, 14, 23, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #94a3b8;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .map-control-btn:hover {
+            color: #3b82f6;
+            background: rgba(30, 41, 59, 0.9);
+            transform: translateY(-2px);
+            border-color: #3b82f6;
+        }
+
+        .map-control-btn.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #2563eb;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+        }
+
+        /* ===== Analysis Sidebar ===== */
+        #analysisSidebar {
+            position: fixed;
+            top: 100px;
+            right: -350px;
+            width: 320px;
+            height: calc(100vh - 130px);
+            background: rgba(10, 14, 23, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-top-left-radius: 24px;
+            z-index: 1000;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 24px;
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        #analysisSidebar.active {
+            right: 0;
+        }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sidebar-header h2 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #f8fafc;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-close {
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .analysis-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 18px;
+        }
+
+        .card-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: #64748b;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .card-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+
+        .risk-meter-container {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin-top: 12px;
+            overflow: hidden;
+        }
+
+        #riskMeterFill {
+            height: 100%;
+            width: 0%;
+            transition: width 1s ease;
+        }
+
+        .advice-box {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 4px solid #3b82f6;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #cbd5e1;
+        }
+
         /* ===== Modal Overlay ===== */
         #modalOverlay {
             position: fixed;
@@ -683,6 +815,49 @@
 
     <div id="deck-container"></div>
 
+    <!-- Map Controls (Satellite Toggle) -->
+    <div id="mapControls">
+        <div id="toggleDark" class="map-control-btn active" onclick="toggleMapStyle('dark')" title="Dark Theme">🌑</div>
+        <div id="toggleSatellite" class="map-control-btn" onclick="toggleMapStyle('satellite')" title="Satellite View">
+            🛰️</div>
+    </div>
+
+    <!-- Analysis Sidebar -->
+    <div id="analysisSidebar">
+        <div class="sidebar-header">
+            <h2>Spatial Analysis Profile</h2>
+            <div class="sidebar-close" onclick="toggleSidebar(false)">×</div>
+        </div>
+
+        <div class="analysis-card">
+            <div class="card-label">Selected Location</div>
+            <div id="sideCoords" class="card-value" style="font-size: 14px; font-family: monospace;">--</div>
+        </div>
+
+        <div class="analysis-card">
+            <div class="card-label">Risk Probability</div>
+            <div id="sideRiskScore" class="card-value">--</div>
+            <div class="risk-meter-container">
+                <div id="riskMeterFill"></div>
+            </div>
+        </div>
+
+        <div class="analysis-card">
+            <div class="card-label">Temporal Detection</div>
+            <div id="sideYear" class="card-value">--</div>
+        </div>
+
+        <div class="advice-box">
+            <b>🛡️ Action Protocol:</b>
+            <p id="sideAdvice">Click on a 3D bar to generate an environmental protection protocol based on the predicted
+                risk level.</p>
+        </div>
+
+        <div style="margin-top: auto; font-size: 10px; color: #475569; text-align: center;">
+            Elite Edition | GeoAI Predictive Framework
+        </div>
+    </div>
+
     <!-- Title Bar -->
     <div id="titleBar">
         <div id="titleLeft">
@@ -902,8 +1077,10 @@
             }
         }
 
-        // Dark basemap
-        const DARK_MAP = "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
+        // Map styles
+        const DARK_MAP = "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
+        const SATELLITE_MAP = "mapbox://styles/mapbox/satellite-streets-v11";
+        const MAPBOX_TOKEN = "pk.eyJ1IjoibWFtZG91aGFobWVkMTU4MSIsImEiOiJjbTduaXVndjEwMDRsMm9zYXVhcHJ3eGt6In0.H_fBihpC9-p5Qp7q_WKgVw";
 
         fetch("forest_data_clean.json")
             .then(res => res.json())
@@ -919,21 +1096,23 @@
                 deckInstance = new deck.DeckGL({
                     container: "deck-container",
                     mapStyle: DARK_MAP,
+                    mapboxApiAccessToken: MAPBOX_TOKEN,
                     initialViewState: {
-                        longitude: -40.0, // Start closer to South America
+                        longitude: -40.0,
                         latitude: -5.0,
-                        zoom: 2.5, // Start slightly more zoomed in so it doesn't look tiny
+                        zoom: 2.5,
                         pitch: 0,
                         bearing: 0
                     },
                     controller: true,
                     getTooltip: ({ object }) => object && {
                         html: `<div style="line-height:1.6">
-        <b style="color:#3b82f6">Risk Score:</b> ${object.risk_score}<br>
-        <span style="color:#94a3b8">Detected:</span> ${object.event_year}<br>
-        <span style="color:#94a3b8">Lat:</span> ${object.lat.toFixed(4)}<br>
-        <span style="color:#94a3b8">Lon:</span> ${object.lon.toFixed(4)}
-      </div>`,
+                            <b style="color:#3b82f6">Risk Score:</b> ${object.risk_score}<br>
+                            <span style="color:#94a3b8">Detected:</span> ${object.event_year}<br>
+                            <span style="color:#94a3b8">Lat:</span> ${object.lat.toFixed(4)}<br>
+                            <span style="color:#94a3b8">Lon:</span> ${object.lon.toFixed(4)}<br>
+                            <div style="font-size:10px; margin-top:5px; color:#60a5fa">Click for Full Analysis →</div>
+                          </div>`,
                         style: { color: 'white' }
                     }
                 })
@@ -988,9 +1167,7 @@
                     elevationScale: heightScale >= 1.2 ? 1.2 : heightScale,
                     pickable: true,
                     onClick: info => {
-                        if (info.object) {
-                            alert("Risk Score: " + info.object.risk_score + "\nDetected Year: " + info.object.event_year)
-                        }
+                        if (info.object) toggleSidebar(true, info.object);
                     },
                     updateTriggers: { getFillColor: currentYear },
                     material: { ambient: 0.6, diffuse: 0.7, shininess: 40 }
@@ -1005,9 +1182,7 @@
                     opacity: 0.7,
                     pickable: true,
                     onClick: info => {
-                        if (info.object) {
-                            alert("Risk Score: " + info.object.risk_score + "\nDetected Year: " + info.object.event_year)
-                        }
+                        if (info.object) toggleSidebar(true, info.object);
                     }
                 });
             } else if (currentMode === "heat") {
@@ -1030,9 +1205,7 @@
                     opacity: 0.8,
                     pickable: true,
                     onClick: info => {
-                        if (info.object) {
-                            alert("Risk Score: " + info.object.risk_score + " (HOTSPOT)\nDetected Year: " + info.object.event_year)
-                        }
+                        if (info.object) toggleSidebar(true, info.object);
                     },
                     radiusMinPixels: 2,
                     radiusMaxPixels: 8
@@ -1222,6 +1395,48 @@
                     }
                 }
             })
+        }
+
+        function toggleMapStyle(style) {
+            const isSatellite = style === 'satellite';
+            deckInstance.setProps({
+                mapStyle: isSatellite ? SATELLITE_MAP : DARK_MAP
+            });
+
+            document.getElementById('toggleDark').classList.toggle('active', !isSatellite);
+            document.getElementById('toggleSatellite').classList.toggle('active', isSatellite);
+        }
+
+        function toggleSidebar(show, obj = null) {
+            const sidebar = document.getElementById('analysisSidebar');
+            if (show && obj) {
+                sidebar.classList.add('active');
+
+                // Update Sidebar Data
+                document.getElementById('sideCoords').innerText = `LAT ${obj.lat.toFixed(4)} | LON ${obj.lon.toFixed(4)}`;
+                document.getElementById('sideRiskScore').innerText = obj.risk_score.toFixed(1);
+                document.getElementById('sideYear').innerText = obj.event_year;
+
+                // Update Meter
+                const meterFill = document.getElementById('riskMeterFill');
+                const riskPercent = Math.min(((obj.risk_score - 140) / (185 - 140)) * 100, 100);
+                meterFill.style.width = riskPercent + '%';
+                meterFill.style.background = obj.risk_score > 170 ? '#ef4444' : (obj.risk_score > 165 ? '#f59e0b' : '#22c55e');
+
+                // Generate Protocol
+                let advice = "";
+                if (obj.risk_score > 170) {
+                    advice = "<b>CRITICAL THREAT:</b> Immediate drone surveillance required. Coordinate indicates high likelihood of active fire or illegal road construction. Dispatch Task Force Bravo.";
+                } else if (obj.risk_score > 165) {
+                    advice = "<b>ELEVATED ALERT:</b> Probable agricultural expansion zone. Increase frequency of satellite re-visit (Daily). Monitor for heavy machinery movement.";
+                } else {
+                    advice = "<b>NOMINAL RISK:</b> Stable forest canopy. No immediate intervention needed. Continue baseline conservation monitoring.";
+                }
+                document.getElementById('sideAdvice').innerHTML = advice;
+
+            } else {
+                sidebar.classList.remove('active');
+            }
         }
 
     </script>
