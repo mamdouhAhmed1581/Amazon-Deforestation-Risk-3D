@@ -265,6 +265,46 @@
             margin-top: 10px;
         }
 
+        .ai-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border-radius: 4px;
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .footer-links {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            gap: 15px;
+        }
+
+        .link-chip {
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: #cbd5e1;
+            font-size: 12px;
+            text-decoration: none;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .link-chip:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: #3b82f6;
+            color: #60a5fa;
+        }
+
 
 
         /* ===== Stats Bar ===== */
@@ -667,14 +707,47 @@
                     </div>
                 </div>
 
-                <!-- Section 3: Study Area -->
+                <!-- Section 3: AI Architecture -->
                 <div class="modal-section">
-                    <h3><span>🌍</span> Study Area: Rondônia, Brazil</h3>
-                    <div class="modal-text">
-                        <p>Focusing on the "Arc of Deforestation", the model analyzes 150,000 spatial samples from 2001
-                            to 2022 to predict future trends up to 2030. High-risk areas are concentrated along
-                            expanding agricultural frontiers and illegal logging roads.</p>
+                    <h3><span>🧠</span> Deep Learning Architecture (U-Net)</h3>
+                    <div class="modal-grid">
+                        <div class="modal-text">
+                            <span class="ai-badge">Semantic Segmentation</span>
+                            <p>To identify forest patterns from satellite imagery, we employed a <b>U-Net
+                                    architecture</b>. The model consists of an encoder path to capture context and a
+                                symmetric decoder path that enables precise localization.</p>
+                            <div class="highlight-box">
+                                <b>Training Specs:</b> 128x128 patches, Adam Optimizer, Binary Cross-Entropy Loss,
+                                implemented in <b>PyTorch/Keras</b>.
+                            </div>
+                        </div>
+                        <div class="modal-text">
+                            <p style="font-style: italic; font-size: 13px;">The AI model transforms raw spectral data
+                                into binary forest/non-forest masks, which are then integrated into the spatial risk
+                                equation.</p>
+                        </div>
                     </div>
+                </div>
+
+                <!-- Section 4: Study Area -->
+                <div class="modal-section">
+                    <h3><span>🌍</span> Study Area & Decision Support</h3>
+                    <div class="modal-text">
+                        <p>Focusing on the "Arc of Deforestation" in <b>Rondônia, Brazil</b>, the model analyzes 150,000
+                            spatial samples. Our findings pinpoint high-risk zones along <b>expanding agricultural
+                                frontiers</b> and undocumented logging roads, providing actionable data for
+                            environmental task forces.</p>
+                    </div>
+                </div>
+
+                <!-- Footer Assets -->
+                <div class="footer-links">
+                    <a href="#" class="link-chip"><span>📑</span> Research Paper (PDF)</a>
+                    <a href="#" class="link-chip"
+                        onclick="alert('Redirecting to Google Colab Notebook...')"><span>📓</span> Model Training
+                        (Colab)</a>
+                    <a href="https://github.com/mamdouhAhmed1581/Amazon-Deforestation-Risk-3D"
+                        class="link-chip"><span>💻</span> GitHub Repo</a>
                 </div>
             </div>
         </div>
