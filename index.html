@@ -829,6 +829,11 @@
                 });
             } else if (currentMode === "heat") {
                 layer = new deck.HeatmapLayer({ id: "risk-heat", data: activeData, getPosition: d => [d.lon, d.lat], getWeight: d => d.risk_score, radiusPixels: 70 });
+            } else if (currentMode === "hotspot") {
+                layer = new deck.HexagonLayer({
+                    id: "risk-hotspot", data: activeData, getPosition: d => [d.lon, d.lat], radius: 1200, extruded: true, elevationScale: 20,
+                    upperPercentile: 98, coverage: 0.8, pickable: true
+                });
             } else {
                 layer = new deck.ScatterplotLayer({ id: "risk-2d", data: activeData, getPosition: d => [d.lon, d.lat], getFillColor: d => d.color, getRadius: 120, pickable: true, onClick: info => { if (info.object) toggleSidebar(true, info.object); } });
             }
