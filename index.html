@@ -830,10 +830,12 @@
             } else if (currentMode === "heat") {
                 layer = new deck.HeatmapLayer({ id: "risk-heat", data: activeData, getPosition: d => [d.lon, d.lat], getWeight: d => d.risk_score, radiusPixels: 70 });
             } else if (currentMode === "hotspot") {
+                const highRiskData = dataGlobal.filter(d => d.risk_score > 170 && d.event_year <= currentYear);
                 layer = new deck.ColumnLayer({
-                    id: "risk-hotspot", data: activeData, getPosition: d => [d.lon, d.lat], getElevation: d => (d.risk_score - 140) * 400,
-                    getFillColor: [255, 30, 30, 255], radius: 200, extruded: true, elevationScale: heightScale, pickable: true,
-                    onClick: info => { if (info.object) toggleSidebar(true, info.object); }
+                    id: "risk-hotspot", data: highRiskData, getPosition: d => [d.lon, d.lat], getElevation: d => (d.risk_score - 160) * 800,
+                    getFillColor: [255, 0, 0, 255], radius: 250, extruded: true, elevationScale: heightScale, pickable: true,
+                    onClick: info => { if (info.object) toggleSidebar(true, info.object); },
+                    material: { ambient: 0.8, diffuse: 0.9, shininess: 100 }
                 });
             } else {
                 layer = new deck.ScatterplotLayer({ id: "risk-2d", data: activeData, getPosition: d => [d.lon, d.lat], getFillColor: d => d.color, getRadius: 120, pickable: true, onClick: info => { if (info.object) toggleSidebar(true, info.object); } });
