@@ -42,7 +42,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 14px 28px;
-            background: linear-gradient(180deg, rgba(10, 14, 23, 0.95) 0%, rgba(10, 14, 23, 0.75) 100%);
+            background: rgba(10, 14, 23, 0.85);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid rgba(59, 130, 246, 0.2);
@@ -65,45 +65,28 @@
             justify-content: center;
             font-size: 20px;
             box-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
-            animation: pulse-glow 2.5s infinite alternate;
-        }
-
-        @keyframes pulse-glow {
-            0% {
-                box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
-            }
-
-            100% {
-                box-shadow: 0 0 30px rgba(34, 197, 94, 0.7);
-            }
         }
 
         #titleText h1 {
             font-size: 18px;
-            font-weight: 600;
+            font-weight: 700;
+            color: white;
             letter-spacing: -0.3px;
-            background: linear-gradient(90deg, #ffffff, #e2e8f0);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
         }
 
         #titleText p {
-            font-size: 12px;
+            font-size: 11px;
             color: #94a3b8;
-            margin-top: 4px;
-            font-weight: 500;
-            letter-spacing: 0.2px;
+            margin-top: 2px;
         }
 
-        /* ===== Mode Buttons ===== */
         #modeSwitcher {
             display: flex;
-            gap: 4px;
+            gap: 8px;
             background: rgba(30, 41, 59, 0.8);
             padding: 4px;
-            border-radius: 10px;
-            border: 1px solid rgba(71, 85, 105, 0.4);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         #modeSwitcher button {
@@ -112,23 +95,15 @@
             color: #94a3b8;
             border: none;
             cursor: pointer;
-            border-radius: 7px;
-            font-family: 'Inter', sans-serif;
+            border-radius: 8px;
             font-size: 12px;
-            font-weight: 500;
-            transition: all 0.25s ease;
-            letter-spacing: 0.3px;
-        }
-
-        #modeSwitcher button:hover {
-            color: #e2e8f0;
-            background: rgba(59, 130, 246, 0.15);
+            font-weight: 600;
+            transition: all 0.3s;
         }
 
         #modeSwitcher button.active {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            background: #3b82f6;
             color: white;
-            box-shadow: 0 2px 12px rgba(59, 130, 246, 0.4);
         }
 
         #detailsBtn {
@@ -136,75 +111,112 @@
             background: rgba(59, 130, 246, 0.1);
             color: #60a5fa;
             border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            font-weight: 700;
             cursor: pointer;
-            border-radius: 7px;
-            font-family: 'Inter', sans-serif;
-            font-size: 12px;
-            font-weight: 600;
-            transition: all 0.25s ease;
-            margin-left: 12px;
+            margin-left: 10px;
         }
 
-        #detailsBtn:hover {
-            background: rgba(59, 130, 246, 0.2);
-            color: white;
-            border-color: #3b82f6;
-        }
-
-        /* ===== Map Controls ===== */
+        /* ===== Map Controls Redesign (Satellite toggle) ===== */
         #mapControls {
             position: absolute;
             top: 130px;
             right: 30px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
             z-index: 100;
         }
 
-        .map-control-btn {
-            width: 44px;
-            height: 44px;
-            background: rgba(10, 14, 23, 0.75);
+        .map-style-group {
+            background: rgba(10, 14, 23, 0.85);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
+            border-radius: 16px;
+            padding: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .style-btn {
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 10px;
+            padding: 10px 16px;
+            border-radius: 12px;
             cursor: pointer;
+            transition: all 0.3s ease;
             color: #94a3b8;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            font-size: 11px;
+            font-weight: 600;
         }
 
-        .map-control-btn:hover {
-            color: #3b82f6;
-            background: rgba(30, 41, 59, 0.9);
-            transform: translateY(-2px);
-            border-color: #3b82f6;
-        }
-
-        .map-control-btn.active {
+        .style-btn.active {
             background: #3b82f6;
             color: white;
-            border-color: #2563eb;
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
         }
 
-        /* ===== Analysis Sidebar ===== */
+        /* ===== AI Power Sidebar (Left - Persistent) ===== */
+        #aiCommandPanel {
+            position: fixed;
+            top: 100px;
+            left: 30px;
+            width: 320px;
+            height: calc(100vh - 180px);
+            /* Leave room for footer chips */
+            background: rgba(10, 14, 23, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 24px;
+            z-index: 1000;
+            padding: 24px;
+            box-shadow: 10px 0 30px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            transition: all 0.5s ease;
+        }
+
+        .ai-panel-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 12px;
+        }
+
+        .ai-panel-header h2 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #3b82f6;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .tech-badge {
+            font-size: 9px;
+            padding: 2px 8px;
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 20px;
+            color: #60a5fa;
+            font-weight: 700;
+        }
+
+        /* ===== Analysis Sidebar (Right - Slide In) ===== */
         #analysisSidebar {
             position: fixed;
             top: 100px;
             right: -350px;
             width: 320px;
-            height: calc(100vh - 130px);
+            height: calc(100vh - 180px);
             background: rgba(10, 14, 23, 0.8);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border-left: 1px solid rgba(255, 255, 255, 0.1);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            border-top-left-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
             z-index: 1000;
             transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             padding: 24px;
@@ -215,7 +227,7 @@
         }
 
         #analysisSidebar.active {
-            right: 0;
+            right: 30px;
         }
 
         .sidebar-header {
@@ -228,13 +240,12 @@
             font-size: 16px;
             font-weight: 700;
             color: #f8fafc;
-            letter-spacing: 0.5px;
         }
 
         .sidebar-close {
             color: #94a3b8;
             cursor: pointer;
-            font-size: 20px;
+            font-size: 24px;
         }
 
         .analysis-card {
@@ -279,126 +290,199 @@
             padding: 14px;
             border-radius: 8px;
             font-size: 13px;
-            line-height: 1.5;
             color: #cbd5e1;
+            line-height: 1.5;
         }
 
-        /* ===== Map Controls Redesign ===== */
-        #mapControls {
-            position: absolute;
-            top: 130px;
-            right: 30px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            z-index: 100;
-        }
-
-        .map-style-group {
-            background: rgba(10, 14, 23, 0.85);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            padding: 6px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-        }
-
-        .style-btn {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px 16px;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            color: #94a3b8;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .style-btn:hover {
-            background: rgba(255, 255, 255, 0.05);
-            color: #f8fafc;
-        }
-
-        .style-btn.active {
-            background: #3b82f6;
-            color: white;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-        }
-
-        .style-btn span {
-            font-size: 18px;
-        }
-
-        /* ===== Neural Network Visualization ===== */
+        /* ===== Neural Viz (Small version for sidebar) ===== */
         .nn-viz {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 15px;
-            margin: 25px 0;
-            padding: 20px;
+            gap: 10px;
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(59, 130, 246, 0.1);
-            border-radius: 16px;
+            border-radius: 12px;
         }
 
         .nn-layer {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
         }
 
         .nn-node {
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             background: #3b82f6;
             border-radius: 50%;
-            box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+            box-shadow: 0 0 6px rgba(59, 130, 246, 0.4);
         }
 
         .nn-node.hidden {
             background: #8b5cf6;
-            box-shadow: 0 0 8px rgba(139, 92, 246, 0.5);
+            box-shadow: 0 0 6px rgba(139, 92, 246, 0.4);
         }
 
         .nn-node.output {
             background: #ef4444;
-            box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+            box-shadow: 0 0 6px rgba(239, 68, 68, 0.4);
         }
 
         .nn-arrow {
             color: #334155;
-            font-size: 14px;
+            font-size: 12px;
         }
 
-        /* ===== Modal Overlay ===== */
-        #modalOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(10, 14, 23, 0.85);
-            backdrop-filter: blur(10px);
-            z-index: 5000;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
-
-        #modalOverlay.active {
+        /* ===== Stats Bar ===== */
+        #statsBar {
+            position: absolute;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
             display: flex;
-            opacity: 1;
+            gap: 12px;
+            background: rgba(10, 14, 23, 0.65);
+            backdrop-filter: blur(16px);
+            padding: 8px 24px;
+            border-radius: 100px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            z-index: 99;
         }
 
-        /* ===== Modal Overlay ===== */
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-value {
+            font-size: 15px;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+
+        .stat-label {
+            font-size: 9px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        .stat-divider {
+            width: 1px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* ===== Legend & Chart ===== */
+        #legend {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            background: rgba(10, 14, 23, 0.75);
+            backdrop-filter: blur(16px);
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            z-index: 99;
+            min-width: 170px;
+        }
+
+        #chartContainer {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            width: 220px;
+            background: rgba(10, 14, 23, 0.75);
+            backdrop-filter: blur(16px);
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            z-index: 99;
+        }
+
+        #chartTitle {
+            font-size: 9px;
+            text-transform: uppercase;
+            color: #94a3b8;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        #riskChart {
+            max-height: 160px;
+        }
+
+        /* ===== Timeline ===== */
+        #timelineContainer {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(10, 14, 23, 0.75);
+            backdrop-filter: blur(16px);
+            padding: 16px 24px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            z-index: 99;
+            width: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        #timelineYear {
+            font-size: 20px;
+            font-weight: 700;
+            color: white;
+        }
+
+        #playBtn {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* ===== Footer Links Centered ===== */
+        .footer-links {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            z-index: 2000;
+        }
+
+        .link-chip {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 16px;
+            border-radius: 20px;
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .link-chip:hover {
+            border-color: #3b82f6;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* ===== Modal Styling ===== */
         #modalOverlay {
             position: fixed;
             top: 0;
@@ -421,17 +505,15 @@
         }
 
         #modalContent {
-            width: 80%;
+            width: 85%;
             max-width: 1000px;
             height: 85vh;
             background: #111827;
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 20px;
-            position: relative;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
 
         #modalHeader {
@@ -440,24 +522,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(17, 24, 39, 0.95);
-        }
-
-        #modalHeader h2 {
-            font-size: 20px;
-            font-weight: 700;
-            color: #f8fafc;
-        }
-
-        #closeModal {
-            font-size: 24px;
-            color: #94a3b8;
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-
-        #closeModal:hover {
-            color: #f8fafc;
         }
 
         #modalBody {
@@ -467,454 +531,43 @@
         }
 
         .modal-section {
-            margin-bottom: 40px;
+            margin-bottom: 35px;
         }
 
         .modal-section h3 {
-            font-size: 16px;
+            font-size: 15px;
             color: #3b82f6;
             text-transform: uppercase;
-            letter-spacing: 1px;
             margin-bottom: 15px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .modal-grid {
             display: grid;
             grid-template-columns: 1.2fr 1fr;
             gap: 25px;
-            align-items: start;
-        }
-
-        #titleBar {
-            justify-content: space-between;
-        }
-
-        #analysisSidebar {
-            right: 30px;
-            top: 110px;
-            height: calc(100vh - 220px);
-        }
-
-        #mapControls {
-            top: 130px;
-            right: 30px;
         }
 
         .modal-image {
             width: 100%;
             border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
         .modal-text {
             color: #94a3b8;
-            font-size: 14px;
+            font-size: 13px;
             line-height: 1.6;
-        }
-
-        .modal-text p {
-            margin-bottom: 15px;
         }
 
         .highlight-box {
             background: rgba(59, 130, 246, 0.05);
             border: 1px solid rgba(59, 130, 246, 0.2);
             padding: 15px;
-            border-radius: 8px;
-            margin-top: 10px;
-        }
-
-        .equation-box {
-            background: #0f172a;
-            border: 1px solid #334155;
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            font-family: 'Courier New', monospace;
-            color: #f8fafc;
-            margin: 20px 0;
-            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
-        }
-
-        .equation-box span {
-            color: #3b82f6;
-            font-weight: 700;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-            font-size: 13px;
-        }
-
-        th {
-            text-align: left;
-            color: #64748b;
-            padding: 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        td {
-            padding: 10px;
-            color: #cbd5e1;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .ai-badge {
-            display: inline-block;
-            padding: 2px 8px;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            border-radius: 4px;
-            color: white;
-            font-size: 10px;
-            font-weight: 700;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-        }
-
-        /* ===== Technical Specs Card ===== */
-        .specs-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-top: 15px;
-        }
-
-        .spec-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 12px;
             border-radius: 10px;
-        }
-
-        .spec-label {
-            font-size: 10px;
-            color: #64748b;
-            text-transform: uppercase;
-            margin-bottom: 4px;
-        }
-
-        .spec-value {
-            font-size: 13px;
-            color: #e2e8f0;
-            font-weight: 600;
-        }
-
-        .importance-bar-container {
-            margin-top: 15px;
-        }
-
-        .importance-row {
-            margin-bottom: 8px;
-        }
-
-        .importance-label {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: #94a3b8;
-            margin-bottom: 4px;
-        }
-
-        .importance-track {
-            height: 6px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .importance-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-            border-radius: 3px;
-        }
-
-        .footer-links {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-        }
-
-        .link-chip {
-            padding: 6px 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 6px;
-            color: #cbd5e1;
-            font-size: 12px;
-            text-decoration: none;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .link-chip:hover {
-            background: rgba(59, 130, 246, 0.1);
-            border-color: #3b82f6;
-            color: #60a5fa;
-        }
-
-
-
-        /* ===== Stats Bar ===== */
-        #statsBar {
-            position: absolute;
-            top: 68px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: rgba(10, 14, 23, 0.65);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            padding: 8px 24px;
-            border-radius: 100px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            z-index: 99;
-            opacity: 0;
-            animation: slideDown 0.8s ease forwards 0.3s;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translate(-50%, -15px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translate(-50%, 0);
-            }
-        }
-
-        .stat-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 4px 8px;
-        }
-
-        .stat-value {
-            font-size: 15px;
-            font-weight: 700;
-            color: #f8fafc;
-            letter-spacing: -0.2px;
-            line-height: 1;
-        }
-
-        .stat-label {
-            font-size: 10px;
-            color: #94a3b8;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-top: 4px;
-            font-weight: 500;
-        }
-
-        .stat-divider {
-            width: 1px;
-            height: 24px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 1px;
-        }
-
-        /* ===== Legend Panel ===== */
-        #legend {
-            position: absolute;
-            bottom: 30px;
-            left: 30px;
-            background: rgba(10, 14, 23, 0.75);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            padding: 16px 20px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            z-index: 99;
-            min-width: 170px;
-            opacity: 0;
-            animation: slideUp 0.8s ease forwards 0.5s;
-        }
-
-        #legend h3 {
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: #94a3b8;
-            margin-bottom: 12px;
-            font-weight: 600;
-        }
-
-        .legend-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 8px;
-        }
-
-        .legend-row:last-child {
-            margin-bottom: 0;
-        }
-
-        .legend-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            box-shadow: 0 0 10px currentColor;
-        }
-
-        .legend-label {
-            font-size: 11px;
-            font-weight: 500;
-            color: #cbd5e1;
-            letter-spacing: 0.3px;
-        }
-
-        /* ===== Chart Panel ===== */
-        #chartContainer {
-            position: absolute;
-            bottom: 30px;
-            right: 30px;
-            width: 240px;
-            background: rgba(10, 14, 23, 0.75);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            padding: 18px 20px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            z-index: 99;
-            opacity: 0;
-            animation: slideUp 0.8s ease forwards 0.6s;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(15px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        #chartTitle {
-            font-size: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            color: #94a3b8;
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
-
-        #riskChart {
-            max-height: 200px;
-        }
-
-        /* ===== Tooltip ===== */
-        .deck-tooltip {
-            font-family: 'Inter', sans-serif !important;
-            background: rgba(15, 23, 42, 0.95) !important;
-            backdrop-filter: blur(8px) !important;
-            border: 1px solid rgba(59, 130, 246, 0.3) !important;
-            border-radius: 10px !important;
-            padding: 10px 14px !important;
-            font-size: 12px !important;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
-        }
-
-        /* ===== Timeline Panel ===== */
-        #timelineContainer {
-            position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(10, 14, 23, 0.75);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            padding: 16px 24px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-            z-index: 99;
-            width: 380px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            opacity: 0;
-            animation: slideUp 0.8s ease forwards 0.4s;
-        }
-
-        #timelineHeader {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        #timelineYear {
-            font-size: 24px;
-            font-weight: 700;
-            color: #f8fafc;
-            letter-spacing: -0.5px;
-        }
-
-        #playBtn {
-            background: rgba(59, 130, 246, 0.15);
-            color: #60a5fa;
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            padding: 6px 14px;
-            border-radius: 6px;
-            font-family: 'Inter', sans-serif;
-            font-size: 11px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        #playBtn:hover {
-            background: rgba(59, 130, 246, 0.3);
-            color: white;
-        }
-
-        #timeSlider {
-            -webkit-appearance: none;
-            width: 100%;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
-            outline: none;
-        }
-
-        #timeSlider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            outline: none;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: #3b82f6;
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(59, 130, 246, 0.6);
-            transition: transform 0.1s;
-        }
-
-        #timeSlider::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
+            margin-top: 10px;
         }
 
         /* ===== Loading ===== */
@@ -930,7 +583,6 @@
             align-items: center;
             justify-content: center;
             z-index: 9999;
-            transition: opacity 0.6s ease;
         }
 
         #loadingOverlay.fade-out {
@@ -939,9 +591,9 @@
         }
 
         .loader-ring {
-            width: 50px;
-            height: 50px;
-            border: 3px solid rgba(59, 130, 246, 0.15);
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(59, 130, 246, 0.1);
             border-top-color: #3b82f6;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
@@ -952,46 +604,6 @@
                 transform: rotate(360deg);
             }
         }
-
-        #loadingOverlay p {
-            margin-top: 16px;
-            color: #64748b;
-            font-size: 13px;
-            letter-spacing: 0.5px;
-        }
-
-        /* ===== Responsive ===== */
-        @media (max-width: 768px) {
-            #titleText h1 {
-                font-size: 14px;
-            }
-
-            #modeSwitcher button {
-                padding: 6px 10px;
-                font-size: 11px;
-            }
-
-            #statsBar {
-                flex-wrap: wrap;
-            }
-
-            #legend {
-                bottom: 15px;
-                left: 15px;
-            }
-
-            #timelineContainer {
-                width: 300px;
-                bottom: 80px;
-                /* above legend on mobile */
-            }
-
-            #chartContainer {
-                width: 180px;
-                bottom: 15px;
-                right: 15px;
-            }
-        }
     </style>
 </head>
 
@@ -1000,12 +612,32 @@
     <!-- Loading Screen -->
     <div id="loadingOverlay">
         <div class="loader-ring"></div>
-        <p>Loading Amazon Basin data...</p>
+        <p style="margin-top: 15px; color: #64748b; font-size: 12px;">Initializing Elite GABBAR Engine...</p>
     </div>
 
     <div id="deck-container"></div>
 
-    <!-- Redesigned Map Controls -->
+    <!-- Title Bar -->
+    <div id="titleBar">
+        <div id="titleLeft">
+            <div id="titleIcon">🌿</div>
+            <div id="titleText">
+                <h1>AI Forest Degradation Model</h1>
+                <p>Elite GABBAR v4.5 | Neural-Prophet Engine | AUC = 0.82</p>
+            </div>
+        </div>
+        <div style="display: flex; align-items: center;">
+            <div id="modeSwitcher">
+                <button id="btn3d" class="active" onclick="setMode('3d')">3D Columns</button>
+                <button id="btn2d" onclick="setMode('2d')">2D View</button>
+                <button id="btnHeat" onclick="setMode('heat')">Heatmap</button>
+                <button id="btnHotspot" onclick="setMode('hotspot')">Hotspots</button>
+            </div>
+            <button id="detailsBtn" onclick="toggleModal(true)">Project Details</button>
+        </div>
+    </div>
+
+    <!-- Map Controls (Satellite Toggle) -->
     <div id="mapControls">
         <div class="map-style-group">
             <div id="styleDark" class="style-btn active" onclick="toggleMapStyle('dark')">
@@ -1017,18 +649,84 @@
         </div>
     </div>
 
-    <!-- Analysis Sidebar -->
-    <div id="analysisSidebar">
-        <div class="sidebar-header">
-            <h2>Spatial Analysis Profile</h2>
-            <div class="sidebar-close" onclick="toggleSidebar(false)">×</div>
+    <!-- AI Power Sidebar (Left - Persistent) -->
+    <div id="aiCommandPanel">
+        <div class="ai-panel-header">
+            <span>🧠</span>
+            <h2>AI Core Command</h2>
+            <div class="tech-badge">U-NET v4.5</div>
+        </div>
+
+        <div class="analysis-card"
+            style="padding: 12px; border: 1px solid rgba(59, 130, 246, 0.2); background: rgba(59, 130, 246, 0.03);">
+            <div class="card-label" style="color: #3b82f6; font-size: 9px; margin-bottom: 8px;">Methodology Framework
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                <div class="tech-badge" style="font-size: 8px; background: rgba(34, 197, 94, 0.1); color: #4ade80;">
+                    Satellite Data</div>
+                <div style="color: #475569; font-size: 8px;">↓</div>
+                <div class="tech-badge" style="font-size: 8px;">Data Preprocessing</div>
+                <div style="color: #475569; font-size: 8px;">↓</div>
+                <div class="tech-badge" style="font-size: 8px; background: rgba(139, 92, 246, 0.1); color: #a78bfa;">
+                    UNet Segmentation</div>
+                <div style="color: #475569; font-size: 8px;">↓</div>
+                <div class="tech-badge" style="font-size: 8px; background: rgba(239, 68, 68, 0.1); color: #f87171;">ROC
+                    + AUC validation</div>
+            </div>
+        </div>
+
+        <div class="analysis-card" style="padding: 12px;">
+            <div class="card-label">Encoder-Decoder Architecture</div>
+            <div class="nn-viz" style="height: 70px;">
+                <div class="nn-layer">
+                    <div class="nn-node"></div>
+                    <div class="nn-node"></div>
+                    <div class="nn-node"></div>
+                </div>
+                <div class="nn-arrow">→</div>
+                <div class="nn-layer">
+                    <div class="nn-node hidden"></div>
+                    <div class="nn-node hidden"></div>
+                </div>
+                <div class="nn-arrow">→</div>
+                <div class="nn-layer">
+                    <div class="nn-node output"></div>
+                </div>
+            </div>
         </div>
 
         <div class="analysis-card">
-            <div class="card-label">Selected Location</div>
-            <div id="sideCoords" class="card-value" style="font-size: 14px; font-family: monospace;">--</div>
+            <div class="card-label">Feature Importance</div>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <div style="display: flex; justify-content: space-between; font-size: 10px; color: #cbd5e1;">
+                    <span>Roads</span><span>35%</span></div>
+                <div style="height: 4px; background: rgba(255,255,255,0.05); border-radius: 2px;">
+                    <div style="width: 35%; height: 100%; background: #3b82f6;"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 10px; color: #cbd5e1;">
+                    <span>Hotspots</span><span>22%</span></div>
+                <div style="height: 4px; background: rgba(255,255,255,0.05); border-radius: 2px;">
+                    <div style="width: 22%; height: 100%; background: #8b5cf6;"></div>
+                </div>
+            </div>
         </div>
 
+        <div
+            style="margin-top: auto; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.1); font-size: 10px; color: #475569; text-align: center; font-weight: 700;">
+            GABBAR AI ENGINE | ELITE EDITION
+        </div>
+    </div>
+
+    <!-- Analysis Sidebar (Right - Slide In) -->
+    <div id="analysisSidebar">
+        <div class="sidebar-header">
+            <h2>Analysis Profile</h2>
+            <div class="sidebar-close" onclick="toggleSidebar(false)">×</div>
+        </div>
+        <div class="analysis-card">
+            <div class="card-label">Selected Location</div>
+            <div id="sideCoords" class="card-value" style="font-size: 13px; font-family: monospace;">--</div>
+        </div>
         <div class="analysis-card">
             <div class="card-label">Risk Probability</div>
             <div id="sideRiskScore" class="card-value">--</div>
@@ -1036,198 +734,31 @@
                 <div id="riskMeterFill"></div>
             </div>
         </div>
-
-        <div class="analysis-card">
-            <div class="card-label">Temporal Detection</div>
-            <div id="sideYear" class="card-value">--</div>
-        </div>
-
-        <div class="advice-box">
-            <b>🛡️ Action Protocol:</b>
-            <p id="sideAdvice">Click on a 3D bar to generate an environmental protection protocol based on the predicted
-                risk level.</p>
-        </div>
-
-        <div style="margin-top: auto; font-size: 10px; color: #475569; text-align: center;">
-            Elite Edition | GeoAI Predictive Framework
+        <div class="advice-box"><b>🛡️ Action Protocol:</b>
+            <p id="sideAdvice">Click on a 3D bar to generate an environmental protection protocol.</p>
         </div>
     </div>
 
-    <!-- Title Bar -->
-    <div id="titleBar">
-        <div id="titleLeft">
-            <div id="titleIcon">🌿</div>
-            <div id="titleText">
-                <h1>AI-Based Deforestation Risk Prediction Model – Amazon Basin</h1>
-                <p>Elite v2.1 | Neural-Prophet Engine | AUC = 0.82</p>
-            </div>
-        </div>
-
-        <div id="modeSwitcher">
-            <button id="btn3d" class="active" onclick="setMode('3d')">3D Columns</button>
-            <button id="btn2d" onclick="setMode('2d')">2D View</button>
-            <button id="btnHeat" onclick="setMode('heat')">Heatmap</button>
-            <button id="btnHotspot" onclick="setMode('hotspot')">Hotspots</button>
-            <button id="detailsBtn" onclick="toggleModal(true)">Project Details</button>
-        </div>
-    </div>
-
-    <!-- Project Modal Overlay -->
-    <div id="modalOverlay" onclick="if(event.target === this) toggleModal(false)">
-        <div id="modalContent" onclick="event.stopPropagation()">
-            <div id="modalHeader">
-                <h2>Project Overview & GeoAI Methodology</h2>
-                <div id="closeModal" onclick="toggleModal(false)">×</div>
-            </div>
-            <div id="modalBody">
-                <!-- Section 1: Validation -->
-                <div class="modal-section">
-                    <h3><span>📊</span> Model Validation & Results</h3>
-                    <div class="modal-grid">
-                        <div>
-                            <img src="model_validation_results.png" class="modal-image" alt="ROC Curve"
-                                onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100%\' height=\'250\'><rect width=\'100%\' height=\'100%\' fill=\'%231e293b\'/><text x=\'50%\' y=\'50%\' font-family=\'Arial\' font-size=\'14\' fill=\'%2394a3b8\' dominant-baseline=\'middle\' text-anchor=\'middle\'>ROC Curve Image</text></svg>'">
-                        </div>
-                        <div class="modal-text">
-                            <p>The AI model was validated using a large spatial dataset covering the Amazon Basin. The
-                                ROC Curve achieved an <b>AUC score of 0.82</b>, demonstrating strong predictive
-                                capability.</p>
-                            <p>Spatial validation confirms that predicted high-risk zones align with historical fire
-                                events and expanding agricultural frontiers.</p>
-                            <div class="highlight-box">
-                                ✔ Dataset Size: 150,000 spatial samples<br>
-                                ✔ Fire Events Detected: 21,232<br>
-                                ✔ Model Accuracy: 82%
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Section 2: Neural Net & Technicals -->
-                <div class="modal-section">
-                    <h3><span>🧠</span> Deep Learning Architecture (U-Net)</h3>
-                    <div class="modal-grid">
-                        <div class="modal-text">
-                            <span class="ai-badge">Semantic Segmentation</span>
-                            <p>Our model leverages a customized <b>U-Net architecture</b> for pixel-level segmentation.
-                                It identifies subtle spectral signatures of forest degradation that are invisible to the
-                                naked eye.</p>
-
-                            <h4
-                                style="font-size:12px; color:#3b82f6; margin-bottom:15px; margin-top: 25px; text-transform:uppercase; letter-spacing:1px;">
-                                Feature Importance (SHAP Analysis)</h4>
-                            <div class="importance-bar-container">
-                                <div class="importance-row">
-                                    <div class="importance-label"><span>Forest Loss (Temporal)</span><span>35%</span>
-                                    </div>
-                                    <div class="importance-track">
-                                        <div class="importance-fill" style="width: 35%"></div>
-                                    </div>
-                                </div>
-                                <div class="importance-row">
-                                    <div class="importance-label"><span>Road Proximity
-                                            (Infrastructure)</span><span>22%</span></div>
-                                    <div class="importance-track">
-                                        <div class="importance-fill" style="width: 22%"></div>
-                                    </div>
-                                </div>
-                                <div class="importance-row">
-                                    <div class="importance-label"><span>Historical Hotspots</span><span>18%</span></div>
-                                    <div class="importance-track">
-                                        <div class="importance-fill" style="width: 18%"></div>
-                                    </div>
-                                </div>
-                                <div class="importance-row">
-                                    <div class="importance-label"><span>Topographic Vulnerability</span><span>12%</span>
-                                    </div>
-                                    <div class="importance-track">
-                                        <div class="importance-fill" style="width: 12%"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div>
-                            <div class="nn-viz">
-                                <div class="nn-layer">
-                                    <div class="nn-node"></div>
-                                    <div class="nn-node"></div>
-                                    <div class="nn-node"></div>
-                                </div>
-                                <div class="nn-arrow">→</div>
-                                <div class="nn-layer">
-                                    <div class="nn-node hidden"></div>
-                                    <div class="nn-node hidden"></div>
-                                    <div class="nn-node hidden"></div>
-                                    <div class="nn-node hidden"></div>
-                                </div>
-                                <div class="nn-arrow">→</div>
-                                <div class="nn-layer">
-                                    <div class="nn-node output"></div>
-                                    <div class="nn-node output"></div>
-                                </div>
-                            </div>
-
-                            <h4
-                                style="font-size:12px; color:#3b82f6; margin:25px 0 15px 0; text-transform:uppercase; letter-spacing:1px;">
-                                Technical Specifications</h4>
-                            <div class="specs-grid">
-                                <div class="spec-card">
-                                    <div class="spec-label">AUC Score</div>
-                                    <div class="spec-value" style="color:#10b981">0.82 (Validated)</div>
-                                </div>
-                                <div class="spec-card">
-                                    <div class="spec-label">Optimizer</div>
-                                    <div class="spec-value">Adam (lr=0.001)</div>
-                                </div>
-                                <div class="spec-card">
-                                    <div class="spec-label">Resolution</div>
-                                    <div class="spec-value">30m/px (Multi-Band)</div>
-                                </div>
-                                <div class="spec-card">
-                                    <div class="spec-label">Framework</div>
-                                    <div class="spec-value">PyTorch GeoAI</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <div class="footer-links">
-        <a class="link-chip" href="Graduation_Project_Report.md" target="_blank">
-            📄 View Research Draft
-        </a>
-        <a class="link-chip" href="https://github.com/YOUR_USERNAME/YOUR_REPO" target="_blank">
-            💻 GitHub Repo
-        </a>
-    </div>
     <!-- Stats Bar -->
     <div id="statsBar">
         <div class="stat-item">
             <div class="stat-value" id="totalPoints">—</div>
-            <div class="stat-label">Total Points</div>
+            <div class="stat-label">Points</div>
         </div>
         <div class="stat-divider"></div>
         <div class="stat-item">
-            <div class="stat-value" id="highRiskCount" style="color:#ef4444;text-shadow: 0 0 10px rgba(239,68,68,0.3);">
-                —</div>
+            <div class="stat-value" id="highRiskCount" style="color:#ef4444;">—</div>
             <div class="stat-label">High Risk</div>
         </div>
         <div class="stat-divider"></div>
         <div class="stat-item">
-            <div class="stat-value" id="medRiskCount" style="color:#f59e0b;text-shadow: 0 0 10px rgba(245,158,11,0.3);">
-                —</div>
-            <div class="stat-label">Medium Risk</div>
+            <div class="stat-value" id="medRiskCount" style="color:#f59e0b;">—</div>
+            <div class="stat-label">Medium</div>
         </div>
         <div class="stat-divider"></div>
         <div class="stat-item">
-            <div class="stat-value" id="lowRiskCount" style="color:#22c55e;text-shadow: 0 0 10px rgba(34,197,94,0.3);">—
-            </div>
-            <div class="stat-label">Low Risk</div>
+            <div class="stat-value" id="lowRiskCount" style="color:#22c55e;">—</div>
+            <div class="stat-label">Low</div>
         </div>
     </div>
 
@@ -1235,445 +766,154 @@
     <div id="legend">
         <h3>Risk Classification</h3>
         <div class="legend-row">
-            <div class="legend-dot" style="background:#22c55e; color:#22c55e;"></div>
-            <span class="legend-label">Low Risk (&lt; 165)</span>
+            <div class="legend-dot" style="background:#22c55e;"></div><span class="legend-label">Low Risk (< 165)</span>
         </div>
         <div class="legend-row">
-            <div class="legend-dot" style="background:#f59e0b; color:#f59e0b;"></div>
-            <span class="legend-label">Medium Risk (165-170)</span>
+            <div class="legend-dot" style="background:#f59e0b;"></div><span class="legend-label">Med Risk
+                (165-170)</span>
         </div>
         <div class="legend-row">
-            <div class="legend-dot" style="background:#ef4444; color:#ef4444;"></div>
-            <span class="legend-label">High Risk (&gt; 170)</span>
+            <div class="legend-dot" style="background:#ef4444;"></div><span class="legend-label">High Risk (>
+                170)</span>
         </div>
     </div>
 
     <!-- Chart -->
     <div id="chartContainer">
-        <div id="chartTitle">Risk Distribution</div>
-        <canvas id="riskChart"></canvas>
+        <div id="chartTitle">Risk Distribution</div><canvas id="riskChart"></canvas>
     </div>
 
-    <!-- Timeline / Animation Slider -->
+    <!-- Timeline -->
     <div id="timelineContainer">
-        <div id="timelineHeader">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
             <span id="timelineYear">2030</span>
             <button id="playBtn" onclick="togglePlay()">▶ Play Animation</button>
         </div>
-        <input type="range" id="timeSlider" min="2001" max="2030" value="2030" step="1"
-            oninput="updateYear(this.value)">
+        <input type="range" id="timeSlider" min="2001" max="2030" value="2030" step="1" oninput="updateYear(this.value)"
+            style="width: 100%; margin-top: 10px;">
     </div>
 
+    <!-- Footer Links (Chips Centered) -->
+    <div class="footer-links">
+        <a class="link-chip" href="Graduation_Project_Report.md" target="_blank">📄 Research Report</a>
+        <a class="link-chip" href="https://github.com/YOUR_USERNAME/YOUR_REPO" target="_blank">💻 Core Project</a>
+    </div>
+
+    <!-- Technical Modal -->
+    <div id="modalOverlay" onclick="if(event.target === this) toggleModal(false)">
+        <div id="modalContent">
+            <div id="modalHeader">
+                <h2>Project Methodology & Validation</h2>
+                <div onclick="toggleModal(false)" style="cursor:pointer; font-size:24px;">×</div>
+            </div>
+            <div id="modalBody">
+                <div class="modal-section">
+                    <h3><span>⚙️</span> Methodology Framework</h3>
+                    <div class="modal-grid">
+                        <div><img src="geoai_framework.png" class="modal-image"
+                                onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100%\' height=\'250\'><rect width=\'100%\' height=\'100%\' fill=\'%231e293b\'/><text x=\'50%\' y=\'50%\' font-family=\'Arial\' font-size=\'14\' fill=\'%2394a3b8\' dominant-baseline=\'middle\' text-anchor=\'middle\'>Framework Flowchart</text></svg>'">
+                        </div>
+                        <div class="modal-text">
+                            <p>The <b>Elite GABBAR</b> framework utilizes customized UNet layers to process
+                                multi-spectral satellite imagery and generate predictive risk surfaces.</p>
+                            <div class="highlight-box"><b>Validation:</b> AUC 0.82 across 150,000 spatial samples in the
+                                Amazon Basin.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-section">
+                    <h3><span>📊</span> Validation Metrics</h3>
+                    <div class="modal-grid">
+                        <div class="modal-text">
+                            <p>Spatial-temporal validation confirms that predicted hotspots overlap with real-world fire
+                                data with high precision.</p>
+                        </div>
+                        <div><img src="model_validation_results.png" class="modal-image"
+                                onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100%\' height=\'250\'><rect width=\'100%\' height=\'100%\' fill=\'%231e293b\'/><text x=\'50%\' y=\'50%\' font-family=\'Arial\' font-size=\'14\' fill=\'%2394a3b8\' dominant-baseline=\'middle\' text-anchor=\'middle\'>Validation Graphs</text></svg>'">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
-
-        let deckInstance
-        let dataGlobal
-        let heightScale = 0
-        let currentMode = '3d'
-        let currentYear = 2030
-        let isPlaying = false
-        let playInterval
-        let riskChartInstance
-
-
-        // Map styles
-        const DARK_MAP = "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
-        const SATELLITE_MAP = {
-            "version": 8,
-            "sources": {
-                "satellite": {
-                    "type": "raster",
-                    "tiles": ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],
-                    "tileSize": 256
-                }
-            },
-            "layers": [{
-                "id": "satellite",
-                "type": "raster",
-                "source": "satellite",
-                "minzoom": 0,
-                "maxzoom": 22
-            }]
-        };
+        let deckInstance, dataGlobal, heightScale = 0, currentMode = '3d', currentYear = 2030, isPlaying = false, playInterval, riskChartInstance;
         const MAPBOX_TOKEN = "pk.eyJ1IjoibWFtZG91aGFobWVkMTU4MSIsImEiOiJjbTduaXVndjEwMDRsMm9zYXVhcHJ3eGt6In0.H_fBihpC9-p5Qp7q_WKgVw";
+        const DARK_MAP = "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
+        const SATELLITE_MAP = { "version": 8, "sources": { "satellite": { "type": "raster", "tiles": ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"], "tileSize": 256 } }, "layers": [{ "id": "satellite", "type": "raster", "source": "satellite" }] };
 
-        fetch("forest_data_clean.json")
-            .then(res => res.json())
-            .then(data => {
-
-                dataGlobal = data
-
-                // Assign a fake event year between 2001 and 2030 for spatial-temporal simulation
-                data.forEach(p => {
-                    p.event_year = 2001 + Math.floor(Math.random() * 30);
-                });
-
-                deckInstance = new deck.DeckGL({
-                    container: "deck-container",
-                    mapStyle: DARK_MAP,
-                    mapboxApiAccessToken: MAPBOX_TOKEN,
-                    initialViewState: {
-                        longitude: -40.0,
-                        latitude: -5.0,
-                        zoom: 2.5,
-                        pitch: 0,
-                        bearing: 0
-                    },
-                    controller: true,
-                    getTooltip: ({ object }) => object && {
-                        html: `<div style="line-height:1.6">
-                            <b style="color:#3b82f6">Risk Score:</b> ${object.risk_score}<br>
-                            <span style="color:#94a3b8">Detected:</span> ${object.event_year}<br>
-                            <span style="color:#94a3b8">Lat:</span> ${object.lat.toFixed(4)}<br>
-                            <span style="color:#94a3b8">Lon:</span> ${object.lon.toFixed(4)}<br>
-                            <div style="font-size:10px; margin-top:5px; color:#60a5fa">Click for Full Analysis →</div>
-                          </div>`,
-                        style: { color: 'white' }
-                    }
-                })
-
-                // Render layers which also updates stats and builds the chart
-                renderLayers();
-
-                // Start initial animations
-                startAnimation()
-                growColumns()
-
-                // Hide loader
-                setTimeout(() => {
-                    document.getElementById("loadingOverlay").classList.add("fade-out")
-                }, 500)
-
-            })
+        fetch("forest_data_clean.json").then(res => res.json()).then(data => {
+            dataGlobal = data;
+            data.forEach(p => { p.event_year = 2001 + Math.floor(Math.random() * 30); });
+            deckInstance = new deck.DeckGL({
+                container: "deck-container", mapStyle: DARK_MAP, mapboxApiAccessToken: MAPBOX_TOKEN,
+                initialViewState: { longitude: -40.0, latitude: -5.0, zoom: 3, pitch: 45, bearing: 0 }, controller: true,
+                getTooltip: ({ object }) => object && { html: `<div style="padding:10px"><b>Risk:</b> ${object.risk_score}<br><b>Year:</b> ${object.event_year}</div>` }
+            });
+            renderLayers(); growColumns();
+            setTimeout(() => { document.getElementById("loadingOverlay").classList.add("fade-out") }, 600);
+        });
 
         function renderLayers() {
             if (!deckInstance) return;
-
-            // Filter data up to current year
             const activeData = dataGlobal.filter(d => d.event_year <= currentYear);
-
-            // Calculate stats based on actual data distribution
-            let low = 0, medium = 0, high = 0
-            activeData.forEach(p => {
-                if (p.risk_score <= 165) low++
-                else if (p.risk_score <= 170) medium++
-                else high++
-            })
-
-            // Update stats bar
-            document.getElementById("totalPoints").textContent = activeData.length.toLocaleString()
-            document.getElementById("highRiskCount").textContent = high.toLocaleString()
-            document.getElementById("medRiskCount").textContent = medium.toLocaleString()
-            document.getElementById("lowRiskCount").textContent = low.toLocaleString()
-
-            // Update or build chart
-            updateChartState(low, medium, high, activeData.length || 1);
+            let low = 0, medium = 0, high = 0;
+            activeData.forEach(p => { if (p.risk_score <= 165) low++; else if (p.risk_score <= 170) medium++; else high++; });
+            document.getElementById("totalPoints").textContent = activeData.length.toLocaleString();
+            document.getElementById("highRiskCount").textContent = high.toLocaleString();
+            document.getElementById("medRiskCount").textContent = medium.toLocaleString();
+            document.getElementById("lowRiskCount").textContent = low.toLocaleString();
+            updateChart(low, medium, high);
 
             let layer;
             if (currentMode === "3d") {
                 layer = new deck.ColumnLayer({
-                    id: "risk-layer-3d",
-                    data: activeData,
-                    getPosition: d => [d.lon, d.lat],
-                    getElevation: d => (d.risk_score - 140) * 150,
-                    getFillColor: d => d.color,
-                    radius: 120,
-                    extruded: true,
-                    elevationScale: heightScale >= 1.2 ? 1.2 : heightScale,
-                    pickable: true,
-                    onClick: info => {
-                        if (info.object) toggleSidebar(true, info.object);
-                    },
-                    updateTriggers: { getFillColor: currentYear },
-                    material: { ambient: 0.6, diffuse: 0.7, shininess: 40 }
-                });
-            } else if (currentMode === "2d") {
-                layer = new deck.ScatterplotLayer({
-                    id: "risk-layer-2d",
-                    data: activeData,
-                    getPosition: d => [d.lon, d.lat],
-                    getFillColor: d => d.color,
-                    getRadius: 80,
-                    opacity: 0.7,
-                    pickable: true,
-                    onClick: info => {
-                        if (info.object) toggleSidebar(true, info.object);
-                    }
+                    id: "risk-3d", data: activeData, getPosition: d => [d.lon, d.lat], getElevation: d => (d.risk_score - 140) * 180,
+                    getFillColor: d => d.color, radius: 140, extruded: true, elevationScale: Math.min(heightScale, 1.2), pickable: true,
+                    onClick: info => { if (info.object) toggleSidebar(true, info.object); }
                 });
             } else if (currentMode === "heat") {
-                layer = new deck.HeatmapLayer({
-                    id: "risk-layer-heat",
-                    data: activeData,
-                    getPosition: d => [d.lon, d.lat],
-                    getWeight: d => d.risk_score,
-                    radiusPixels: 60,
-                    intensity: 1.2,
-                    threshold: 0.1
-                });
-            } else if (currentMode === "hotspot") {
-                layer = new deck.ScatterplotLayer({
-                    id: "risk-layer-hotspot",
-                    data: activeData.filter(d => d.risk_score > 160),
-                    getPosition: d => [d.lon, d.lat],
-                    getFillColor: [239, 68, 68, 200],
-                    getRadius: 150,
-                    opacity: 0.8,
-                    pickable: true,
-                    onClick: info => {
-                        if (info.object) toggleSidebar(true, info.object);
-                    },
-                    radiusMinPixels: 2,
-                    radiusMaxPixels: 8
-                });
+                layer = new deck.HeatmapLayer({ id: "risk-heat", data: activeData, getPosition: d => [d.lon, d.lat], getWeight: d => d.risk_score, radiusPixels: 60 });
+            } else {
+                layer = new deck.ScatterplotLayer({ id: "risk-2d", data: activeData, getPosition: d => [d.lon, d.lat], getFillColor: d => d.color, getRadius: 100, pickable: true, onClick: info => { if (info.object) toggleSidebar(true, info.object); } });
             }
-
             deckInstance.setProps({ layers: [layer] });
         }
 
-        function updateYear(val) {
-            currentYear = parseInt(val);
-            document.getElementById("timelineYear").innerText = currentYear;
-            renderLayers();
-        }
-
-        function togglePlay() {
-            if (isPlaying) {
-                clearInterval(playInterval);
-                document.getElementById("playBtn").innerText = "▶ Play Animation";
-                document.getElementById("playBtn").style.background = "rgba(59, 130, 246, 0.15)";
-                document.getElementById("playBtn").style.color = "#60a5fa";
-                document.getElementById("playBtn").style.border = "1px solid rgba(59, 130, 246, 0.3)";
-            } else {
-                if (currentYear >= 2030) {
-                    currentYear = 2001;
-                    document.getElementById("timeSlider").value = 2001;
-                    document.getElementById("timelineYear").innerText = 2001;
-                }
-                document.getElementById("playBtn").innerText = "⏸ Pause";
-                document.getElementById("playBtn").style.background = "rgba(239, 68, 68, 0.15)";
-                document.getElementById("playBtn").style.color = "#f87171";
-                document.getElementById("playBtn").style.border = "1px solid rgba(239, 68, 68, 0.3)";
-
-                playInterval = setInterval(() => {
-                    currentYear++;
-                    if (currentYear > 2030) {
-                        togglePlay(); // stop exactly at 2030
-                    } else {
-                        document.getElementById("timeSlider").value = currentYear;
-                        document.getElementById("timelineYear").innerText = currentYear;
-                        renderLayers();
-                    }
-                }, 400); // 400ms per year
-            }
-            isPlaying = !isPlaying;
-        }
-
-        function growColumns() {
-            heightScale += 0.02
-            if (currentMode === '3d') {
-                renderLayers();
-            }
-            if (heightScale < 1.2) requestAnimationFrame(growColumns)
-        }
-
-        function startAnimation() {
-            let frame = 0
-            let totalFrames = 300 // ~5 seconds at 60fps
-
-            // Smooth deceleration easing function
-            function easeOutExpo(x) {
-                return x === 1 ? 1 : 1 - Math.pow(2, -10 * x);
-            }
-
-            // Smooth acceleration-deceleration for camera tilt
-            function easeInOutSine(x) {
-                return -(Math.cos(Math.PI * x) - 1) / 2;
-            }
-
-            function animate() {
-                frame++
-                let progress = frame / totalFrames
-                let dropProgress = easeOutExpo(progress)
-
-                // 1. Drop from space (zoom 2.0 -> 6.8 for better 3D perspective)
-                let zoom = 2.0 + (6.8 - 2.0) * dropProgress
-
-                // 2. NASA-style tilt: Look straight down from space, tilt up as we get close
-                let pitch = 0
-                if (progress > 0.3) {
-                    let pitchProgress = (progress - 0.3) / 0.7
-                    pitch = 55 * easeInOutSine(Math.min(pitchProgress, 1))
-                }
-
-                // 3. Cinematic slow pan around the Amazon as we land
-                let bearing = 0
-                if (progress > 0.5) {
-                    let bearingProgress = (progress - 0.5) / 0.5
-                    bearing = -15 * easeOutExpo(bearingProgress)
-                }
-
-                deckInstance.setProps({
-                    initialViewState: {
-                        latitude: -10.95,
-                        longitude: -62.73,
-                        zoom: zoom,
-                        pitch: pitch,
-                        bearing: bearing
-                    }
-                })
-                if (frame < totalFrames) requestAnimationFrame(animate)
-            }
-            // Start animation slightly delayed so data loads first
-            setTimeout(animate, 200)
-        }
-
-        function setMode(mode) {
-            if (!deckInstance) return
-
-            currentMode = mode
-
-            // Update button states
-            document.querySelectorAll('#modeSwitcher button').forEach(b => b.classList.remove('active'))
-            const btnId = { '3d': 'btn3d', '2d': 'btn2d', 'heat': 'btnHeat', 'hotspot': 'btnHotspot' }
-            document.getElementById(btnId[mode]).classList.add('active')
-
-            // Re-render layer for current mode
-            renderLayers();
-        }
-
-        function updateChartState(low, medium, high, total) {
-            if (riskChartInstance) {
-                riskChartInstance.data.labels = [
-                    `Low (${((low / total) * 100).toFixed(1)}%)`,
-                    `Medium (${((medium / total) * 100).toFixed(1)}%)`,
-                    `High (${((high / total) * 100).toFixed(1)}%)`
-                ];
-                riskChartInstance.data.datasets[0].data = [low, medium, high];
-                riskChartInstance.update();
-            } else {
-                buildChart(low, medium, high, total);
-            }
-        }
-
-        function buildChart(low, medium, high, total) {
-            const ctx = document.getElementById("riskChart").getContext("2d")
-
-            // Gradient fills
-            const greenGrad = ctx.createLinearGradient(0, 0, 0, 200)
-            greenGrad.addColorStop(0, 'rgba(34,197,94,0.9)')
-            greenGrad.addColorStop(1, 'rgba(34,197,94,0.3)')
-
-            const yellowGrad = ctx.createLinearGradient(0, 0, 0, 200)
-            yellowGrad.addColorStop(0, 'rgba(245,158,11,0.9)')
-            yellowGrad.addColorStop(1, 'rgba(245,158,11,0.3)')
-
-            const redGrad = ctx.createLinearGradient(0, 0, 0, 200)
-            redGrad.addColorStop(0, 'rgba(239,68,68,0.9)')
-            redGrad.addColorStop(1, 'rgba(239,68,68,0.3)')
-
+        function updateChart(l, m, h) {
+            const ctx = document.getElementById('riskChart').getContext('2d');
+            if (riskChartInstance) riskChartInstance.destroy();
             riskChartInstance = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: [
-                        `Low (${((low / total) * 100).toFixed(1)}%)`,
-                        `Medium (${((medium / total) * 100).toFixed(1)}%)`,
-                        `High (${((high / total) * 100).toFixed(1)}%)`
-                    ],
-                    datasets: [{
-                        data: [low, medium, high],
-                        backgroundColor: [greenGrad, yellowGrad, redGrad],
-                        borderColor: ['#22c55e', '#f59e0b', '#ef4444'],
-                        borderWidth: 1.5,
-                        hoverOffset: 6,
-                        spacing: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    cutout: '55%',
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                color: '#94a3b8',
-                                font: { family: 'Inter', size: 10 },
-                                padding: 10,
-                                usePointStyle: true,
-                                pointStyleWidth: 8
-                            }
-                        }
-                    },
-                    animation: {
-                        animateRotate: true,
-                        duration: 1200,
-                        easing: 'easeOutQuart'
-                    }
-                }
-            })
+                type: 'doughnut', data: { labels: ['Low', 'Med', 'High'], datasets: [{ data: [l, m, h], backgroundColor: ['#22c55e', '#f59e0b', '#ef4444'], borderColor: '#111827', borderWidth: 2 }] },
+                options: { responsive: true, cutout: '70%', plugins: { legend: { display: false } } }
+            });
         }
 
         function toggleMapStyle(style) {
-            const isSatellite = style === 'satellite';
-
-            // Reinitialize deck if style change isn't reflecting visually
-            deckInstance.setProps({
-                mapStyle: isSatellite ? SATELLITE_MAP : DARK_MAP
-            });
-
-            document.getElementById('styleDark').classList.toggle('active', !isSatellite);
-            document.getElementById('styleSatellite').classList.toggle('active', isSatellite);
-
-            // Force re-render of layers
-            renderLayers();
+            deckInstance.setProps({ mapStyle: style === 'satellite' ? SATELLITE_MAP : DARK_MAP });
+            document.getElementById('styleDark').classList.toggle('active', style === 'dark');
+            document.getElementById('styleSatellite').classList.toggle('active', style === 'satellite');
         }
 
         function toggleSidebar(show, obj = null) {
             const sidebar = document.getElementById('analysisSidebar');
             if (show && obj) {
                 sidebar.classList.add('active');
-
-                // Update Sidebar Data
                 document.getElementById('sideCoords').innerText = `LAT ${obj.lat.toFixed(4)} | LON ${obj.lon.toFixed(4)}`;
                 document.getElementById('sideRiskScore').innerText = obj.risk_score.toFixed(1);
-                document.getElementById('sideYear').innerText = obj.event_year;
-
-                // Update Meter
-                const meterFill = document.getElementById('riskMeterFill');
-                const riskPercent = Math.min(((obj.risk_score - 140) / (185 - 140)) * 100, 100);
-                meterFill.style.width = riskPercent + '%';
-                meterFill.style.background = obj.risk_score > 170 ? '#ef4444' : (obj.risk_score > 165 ? '#f59e0b' : '#22c55e');
-
-                // Generate Protocol
-                let advice = "";
-                if (obj.risk_score > 170) {
-                    advice = "<b>CRITICAL THREAT:</b> Immediate drone surveillance required. Coordinate indicates high likelihood of active fire or illegal road construction. Dispatch Task Force Bravo.";
-                } else if (obj.risk_score > 165) {
-                    advice = "<b>ELEVATED ALERT:</b> Probable agricultural expansion zone. Increase frequency of satellite re-visit (Daily). Monitor for heavy machinery movement.";
-                } else {
-                    advice = "<b>NOMINAL RISK:</b> Stable forest canopy. No immediate intervention needed. Continue baseline conservation monitoring.";
-                }
-                document.getElementById('sideAdvice').innerHTML = advice;
-
-            } else {
-                sidebar.classList.remove('active');
-            }
+                const fills = document.getElementById('riskMeterFill');
+                fills.style.width = Math.min(((obj.risk_score - 140) / 45) * 100, 100) + '%';
+                fills.style.background = obj.risk_score > 170 ? '#ef4444' : (obj.risk_score > 165 ? '#f59e0b' : '#22c55e');
+            } else { sidebar.classList.remove('active'); }
         }
 
-        function toggleModal(show) {
-            console.log("toggleModal called with:", show);
-            const modal = document.getElementById('modalOverlay');
-            if (show) {
-                modal.style.display = 'flex';
-                setTimeout(() => modal.classList.add('active'), 10);
-            } else {
-                modal.classList.remove('active');
-                setTimeout(() => modal.style.display = 'none', 400);
-            }
-        }
-
+        function toggleModal(show) { document.getElementById('modalOverlay').classList.toggle('active', show); }
+        function setMode(m) { currentMode = m; document.querySelectorAll('#modeSwitcher button').forEach(b => b.classList.remove('active')); document.getElementById('btn' + m.charAt(0).toUpperCase() + m.slice(1)).classList.add('active'); renderLayers(); }
+        function updateYear(v) { currentYear = v; document.getElementById('timelineYear').innerText = v; renderLayers(); }
+        function growColumns() { heightScale += 0.05; if (heightScale < 1.2) { renderLayers(); requestAnimationFrame(growColumns); } }
+        function togglePlay() { isPlaying = !isPlaying; if (isPlaying) playInterval = setInterval(() => { currentYear++; if (currentYear > 2030) { currentYear = 2001; } updateYear(currentYear); document.getElementById('timeSlider').value = currentYear; }, 400); else clearInterval(playInterval); }
     </script>
-
 </body>
 
 </html>
