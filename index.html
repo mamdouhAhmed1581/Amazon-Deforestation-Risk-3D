@@ -376,6 +376,130 @@
             font-size: 14px;
         }
 
+        /* ===== Active Intel Sidebar ===== */
+        #analysisSidebar {
+            position: fixed;
+            top: 130px;
+            right: -400px;
+            width: 320px;
+            background: rgba(10, 14, 23, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 16px;
+            z-index: 1000;
+            padding: 20px;
+            box-shadow: -10px 10px 40px rgba(0, 0, 0, 0.6);
+            transition: right 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        #analysisSidebar.active {
+            right: 30px;
+        }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 12px;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-header h2 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #f8fafc;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        #closeSidebar {
+            font-size: 24px;
+            color: #64748b;
+            cursor: pointer;
+            transition: color 0.2s;
+            line-height: 1;
+        }
+
+        #closeSidebar:hover {
+            color: #ef4444;
+        }
+
+        .sidebar-content {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+        }
+
+        .info-label {
+            color: #94a3b8;
+        }
+
+        .info-value {
+            color: #f8fafc;
+            font-family: monospace;
+            font-size: 14px;
+        }
+
+        .risk-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .risk-title {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #64748b;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .risk-score {
+            font-size: 28px;
+            font-weight: 800;
+            color: #f8fafc;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+        }
+
+        .risk-meter-bg {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-top: 15px;
+            overflow: hidden;
+        }
+
+        .risk-meter-fill {
+            height: 100%;
+            width: 0%;
+            transition: width 0.8s ease, background-color 0.8s ease;
+        }
+
+        .protocol-box {
+            background: rgba(59, 130, 246, 0.05);
+            border-left: 4px solid #3b82f6;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 12.5px;
+            color: #cbd5e1;
+            line-height: 1.5;
+            transition: all 0.3s ease;
+        }
+
         /* ===== Modal Overlay ===== */
         #modalOverlay {
             position: fixed;
@@ -1372,6 +1496,45 @@
             </div>
         </div>
     </div>
+    <!-- Analysis Sidebar -->
+    <div id="analysisSidebar">
+        <div class="sidebar-header">
+            <h2 style="display:flex; align-items:center; gap:8px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                Location Intel
+            </h2>
+            <div id="closeSidebar" onclick="toggleSidebar(false)">×</div>
+        </div>
+        <div class="sidebar-content">
+            <div class="info-row">
+                <span class="info-label">Coordinates</span>
+                <div>
+                    <span class="info-value" id="sideLat">--</span>, <span class="info-value" id="sideLon">--</span>
+                </div>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Detection Year</span>
+                <span class="info-value" id="sideYear" style="color: #60a5fa; font-weight: bold;">--</span>
+            </div>
+
+            <div class="risk-card">
+                <div class="risk-title">Threat Severity</div>
+                <div class="risk-score" id="sideRiskScore">--</div>
+                <div class="risk-meter-bg">
+                    <div class="risk-meter-fill" id="riskMeterFill"></div>
+                </div>
+            </div>
+
+            <div id="sideProtocol" class="protocol-box">
+                <div id="sideAdvice">Click on a 3D bar to intercept intelligence.</div>
+            </div>
+        </div>
+    </div>
+
     <!-- Stats Bar -->
     <div id="statsBar" class="ui-element ui-hidden ui-hidden-up">
         <div class="stat-item">
@@ -1431,7 +1594,131 @@
             oninput="updateYear(this.value)">
     </div>
 
+    <!-- Project Modal -->
+    <div id="modalOverlay" onclick="if(event.target === this) toggleModal(false)">
+        <div id="modalContent">
+            <div id="modalHeader">
+                <h2>Project Overview & GeoAI Methodology</h2>
+                <div id="closeModal" onclick="toggleModal(false)">×</div>
+            </div>
+            <div id="modalBody">
+                <div class="modal-grid">
+                    <!-- Left Column -->
+                    <div class="modal-left">
+                        <div class="modal-section" style="margin-bottom: 30px;">
+                            <h3 class="section-title">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                                </svg>
+                                ANALYSIS & VALIDATION
+                            </h3>
+                            <div class="modal-text">
+                                <p>The model reached an <b>AUC score of 0.82</b>, indicating strong predictive
+                                    performance. Spatial validation was performed by correlating high-risk predictions
+                                    with active fire events and historical hotspots.</p>
+                            </div>
+                            <div class="highlight-box" style="border-left: 3px solid #ef4444;">
+                                <strong style="color: #ef4444;">Hotspot Clusters:</strong> Identified using DBSCAN
+                                clustering to correlate fire intensity with predicted risk zones.
+                            </div>
+                        </div>
 
+                        <div class="modal-section" style="margin-bottom: 30px;">
+                            <h3 class="section-title">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444"
+                                    stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                                </svg>
+                                <span style="color: #60a5fa">DEEP LEARNING & MATHEMATICAL MODEL</span>
+                            </h3>
+                            <div class="ai-badge" style="margin-bottom: 15px; display: inline-block;">Semantic
+                                Segmentation</div>
+                            <div class="modal-text">
+                                <p>The core engine uses a <b>U-Net architecture</b> for binary segmentation. The model
+                                    was trained using 150,000 spatial samples with multi-temporal features.</p>
+                            </div>
+                            <div class="equation-box">
+                                Risk Index = <br>
+                                <span>0.30</span> (Forest Loss) + <span>0.20</span> (Distance to Roads) + <br>
+                                <span>0.15</span> (Population Density) + <span>0.15</span> (Fire History) + <br>
+                                <span>0.10</span> (Slope) + <span>0.10</span> (Elevation)
+                            </div>
+                        </div>
+
+                        <div class="modal-section">
+                            <h3 class="section-title">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path
+                                        d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+                                    </path>
+                                </svg>
+                                GEOAI METHODOLOGY FRAMEWORK
+                            </h3>
+                            <div class="modal-text">
+                                <p>The proposed GeoAI framework integrates satellite data, deep learning segmentation,
+                                    spatial risk modeling, and validation techniques to predict deforestation risk
+                                    across the Amazon Basin.</p>
+                            </div>
+                            <img src="geoai_framework.png" class="modal-image" style="margin-top: 15px;">
+                        </div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="modal-right">
+                        <img src="model_validation_results.png" class="modal-image" alt="Validation Results"
+                            style="margin-bottom: 20px;">
+                        <div class="specs-grid">
+                            <div class="spec-card">
+                                <div class="spec-label">Predictive Engine</div>
+                                <div class="spec-value">U-Net (PyTorch)</div>
+                            </div>
+                            <div class="spec-card">
+                                <div class="spec-label">Data Points</div>
+                                <div class="spec-value">150,000</div>
+                            </div>
+                            <div class="spec-card">
+                                <div class="spec-label">AUC Score</div>
+                                <div class="spec-value">0.82 (Strong)</div>
+                            </div>
+                            <div class="spec-card">
+                                <div class="spec-label">Primary Threat</div>
+                                <div class="spec-value">Road Expansion</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="modalFooter"
+                style="padding: 20px 30px; border-top: 1px solid rgba(255, 255, 255, 0.05); display: flex; justify-content: flex-end; gap: 15px; background: #0f172a;">
+                <a href="Graduation_Project_Report.md" target="_blank"
+                    style="padding: 8px 16px; background: rgba(255, 255, 255, 0.05); border-radius: 6px; color: #94a3b8; font-size: 13px; text-decoration: none; font-weight: 500; transition: all 0.2s; border: 1px solid rgba(255, 255, 255, 0.1);">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        style="vertical-align: middle; margin-right: 6px;">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    Graduation Project Report
+                </a>
+                <a href="https://github.com" target="_blank"
+                    style="padding: 8px 16px; background: rgba(59, 130, 246, 0.1); border-radius: 6px; border: 1px solid rgba(59, 130, 246, 0.3); color: #60a5fa; font-size: 13px; text-decoration: none; font-weight: 600; transition: all 0.2s;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        style="vertical-align: middle; margin-right: 6px;">
+                        <path
+                            d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+                        </path>
+                    </svg>
+                    GitHub Repository
+                </a>
+            </div>
+        </div>
+    </div>
     <script>
 
         let deckInstance
@@ -1488,32 +1775,7 @@
                         bearing: 0
                     },
                     controller: true,
-                    getTooltip: ({ object }) => object && {
-                        html: `<div style="line-height:1.6; padding: 2px;">
-                            <h4 style="margin: 0 0 8px 0; color: #60a5fa; font-size: 13px; border-bottom: 1px solid rgba(59,130,246,0.3); padding-bottom: 4px;">📍 Event Detection Marker</h4>
-                            <div style="display:flex; justify-content:space-between; width:160px; font-size: 12px;">
-                                <span style="color:#94a3b8">Estimated Year:</span> <b style="color: #f8fafc">${object.event_year}</b>
-                            </div>
-                            <div style="display:flex; justify-content:space-between; width:160px; font-size: 12px; margin-top:4px;">
-                                <span style="color:#94a3b8">Risk Severity:</span> 
-                                <b style="color: ${object.risk_score > 165 ? '#ef4444' : (object.risk_score > 150 ? '#f59e0b' : '#22c55e')}">
-                                    ${object.risk_score.toFixed(1)} / 200
-                                </b>
-                            </div>
-                            <div style="margin-top:8px; font-size:10px; color:#cbd5e1; background:rgba(0,0,0,0.3); padding:4px; border-radius:4px; text-align:center;">
-                                Lat: ${object.lat.toFixed(4)} | Lon: ${object.lon.toFixed(4)}
-                            </div>
-                          </div>`,
-                        style: {
-                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
-                            border: '1px solid rgba(59, 130, 246, 0.5)',
-                            borderRadius: '10px',
-                            color: 'white',
-                            boxShadow: '0 8px 25px rgba(0,0,0,0.6)',
-                            padding: '12px',
-                            fontFamily: 'Inter, sans-serif'
-                        }
-                    }
+                    controller: true
                 })
 
                 // Render layers which also updates stats and builds the chart
@@ -1591,7 +1853,7 @@
                 dynamic_score = Math.max(130, Math.min(190, dynamic_score));
 
                 let dColor = [34, 197, 94, 200];
-                if (dynamic_score > 170) dColor = [239, 68, 68, 200];
+                if (dynamic_score > 170) dColor = [255, 0, 0, 255]; // Pure red for critical risk
                 else if (dynamic_score > 165) dColor = [245, 158, 11, 200];
 
                 return {
@@ -1631,7 +1893,7 @@
                     elevationScale: heightScale >= 1.2 ? 1.2 : heightScale,
                     pickable: true,
                     onClick: info => {
-                        if (info.object) showSpatialPopup(info);
+                        if (info.object) toggleSidebar(true, info.object);
                     },
                     updateTriggers: { getFillColor: currentYear },
                     material: { ambient: 0.6, diffuse: 0.7, shininess: 40 }
@@ -1646,7 +1908,7 @@
                     opacity: 0.7,
                     pickable: true,
                     onClick: info => {
-                        if (info.object) showSpatialPopup(info);
+                        if (info.object) toggleSidebar(true, info.object);
                     }
                 });
             } else if (currentMode === "heat") {
@@ -1665,12 +1927,12 @@
                     id: "risk-layer-hotspot",
                     data: activeData.filter(d => d.dynamic_score > 160),
                     getPosition: d => [d.lon, d.lat],
-                    getFillColor: [239, 68, 68, 200],
+                    getFillColor: [255, 0, 0, 255], // Pure red
                     getRadius: 150,
                     opacity: 0.8,
                     pickable: true,
                     onClick: info => {
-                        if (info.object) showSpatialPopup(info);
+                        if (info.object) toggleSidebar(true, info.object);
                     },
                     radiusMinPixels: 2,
                     radiusMaxPixels: 8
@@ -1771,7 +2033,7 @@
 
         function startAnimation() {
             let frame = 0
-            let totalFrames = 150 // ~2.5 seconds at 60fps
+            let totalFrames = 300 // Expanded from 150 to 300 for a much smoother, grander cinematic entrance.
 
             // Smooth deceleration easing function
             function easeOutExpo(x) {
@@ -1920,7 +2182,45 @@
             renderLayers();
         }
 
-        // Sidebar logic removed
+        function toggleSidebar(show, obj = null) {
+            const sidebar = document.getElementById('analysisSidebar');
+            if (show && obj) {
+                const score = obj.dynamic_score ? obj.dynamic_score : obj.risk_score;
+
+                document.getElementById('sideLat').innerText = obj.lat.toFixed(4);
+                document.getElementById('sideLon').innerText = obj.lon.toFixed(4);
+                document.getElementById('sideYear').innerText = obj.event_year;
+
+                const riskEl = document.getElementById('sideRiskScore');
+                riskEl.innerText = score.toFixed(1) + ' / 200';
+
+                const adviceEl = document.getElementById('sideAdvice');
+                const riskBar = document.getElementById('riskMeterFill');
+                const fillPercent = Math.min(((score - 140) / 45) * 100, 100);
+                riskBar.style.width = fillPercent + '%';
+
+                if (score > 170) {
+                    riskEl.style.color = '#ff0000';
+                    riskBar.style.background = '#ff0000';
+                    riskBar.style.boxShadow = '0 0 10px rgba(255,0,0,0.8)';
+                    adviceEl.innerHTML = '<span style="color:#ff0000; font-weight:bold;">CRITICAL THREAT</span><br>Immediate intervention required.';
+                } else if (score > 165) {
+                    riskEl.style.color = '#f59e0b';
+                    riskBar.style.background = '#f59e0b';
+                    riskBar.style.boxShadow = '0 0 10px rgba(245,158,11,0.8)';
+                    adviceEl.innerHTML = '<span style="color:#f59e0b; font-weight:bold;">ELEVATED RISK</span><br>Close monitoring advised.';
+                } else {
+                    riskEl.style.color = '#22c55e';
+                    riskBar.style.background = '#22c55e';
+                    riskBar.style.boxShadow = '0 0 10px rgba(34,197,94,0.8)';
+                    adviceEl.innerHTML = '<span style="color:#22c55e; font-weight:bold;">STABLE ZONE</span><br>Standard forest preservation.';
+                }
+
+                sidebar.classList.add('active');
+            } else {
+                sidebar.classList.remove('active');
+            }
+        }
 
         function toggleModal(show) {
             console.log("toggleModal called with:", show);
