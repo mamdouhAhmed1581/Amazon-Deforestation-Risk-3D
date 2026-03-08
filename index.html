@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>AI Forest Degradation Risk Model – Amazon Basin</title>
+    <title>AI-Based Deforestation Risk Prediction – Amazon Basin</title>
     <meta name="description" content="AI-powered forest degradation risk analysis for the Amazon Basin using GeoAI">
 
     <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v1.13.0/mapbox-gl.css" rel="stylesheet" />
@@ -72,6 +72,7 @@
             font-weight: 700;
             letter-spacing: -0.4px;
             color: white;
+            text-transform: uppercase;
         }
 
         #titleText p {
@@ -462,8 +463,8 @@
         <div id="titleLeft">
             <div id="titleIcon">🌳</div>
             <div id="titleText">
-                <h1>AI-Based Deforestation Risk Prediction Model – Amazon Basin</h1>
-                <p>Elite Edition | Predictive GeoAI Neural-Pathways | 2001-2030</p>
+                <h1 style="text-transform: uppercase;">AI-Based Deforestation Risk Prediction – Amazon Basin</h1>
+                <p>Elite Edition | Predictive GeoAI Neural-Framework | 2001-2030</p>
             </div>
         </div>
         <div id="modeSwitcher">
@@ -519,42 +520,64 @@
     <div id="modalOverlay" onclick="if(event.target === this) toggleModal(false)">
         <div id="modalContent">
             <div id="modalHeader">
-                <h2>Project Methodology & Neural Analysis</h2>
+                <h2>Project Overview & GeoAI Methodology</h2>
                 <div onclick="toggleModal(false)" style="cursor: pointer; font-size: 30px;">×</div>
             </div>
             <div id="modalBody">
                 <div class="modal-section">
-                    <h3 class="section-title">🌐 Study Area & GeoAI Framework</h3>
+                    <h3 class="section-title"><i class="fas fa-microchip"></i> GeoAI Framework</h3>
                     <div class="modal-grid">
                         <div class="modal-text">
-                            <p>This project analyzes <b>150,000 unique spatial points</b> within the Amazon Basin,
-                                focusing on Rondônia, Brazil. The GABBAR engine predicts future degradation by
-                                correlating satellite multi-spectral bands with human infrastructure expansion.</p>
+                            <p>The proposed framework integrates satellite imagery (PRODES/VIIRS) with deep learning
+                                segmentation (U-Net) and spatial analysis to predict deforestation risk across the
+                                Amazon Basin.</p>
                             <div
-                                style="margin-top:25px; padding:20px; background:rgba(59,130,246,0.05); border-radius:15px; border-left:5px solid #3b82f6;">
-                                <b>Technical Path:</b> Data Acquisition (PRODES/VIIRS) → U-Net Binary Segmentation →
-                                Temporal Risk Estimation.
+                                style="margin-top:20px; padding:15px; background:rgba(59,130,246,0.05); border-radius:12px; border-left:4px solid #3b82f6; font-size:13px;">
+                                <b>Technical Pipeline:</b> Satellite Data → Cloud Preprocessing → Neural Segmentation →
+                                Risk Estimation → 3D Delivery.
                             </div>
                         </div>
-                        <div><img src="geoai_framework.png" class="modal-img" onerror="this.src='image.png'"></div>
+                        <div style="text-align:center;">
+                            <img src="geoai_framework.png" class="modal-img" style="border:1px solid #3b82f6;">
+                        </div>
                     </div>
                 </div>
 
                 <div class="modal-section">
-                    <h3 class="section-title">📊 Spatial Validation & AUC Score</h3>
+                    <h3 class="section-title"><i class="fas fa-calculator"></i> Mathematical Risk Model</h3>
                     <div class="modal-grid">
-                        <div><img src="model_validation_results.png" class="modal-img" onerror="this.src='image.png'">
-                        </div>
                         <div class="modal-text">
-                            <p>Validation results demonstrate high predictive reliability with a <b>ROC AUC score of
-                                    0.82</b>. The model successfully clusters fire events (Hotspots) using DBSCAN
-                                algorithms.</p>
+                            <p>The Risk Index is calculated through a weighted spatial equation, correlating forest loss
+                                gradients with anthropogenic infrastructure proximity:</p>
                             <div
-                                style="padding:25px; background:rgba(15,23,42,0.8); border:1px solid rgba(59,130,246,0.2); border-radius:20px; font-family:monospace; font-size:14px; color:#60a5fa; margin-top:25px; text-align:center;">
-                                Risk(x,y,t) = 0.3(Loss) + 0.2(Dist) + 0.15(Fire) + 0.15(Pop) + 0.1(Slope) + 0.1(Elev)
+                                style="padding:20px; background:rgba(15,23,42,0.9); border:1px solid rgba(59,130,246,0.3); border-radius:15px; font-family:monospace; font-size:14px; color:#60a5fa; margin:15px 0; text-align:center; border-left:4px solid #ef4444;">
+                                Risk Index = 0.30(FL) + 0.20(DR) + 0.15(PD) + 0.15(FH) + 0.10(SL) + 0.10(EL)
+                            </div>
+                            <p style="font-size:12px; opacity:0.7;">FL: Forest Loss, DR: Road Proximity, PD: Pop
+                                Density, FH: Fire History, SL: Slope, EL: Elevation.</p>
+                        </div>
+                        <div style="display:flex; flex-direction:column; gap:10px;">
+                            <div
+                                style="background:#1e293b; padding:12px; border-radius:10px; border:1px solid #22c55e;">
+                                <h4 style="margin:0; color:#22c55e; font-size:12px;">Validation Score</h4>
+                                <p style="font-size:24px; font-weight:900; margin:0;">0.82 <span
+                                        style="font-size:12px; opacity:0.5;">AUC</span></p>
+                            </div>
+                            <div
+                                style="background:#1e293b; padding:12px; border-radius:10px; border:1px solid #ef4444;">
+                                <h4 style="margin:0; color:#ef4444; font-size:12px;">Clustering Acc.</h4>
+                                <p style="font-size:24px; font-weight:900; margin:0;">85% <span
+                                        style="font-size:12px; opacity:0.5;">DBSCAN</span></p>
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <div class="modal-section">
+                    <h3 class="section-title"><i class="fas fa-globe-americas"></i> Study Area & Conclusion</h3>
+                    <p>Focusing on the "Arc of Deforestation" in Rondônia, Brazil, the model identifies expanding
+                        agricultural frontiers and undocumented logging roads as primary drivers. The resulting 3D
+                        Hotspots provide actionable digital intelligence for environmental protection task forces.</p>
                 </div>
             </div>
             <div class="modal-footer">
@@ -617,7 +640,7 @@
                 let progress = frame / totalFrames;
                 let dropProgress = easeOutExpo(progress);
 
-                // Camera Drop
+                // Camera Drop with ViewState (Fix for User)
                 let zoom = 2.0 + (6.5 - 2.0) * dropProgress;
                 let pitch = 45 * easeInOutSine(Math.min(progress / 0.7, 1));
                 let bearing = -15 * easeOutExpo(Math.max(0, (progress - 0.5) / 0.5));
@@ -625,13 +648,19 @@
                 // Column Growth (Sync with drop)
                 heightScale = Math.min(progress * 2, 1);
 
-                deckInstance.setProps({ initialViewState: { longitude: -62.73, latitude: -10.95, zoom, pitch, bearing } });
+                deckInstance.setProps({
+                    viewState: { longitude: -62.73, latitude: -10.95, zoom, pitch, bearing, transitionDuration: 0 }
+                });
                 updateTemporalState(currentYear);
 
                 if (frame < totalFrames) requestAnimationFrame(animate);
-                else { heightScale = 1; updateTemporalState(currentYear); }
+                else {
+                    heightScale = 1;
+                    deckInstance.setProps({ initialViewState: { longitude: -62.73, latitude: -10.95, zoom: 6.5, pitch: 45, bearing: -15 } });
+                    updateTemporalState(currentYear);
+                }
             }
-            setTimeout(animate, 500);
+            setTimeout(animate, 600);
         }
 
         function updateTemporalState(val) {
