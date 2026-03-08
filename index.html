@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>AI-Based Deforestation Risk Prediction – Amazon Basin</title>
+    <title>AI Forest Degradation Risk Model – Amazon Basin</title>
     <meta name="description" content="AI-powered forest degradation risk analysis for the Amazon Basin using GeoAI">
 
     <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v1.13.0/mapbox-gl.css" rel="stylesheet" />
@@ -12,7 +12,6 @@
     <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v1.13.0/mapbox-gl.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/deck.gl@8.9.0/dist.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         * {
@@ -43,9 +42,9 @@
             align-items: center;
             justify-content: space-between;
             padding: 14px 28px;
-            background: linear-gradient(180deg, rgba(10, 14, 23, 0.98) 0%, rgba(10, 14, 23, 0.8) 100%);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
+            background: linear-gradient(180deg, rgba(10, 14, 23, 0.95) 0%, rgba(10, 14, 23, 0.75) 100%);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid rgba(59, 130, 246, 0.2);
             z-index: 2000;
         }
@@ -57,233 +56,357 @@
         }
 
         #titleIcon {
-            width: 42px;
-            height: 42px;
+            width: 40px;
+            height: 40px;
             background: linear-gradient(135deg, #22c55e, #16a34a);
-            border-radius: 12px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 22px;
-            box-shadow: 0 0 25px rgba(34, 197, 94, 0.4);
+            font-size: 20px;
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
+            animation: pulse-glow 2.5s infinite alternate;
+        }
+
+        @keyframes pulse-glow {
+            0% {
+                box-shadow: 0 0 15px rgba(34, 197, 94, 0.3);
+            }
+
+            100% {
+                box-shadow: 0 0 30px rgba(34, 197, 94, 0.7);
+            }
         }
 
         #titleText h1 {
-            font-size: 19px;
-            font-weight: 700;
-            letter-spacing: -0.4px;
-            color: white;
-            text-transform: uppercase;
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+            background: linear-gradient(90deg, #ffffff, #e2e8f0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         #titleText p {
-            font-size: 11px;
+            font-size: 12px;
             color: #94a3b8;
-            margin-top: 3px;
-            letter-spacing: 0.3px;
+            margin-top: 4px;
+            font-weight: 500;
+            letter-spacing: 0.2px;
         }
 
+        /* ===== Mode Buttons ===== */
         #modeSwitcher {
             display: flex;
-            gap: 5px;
-            background: rgba(30, 41, 59, 0.7);
-            padding: 5px;
-            border-radius: 12px;
-            border: 1px solid rgba(71, 85, 105, 0.3);
+            gap: 4px;
+            background: rgba(30, 41, 59, 0.8);
+            padding: 4px;
+            border-radius: 10px;
+            border: 1px solid rgba(71, 85, 105, 0.4);
         }
 
         #modeSwitcher button {
-            padding: 9px 18px;
+            padding: 8px 16px;
             background: transparent;
             color: #94a3b8;
             border: none;
             cursor: pointer;
-            border-radius: 8px;
+            border-radius: 7px;
             font-family: 'Inter', sans-serif;
-            font-size: 11px;
-            font-weight: 600;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.25s ease;
+            letter-spacing: 0.3px;
+        }
+
+        #modeSwitcher button:hover {
+            color: #e2e8f0;
+            background: rgba(59, 130, 246, 0.15);
         }
 
         #modeSwitcher button.active {
             background: linear-gradient(135deg, #3b82f6, #2563eb);
             color: white;
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+            box-shadow: 0 2px 12px rgba(59, 130, 246, 0.4);
         }
 
         #detailsBtn {
-            padding: 9px 18px;
-            background: #3b82f6;
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 11px;
-            margin-left: 12px;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-        }
-
-        /* ===== Stats Bar (FORCED DYNAMIC) ===== */
-        #statsBar {
-            position: absolute;
-            top: 75px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            align-items: center;
-            gap: 30px;
-            background: rgba(10, 14, 23, 0.85);
-            backdrop-filter: blur(25px);
-            padding: 14px 40px;
-            border-radius: 100px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            z-index: 100;
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.7);
-        }
-
-        .stat-item {
-            display: flex;
-            align-items: baseline;
-            gap: 10px;
-        }
-
-        .stat-value {
-            font-size: 17px;
-            font-weight: 800;
-            color: #f8fafc;
-            font-variant-numeric: tabular-nums;
-            transition: color 0.3s;
-        }
-
-        .stat-label {
-            font-size: 10px;
-            color: #64748b;
-            text-transform: uppercase;
-            letter-spacing: 1.2px;
-            font-weight: 700;
-        }
-
-        .stat-divider {
-            width: 1px;
-            height: 18px;
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        /* ===== Timeline Container (MODERNIZED) ===== */
-        #timelineContainer {
-            position: absolute;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(10, 14, 23, 0.9);
-            backdrop-filter: blur(25px);
-            padding: 20px 40px;
-            border-radius: 24px;
+            padding: 8px 16px;
+            background: rgba(59, 130, 246, 0.1);
+            color: #60a5fa;
             border: 1px solid rgba(59, 130, 246, 0.3);
-            z-index: 500;
-            width: 600px;
+            cursor: pointer;
+            border-radius: 7px;
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.25s ease;
+            margin-left: 12px;
+        }
+
+        #detailsBtn:hover {
+            background: rgba(59, 130, 246, 0.2);
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        /* ===== Map Controls ===== */
+        #mapControls {
+            position: absolute;
+            top: 130px;
+            right: 30px;
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            box-shadow: 0 0 40px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(59, 130, 246, 0.05);
+            gap: 10px;
+            z-index: 100;
         }
 
-        .timeline-header {
+        .map-control-btn {
+            width: 44px;
+            height: 44px;
+            background: rgba(10, 14, 23, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-        }
-
-        .year-display {
-            font-size: 32px;
-            font-weight: 900;
-            color: #3b82f6;
-            letter-spacing: -1px;
-            text-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
-        }
-
-        .timeline-range-labels {
-            display: flex;
-            justify-content: space-between;
-            padding: 0 5px;
-            margin-top: -5px;
-        }
-
-        .range-label {
-            font-size: 10px;
-            font-weight: 700;
-            color: #475569;
-            letter-spacing: 1px;
-        }
-
-        /* Custom Slider Styling */
-        input[type=range] {
-            -webkit-appearance: none;
-            width: 100%;
-            background: transparent;
-        }
-
-        input[type=range]:focus {
-            outline: none;
-        }
-
-        input[type=range]::-webkit-slider-runnable-track {
-            height: 8px;
-            background: rgba(59, 130, 246, 0.15);
-            border-radius: 10px;
-            border: 1px solid rgba(59, 130, 246, 0.1);
-        }
-
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 22px;
-            width: 22px;
-            border-radius: 50%;
-            background: #3b82f6;
+            justify-content: center;
             cursor: pointer;
-            margin-top: -8px;
-            border: 3px solid #f8fafc;
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.6);
-            transition: transform 0.2s;
+            color: #94a3b8;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
 
-        input[type=range]:active::-webkit-slider-thumb {
-            transform: scale(1.2);
+        .map-control-btn:hover {
+            color: #3b82f6;
+            background: rgba(30, 41, 59, 0.9);
+            transform: translateY(-2px);
+            border-color: #3b82f6;
         }
 
-        /* ===== Analysis Sidebar (Right) ===== */
+        .map-control-btn.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #2563eb;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+        }
+
+        /* ===== Analysis Sidebar ===== */
         #analysisSidebar {
             position: fixed;
-            top: 135px;
-            right: -420px;
-            width: 380px;
-            background: rgba(10, 14, 23, 0.9);
-            backdrop-filter: blur(30px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
+            top: 100px;
+            right: -350px;
+            width: 320px;
+            height: calc(100vh - 130px);
+            background: rgba(10, 14, 23, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-top-left-radius: 24px;
             z-index: 1000;
-            padding: 30px;
-            box-shadow: -20px 20px 80px rgba(0, 0, 0, 0.8);
-            transition: right 0.7s cubic-bezier(0.19, 1, 0.22, 1);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 24px;
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
             display: flex;
             flex-direction: column;
             gap: 20px;
         }
 
         #analysisSidebar.active {
-            right: 30px;
+            right: 0;
         }
 
-        /* ===== Modal (Final Clean Footer) ===== */
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sidebar-header h2 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #f8fafc;
+            letter-spacing: 0.5px;
+        }
+
+        .sidebar-close {
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .analysis-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 18px;
+        }
+
+        .card-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: #64748b;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .card-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+
+        .risk-meter-container {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin-top: 12px;
+            overflow: hidden;
+        }
+
+        #riskMeterFill {
+            height: 100%;
+            width: 0%;
+            transition: width 1s ease;
+        }
+
+        .advice-box {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 4px solid #3b82f6;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 13px;
+            line-height: 1.5;
+            color: #cbd5e1;
+        }
+
+        /* ===== Map Controls Redesign ===== */
+        #mapControls {
+            position: absolute;
+            top: 130px;
+            right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 100;
+        }
+
+        .map-style-group {
+            background: rgba(10, 14, 23, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .style-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #94a3b8;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .style-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: #f8fafc;
+        }
+
+        .style-btn.active {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .style-btn span {
+            font-size: 18px;
+        }
+
+        /* ===== Neural Network Visualization ===== */
+        .nn-viz {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 25px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            border-radius: 16px;
+        }
+
+        .nn-layer {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .nn-node {
+            width: 10px;
+            height: 10px;
+            background: #3b82f6;
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+        }
+
+        .nn-node.hidden {
+            background: #8b5cf6;
+            box-shadow: 0 0 8px rgba(139, 92, 246, 0.5);
+        }
+
+        .nn-node.output {
+            background: #ef4444;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+        }
+
+        .nn-arrow {
+            color: #334155;
+            font-size: 14px;
+        }
+
+        /* ===== Modal Overlay ===== */
         #modalOverlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(10, 14, 23, 0.96);
-            backdrop-filter: blur(20px);
+            background: rgba(10, 14, 23, 0.85);
+            backdrop-filter: blur(10px);
+            z-index: 5000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        #modalOverlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        /* ===== Modal Overlay ===== */
+        #modalOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(10, 14, 23, 0.85);
+            backdrop-filter: blur(10px);
             z-index: 5000;
             display: none;
             justify-content: center;
@@ -298,126 +421,530 @@
         }
 
         #modalContent {
-            width: 95%;
-            max-width: 1200px;
+            width: 90%;
+            max-width: 1300px;
             height: 85vh;
-            background: #0f172a;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
+            background: #0b1120;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
 
         #modalHeader {
-            padding: 25px 40px;
+            padding: 20px 30px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #1e293b;
+            background: #0f172a;
+        }
+
+        #modalHeader h2 {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: #f8fafc;
+            margin: 0;
+        }
+
+        #closeModal {
+            font-size: 24px;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        #closeModal:hover {
+            color: #f8fafc;
         }
 
         #modalBody {
-            padding: 45px;
-            overflow-y: scroll !important;
+            padding: 40px;
+            overflow-y: auto;
             flex: 1;
             scrollbar-width: thin;
             scrollbar-color: #3b82f6 #0f172a;
         }
 
         #modalBody::-webkit-scrollbar {
-            width: 10px;
+            width: 8px;
         }
 
         #modalBody::-webkit-scrollbar-thumb {
             background: #3b82f6;
-            border-radius: 10px;
+            border-radius: 8px;
             border: 2px solid #0f172a;
         }
 
         .modal-section {
-            margin-bottom: 60px;
+            margin-bottom: 40px;
         }
 
         .section-title {
-            font-size: 14px;
-            color: #3b82f6;
+            font-size: 13px;
+            color: #60a5fa;
             font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 30px;
+            letter-spacing: 1.5px;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .modal-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1.2fr;
             gap: 50px;
             align-items: start;
         }
 
+        #titleBar {
+            justify-content: space-between;
+        }
+
+        #analysisSidebar {
+            right: 30px;
+            top: 110px;
+            height: calc(100vh - 220px);
+        }
+
+        #mapControls {
+            top: 130px;
+            right: 30px;
+        }
+
         .modal-img {
             width: 100%;
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-image {
+            width: 100%;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
         .modal-text {
-            font-size: 15px;
+            font-size: 14.5px;
             color: #94a3b8;
-            line-height: 1.8;
+            line-height: 1.7;
         }
 
-        .modal-footer {
-            padding: 25px 40px;
+        .modal-text p {
+            margin-bottom: 15px;
+        }
+
+        .highlight-box {
+            background: rgba(59, 130, 246, 0.05);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .equation-box {
             background: #0f172a;
+            border: 1px solid #334155;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            color: #f8fafc;
+            margin: 20px 0;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .equation-box span {
+            color: #3b82f6;
+            font-weight: 700;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 13px;
+        }
+
+        th {
+            text-align: left;
+            color: #64748b;
+            padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        td {
+            padding: 10px;
+            color: #cbd5e1;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .ai-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border-radius: 4px;
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        /* ===== Technical Specs Card ===== */
+        .specs-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .spec-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border-radius: 10px;
+        }
+
+        .spec-label {
+            font-size: 10px;
+            color: #64748b;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .spec-value {
+            font-size: 13px;
+            color: #e2e8f0;
+            font-weight: 600;
+        }
+
+        .importance-bar-container {
+            margin-top: 15px;
+        }
+
+        .importance-row {
+            margin-bottom: 8px;
+        }
+
+        .importance-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 4px;
+        }
+
+        .importance-track {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .importance-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border-radius: 3px;
+        }
+
+        .footer-links {
+            margin-top: 30px;
+            padding-top: 20px;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
             display: flex;
+            gap: 15px;
             justify-content: center;
-            gap: 30px;
         }
 
-        .footer-btn {
-            padding: 14px 30px;
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid rgba(59, 130, 246, 0.4);
-            border-radius: 15px;
-            color: #60a5fa;
+        .link-chip {
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: #cbd5e1;
+            font-size: 12px;
             text-decoration: none;
-            font-size: 14px;
-            font-weight: 800;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .link-chip:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: #3b82f6;
+            color: #60a5fa;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-start;
+            margin-top: 20px;
+        }
+
+
+        /* ===== Stats Bar ===== */
+        #statsBar {
+            position: absolute;
+            top: 68px;
+            left: 50%;
+            transform: translateX(-50%);
             display: flex;
             align-items: center;
             gap: 12px;
-            transition: 0.3s;
+            background: rgba(10, 14, 23, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 8px 24px;
+            border-radius: 100px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            z-index: 99;
+            opacity: 0;
+            animation: slideDown 0.8s ease forwards 0.3s;
         }
 
-        .footer-btn:hover {
-            background: #3b82f6;
-            color: white;
-            transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
         }
 
-        /* HUD */
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 4px 8px;
+        }
+
+        .stat-value {
+            font-size: 15px;
+            font-weight: 700;
+            color: #f8fafc;
+            letter-spacing: -0.2px;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        .stat-divider {
+            width: 1px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 1px;
+        }
+
+        /* ===== Legend Panel ===== */
+        #legend {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            background: rgba(10, 14, 23, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 16px 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            z-index: 99;
+            min-width: 170px;
+            opacity: 0;
+            animation: slideUp 0.8s ease forwards 0.5s;
+        }
+
+        #legend h3 {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #94a3b8;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .legend-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .legend-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            box-shadow: 0 0 10px currentColor;
+        }
+
+        .legend-label {
+            font-size: 11px;
+            font-weight: 500;
+            color: #cbd5e1;
+            letter-spacing: 0.3px;
+        }
+
+        /* ===== Chart Panel ===== */
         #chartContainer {
             position: absolute;
-            bottom: 40px;
-            right: 40px;
-            width: 280px;
-            background: rgba(10, 14, 23, 0.8);
-            backdrop-filter: blur(20px);
-            padding: 25px;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            z-index: 100;
+            bottom: 30px;
+            right: 30px;
+            width: 240px;
+            background: rgba(10, 14, 23, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 18px 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            z-index: 99;
+            opacity: 0;
+            animation: slideUp 0.8s ease forwards 0.6s;
         }
 
-        /* Loading */
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        #chartTitle {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #94a3b8;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        #riskChart {
+            max-height: 200px;
+        }
+
+        /* ===== Tooltip ===== */
+        .deck-tooltip {
+            font-family: 'Inter', sans-serif !important;
+            background: rgba(15, 23, 42, 0.95) !important;
+            backdrop-filter: blur(8px) !important;
+            border: 1px solid rgba(59, 130, 246, 0.3) !important;
+            border-radius: 10px !important;
+            padding: 10px 14px !important;
+            font-size: 12px !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+        }
+
+        /* ===== Timeline Panel ===== */
+        #timelineContainer {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(10, 14, 23, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 16px 24px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            z-index: 99;
+            width: 380px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            opacity: 0;
+            animation: slideUp 0.8s ease forwards 0.4s;
+        }
+
+        #timelineHeader {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #timelineYear {
+            font-size: 24px;
+            font-weight: 700;
+            color: #f8fafc;
+            letter-spacing: -0.5px;
+        }
+
+        #playBtn {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        #playBtn:hover {
+            background: rgba(59, 130, 246, 0.3);
+            color: white;
+        }
+
+        #timeSlider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            outline: none;
+        }
+
+        #timeSlider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            outline: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.6);
+            transition: transform 0.1s;
+        }
+
+        #timeSlider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        /* ===== Loading ===== */
         #loadingOverlay {
             position: fixed;
             top: 0;
@@ -430,348 +957,790 @@
             align-items: center;
             justify-content: center;
             z-index: 9999;
+            transition: opacity 0.6s ease;
         }
 
         #loadingOverlay.fade-out {
             opacity: 0;
             pointer-events: none;
-            transition: 1s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .loader-ring {
-            width: 70px;
-            height: 70px;
-            border: 4px solid rgba(59, 130, 246, 0.1);
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(59, 130, 246, 0.15);
             border-top-color: #3b82f6;
             border-radius: 50%;
-            animation: spin 1s linear infinite;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        #loadingOverlay p {
+            margin-top: 16px;
+            color: #64748b;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 768px) {
+            #titleText h1 {
+                font-size: 14px;
+            }
+
+            #modeSwitcher button {
+                padding: 6px 10px;
+                font-size: 11px;
+            }
+
+            #statsBar {
+                flex-wrap: wrap;
+            }
+
+            #legend {
+                bottom: 15px;
+                left: 15px;
+            }
+
+            #timelineContainer {
+                width: 300px;
+                bottom: 80px;
+                /* above legend on mobile */
+            }
+
+            #chartContainer {
+                width: 180px;
+                bottom: 15px;
+                right: 15px;
+            }
         }
     </style>
 </head>
 
 <body>
 
+    <!-- Loading Screen -->
     <div id="loadingOverlay">
         <div class="loader-ring"></div>
-        <p style="margin-top: 25px; color: #3b82f6; font-size: 15px; letter-spacing: 3px; font-weight: 700;">GABBAR AI
-            ENGINE | LOADING TEMPORAL CORE...</p>
+        <p>Loading Amazon Basin data...</p>
     </div>
 
     <div id="deck-container"></div>
 
+    <!-- Redesigned Map Controls -->
+    <div id="mapControls">
+        <div class="map-style-group">
+            <div id="styleDark" class="style-btn active" onclick="toggleMapStyle('dark')">
+                <span>🌑</span> Analytical View
+            </div>
+            <div id="styleSatellite" class="style-btn" onclick="toggleMapStyle('satellite')">
+                <span>🛰️</span> Satellite Reality
+            </div>
+        </div>
+    </div>
+
+    <!-- Analysis Sidebar -->
+    <div id="analysisSidebar">
+        <div class="sidebar-header">
+            <h2>Spatial Analysis Profile</h2>
+            <div class="sidebar-close" onclick="toggleSidebar(false)">×</div>
+        </div>
+
+        <div class="analysis-card">
+            <div class="card-label">Selected Location</div>
+            <div id="sideCoords" class="card-value" style="font-size: 14px; font-family: monospace;">--</div>
+        </div>
+
+        <div class="analysis-card">
+            <div class="card-label">Risk Probability</div>
+            <div id="sideRiskScore" class="card-value">--</div>
+            <div class="risk-meter-container">
+                <div id="riskMeterFill"></div>
+            </div>
+        </div>
+
+        <div class="analysis-card">
+            <div class="card-label">Temporal Detection</div>
+            <div id="sideYear" class="card-value">--</div>
+        </div>
+
+        <div class="advice-box">
+            <b>🛡️ Action Protocol:</b>
+            <p id="sideAdvice">Click on a 3D bar to generate an environmental protection protocol based on the predicted
+                risk level.</p>
+        </div>
+
+        <div style="margin-top: auto; font-size: 10px; color: #475569; text-align: center;">
+            Elite Edition | GeoAI Predictive Framework
+        </div>
+    </div>
+
     <!-- Title Bar -->
     <div id="titleBar">
         <div id="titleLeft">
-            <div id="titleIcon">🌳</div>
+            <div id="titleIcon">🌿</div>
             <div id="titleText">
-                <h1 style="text-transform: uppercase;">AI-Based Deforestation Risk Prediction – Amazon Basin</h1>
-                <p>Elite Edition | Predictive GeoAI Neural-Framework | 2001-2030</p>
+                <h1>AI-Based Deforestation Risk Prediction Model – Amazon Basin</h1>
+                <p>Elite v2.1 | Neural-Prophet Engine | AUC = 0.82</p>
             </div>
         </div>
+
         <div id="modeSwitcher">
             <button id="btn3d" class="active" onclick="setMode('3d')">3D Columns</button>
-            <button id="btn2d" onclick="setMode('2d')">2D Points</button>
+            <button id="btn2d" onclick="setMode('2d')">2D View</button>
             <button id="btnHeat" onclick="setMode('heat')">Heatmap</button>
             <button id="btnHotspot" onclick="setMode('hotspot')">Hotspots</button>
-            <button id="detailsBtn" onclick="toggleModal(true)">PROJECT DETAILS</button>
+            <button id="detailsBtn" onclick="toggleModal(true)">Project Details</button>
         </div>
     </div>
 
-    <!-- Dynamic Stats Bar -->
-    <div id="statsBar">
-        <div class="stat-item">
-            <div class="stat-value" id="stat-total">0</div>
-            <div class="stat-label">Total Points</div>
-        </div>
-        <div class="stat-divider"></div>
-        <div class="stat-item">
-            <div class="stat-value" id="stat-high" style="color: #ef4444;">0</div>
-            <div class="stat-label">High Risk</div>
-        </div>
-        <div class="stat-divider"></div>
-        <div class="stat-item">
-            <div class="stat-value" id="stat-med" style="color: #f59e0b;">0</div>
-            <div class="stat-label">Med Risk</div>
-        </div>
-        <div class="stat-divider"></div>
-        <div class="stat-item">
-            <div class="stat-value" id="stat-low" style="color: #22c55e;">0</div>
-            <div class="stat-label">Low Risk</div>
-        </div>
-    </div>
-
-    <!-- Timeline HUD -->
-    <div id="timelineContainer">
-        <div class="timeline-header">
-            <div class="year-display" id="yearText">2030</div>
-            <button id="playBtn" onclick="togglePlay()"
-                style="background: rgba(59, 130, 246, 0.1); color: #3b82f6; border: 2px solid #3b82f6; padding: 10px 25px; border-radius: 50px; font-size: 12px; font-weight: 800; cursor: pointer; transition: 0.3s;">▶
-                PLAY ANIMATION</button>
-        </div>
-        <input type="range" id="timeSlider" min="2001" max="2030" value="2030" step="1"
-            oninput="updateTemporalState(this.value)">
-        <div class="timeline-range-labels">
-            <span class="range-label">YEAR 2001</span>
-            <span class="range-label">YEAR 2030</span>
-        </div>
-    </div>
-
-    <div id="chartContainer"><canvas id="riskChart"></canvas></div>
-
+    <!-- Project Modal Overlay -->
     <div id="modalOverlay" onclick="if(event.target === this) toggleModal(false)">
         <div id="modalContent">
             <div id="modalHeader">
                 <h2>Project Overview & GeoAI Methodology</h2>
-                <div onclick="toggleModal(false)" style="cursor: pointer; font-size: 30px;">×</div>
+                <div onclick="toggleModal(false)"
+                    style="cursor: pointer; font-size: 24px; color: #94a3b8; font-weight: 300; background: rgba(255,255,255,0.05); padding: 5px 12px; border-radius: 8px;">
+                    ×</div>
             </div>
+
             <div id="modalBody">
-                <div class="modal-section">
-                    <h3 class="section-title"><i class="fas fa-microchip"></i> GeoAI Framework</h3>
-                    <div class="modal-grid">
-                        <div class="modal-text">
-                            <p>The proposed framework integrates satellite imagery (PRODES/VIIRS) with deep learning
-                                segmentation (U-Net) and spatial analysis to predict deforestation risk across the
-                                Amazon Basin.</p>
-                            <div
-                                style="margin-top:20px; padding:15px; background:rgba(59,130,246,0.05); border-radius:12px; border-left:4px solid #3b82f6; font-size:13px;">
-                                <b>Technical Pipeline:</b> Satellite Data → Cloud Preprocessing → Neural Segmentation →
-                                Risk Estimation → 3D Delivery.
+                <div class="modal-grid">
+
+                    <!-- Left Column -->
+                    <div class="modal-left">
+                        <div class="modal-section">
+                            <h3 class="section-title">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                                </svg>
+                                ANALYSIS & VALIDATION
+                            </h3>
+                            <div class="modal-text">
+                                <p>The model reached an <b style="color:white; font-weight:700;">AUC score of 0.82</b>,
+                                    indicating strong predictive performance. Spatial validation was performed by
+                                    correlating high-risk predictions with active fire events and historical hotspots.
+                                </p>
+
+                                <div
+                                    style="margin-top:20px; padding:15px 20px; background:rgba(15,23,42,0.8); border:1px solid rgba(255,255,255,0.05); border-radius:8px;">
+                                    <p style="margin:0; font-size:14px;"><span
+                                            style="color:#ef4444; font-weight:600;">Hotspot Clusters:</span> Identified
+                                        using DBSCAN clustering to correlate fire intensity with predicted risk zones.
+                                    </p>
+                                </div>
                             </div>
                         </div>
-                        <div style="text-align:center;">
-                            <img src="geoai_framework.png" class="modal-img" style="border:1px solid #3b82f6;">
+
+                        <div class="modal-section" style="margin-top: 50px;">
+                            <h3 class="section-title">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f43f5e"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path
+                                        d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z" />
+                                    <path
+                                        d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z" />
+                                </svg>
+                                DEEP LEARNING & MATHEMATICAL MODEL
+                            </h3>
+                            <div class="modal-text">
+                                <span
+                                    style="display:inline-block; padding:4px 10px; background:rgba(59,130,246,0.15); color:#93c5fd; border: 1px solid rgba(59,130,246,0.3); border-radius:4px; font-size:10px; font-weight:700; letter-spacing:1px; margin-bottom:15px; text-transform:uppercase;">SEMANTIC
+                                    SEGMENTATION</span>
+                                <p>The core engine uses a <b style="color:white; font-weight:700;">U-Net
+                                        architecture</b> for binary segmentation. The model was trained using 150,000
+                                    spatial samples with multi-temporal features.</p>
+
+                                <div
+                                    style="margin-top:20px; padding:20px; background:#040810; border-radius:8px; border-left:3px solid #3b82f6; font-family:'Courier New', monospace; font-size:13px; color:#e2e8f0; font-weight:600; line-height: 1.6;">
+                                    Risk Index = <span style="color:#60a5fa">0.30</span> (FL) + <span
+                                        style="color:#60a5fa">0.20</span> (DR) + <span style="color:#60a5fa">0.15</span>
+                                    (PD) + <br><span style="padding-left: 95px;"></span><span
+                                        style="color:#60a5fa">0.15</span> (FH) + <span style="color:#60a5fa">0.10</span>
+                                    (SL) + <span style="color:#60a5fa">0.10</span> (EL)
+                                </div>
+                                <p
+                                    style="margin-top: 15px; font-size: 11.5px; opacity: 0.6; color: #94a3b8; line-height: 1.8;">
+                                    FL: Forest Loss | DR: Distance to Roads | PD: Population Density<br>
+                                    FH: Fire History | SL: Slope | EL: Elevation
+                                </p>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="modal-section">
-                    <h3 class="section-title"><i class="fas fa-calculator"></i> Mathematical Risk Model</h3>
-                    <div class="modal-grid">
-                        <div class="modal-text">
-                            <p>The Risk Index is calculated through a weighted spatial equation, correlating forest loss
-                                gradients with anthropogenic infrastructure proximity:</p>
-                            <div
-                                style="padding:20px; background:rgba(15,23,42,0.9); border:1px solid rgba(59,130,246,0.3); border-radius:15px; font-family:monospace; font-size:14px; color:#60a5fa; margin:15px 0; text-align:center; border-left:4px solid #ef4444;">
-                                Risk Index = 0.30(FL) + 0.20(DR) + 0.15(PD) + 0.15(FH) + 0.10(SL) + 0.10(EL)
-                            </div>
-                            <p style="font-size:12px; opacity:0.7;">FL: Forest Loss, DR: Road Proximity, PD: Pop
-                                Density, FH: Fire History, SL: Slope, EL: Elevation.</p>
+                    <!-- Right Column -->
+                    <div class="modal-right">
+
+                        <div class="modal-section" style="margin-bottom: 40px;">
+                            <img src="model_validation_results.png" class="modal-img" onerror="this.src='image.png'"
+                                alt="Model Validation Images">
                         </div>
-                        <div style="display:flex; flex-direction:column; gap:10px;">
-                            <div
-                                style="background:#1e293b; padding:12px; border-radius:10px; border:1px solid #22c55e;">
-                                <h4 style="margin:0; color:#22c55e; font-size:12px;">Validation Score</h4>
-                                <p style="font-size:24px; font-weight:900; margin:0;">0.82 <span
-                                        style="font-size:12px; opacity:0.5;">AUC</span></p>
+
+                        <div class="modal-section">
+                            <h3 class="section-title" style="color:#94a3b8; font-size: 11px; margin-bottom: 25px;">
+                                FEATURE IMPORTANCE (SHAP Values)</h3>
+
+                            <!-- Progress Bar 1 -->
+                            <div style="margin-bottom: 18px;">
+                                <div
+                                    style="display:flex; justify-content:space-between; font-size:12px; font-weight:600; color:#cbd5e1; margin-bottom:8px;">
+                                    <span>Forest Loss (Temporal)</span>
+                                    <span>35%</span>
+                                </div>
+                                <div
+                                    style="height:6px; background:rgba(255,255,255,0.05); border-radius:3px; overflow:hidden;">
+                                    <div
+                                        style="height:100%; width:35%; background:linear-gradient(90deg, #6366f1, #a855f7); border-radius:3px;">
+                                    </div>
+                                </div>
                             </div>
-                            <div
-                                style="background:#1e293b; padding:12px; border-radius:10px; border:1px solid #ef4444;">
-                                <h4 style="margin:0; color:#ef4444; font-size:12px;">Clustering Acc.</h4>
-                                <p style="font-size:24px; font-weight:900; margin:0;">85% <span
-                                        style="font-size:12px; opacity:0.5;">DBSCAN</span></p>
+
+                            <!-- Progress Bar 2 -->
+                            <div style="margin-bottom: 18px;">
+                                <div
+                                    style="display:flex; justify-content:space-between; font-size:12px; font-weight:600; color:#cbd5e1; margin-bottom:8px;">
+                                    <span>Road Proximity</span>
+                                    <span>22%</span>
+                                </div>
+                                <div
+                                    style="height:6px; background:rgba(255,255,255,0.05); border-radius:3px; overflow:hidden;">
+                                    <div
+                                        style="height:100%; width:22%; background:linear-gradient(90deg, #6366f1, #8b5cf6); border-radius:3px;">
+                                    </div>
+                                </div>
                             </div>
+
+                            <!-- Progress Bar 3 -->
+                            <div style="margin-bottom: 18px;">
+                                <div
+                                    style="display:flex; justify-content:space-between; font-size:12px; font-weight:600; color:#cbd5e1; margin-bottom:8px;">
+                                    <span>Historical Hotspots</span>
+                                    <span>18%</span>
+                                </div>
+                                <div
+                                    style="height:6px; background:rgba(255,255,255,0.05); border-radius:3px; overflow:hidden;">
+                                    <div
+                                        style="height:100%; width:18%; background:linear-gradient(90deg, #6366f1, #6b21a8); border-radius:3px;">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Progress Bar 4 -->
+                            <div style="margin-bottom: 18px;">
+                                <div
+                                    style="display:flex; justify-content:space-between; font-size:12px; font-weight:600; color:#cbd5e1; margin-bottom:8px;">
+                                    <span>Population Density</span>
+                                    <span>15%</span>
+                                </div>
+                                <div
+                                    style="height:6px; background:rgba(255,255,255,0.05); border-radius:3px; overflow:hidden;">
+                                    <div
+                                        style="height:100%; width:15%; background:linear-gradient(90deg, #3b82f6, #4f46e5); border-radius:3px;">
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
+
                     </div>
-                </div>
 
-                <div class="modal-section">
-                    <h3 class="section-title"><i class="fas fa-globe-americas"></i> Study Area & Conclusion</h3>
-                    <p>Focusing on the "Arc of Deforestation" in Rondônia, Brazil, the model identifies expanding
-                        agricultural frontiers and undocumented logging roads as primary drivers. The resulting 3D
-                        Hotspots provide actionable digital intelligence for environmental protection task forces.</p>
                 </div>
             </div>
-            <div class="modal-footer">
-                <a href="Graduation_Project_Report.md" target="_blank" class="footer-btn">📄 Graduation Project Report
-                    (PDF)</a>
-                <a href="https://github.com" target="_blank" class="footer-btn">🚀 GABBAR GitHub Repository</a>
+
+            <!-- Modal footer -->
+            <div class="modal-footer"
+                style="padding: 15px 30px; background: rgba(0,0,0,0.3); border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: flex-end; gap: 15px;">
+                <a href="Graduation_Project_Report.md" target="_blank"
+                    style="color: #94a3b8; font-size: 12px; text-decoration: none; font-weight: 500;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round"
+                        style="vertical-align: middle; margin-right: 5px;">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    View Report
+                </a>
             </div>
         </div>
     </div>
-
-    <!-- Sidebar (Right) -->
-    <div id="analysisSidebar">
-        <h2
-            style="font-size:18px; font-weight:800; color:white; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:15px;">
-            Target Point Analysis</h2>
-        <div class="ai-card">
-            <div class="ai-card-title">Coordinates</div>
-            <div id="sideCoords" style="font-size:15px; font-weight:700; font-family:monospace;">--</div>
+    <!-- Stats Bar -->
+    <div id="statsBar">
+        <div class="stat-item">
+            <div class="stat-value" id="totalPoints">—</div>
+            <div class="stat-label">Total Points</div>
         </div>
-        <div class="ai-card">
-            <div class="ai-card-title">Risk Probability</div>
-            <div id="sideRiskScore" style="font-size:30px; font-weight:900; color:#3b82f6;">--</div>
-            <div
-                style="height:8px; background:rgba(255,255,255,0.05); border-radius:4px; margin-top:15px; overflow:hidden;">
-                <div id="riskMeterFill" style="height:100%; width:0%; transition:width 1s ease;"></div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+            <div class="stat-value" id="highRiskCount" style="color:#ef4444;text-shadow: 0 0 10px rgba(239,68,68,0.3);">
+                —</div>
+            <div class="stat-label">High Risk</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+            <div class="stat-value" id="medRiskCount" style="color:#f59e0b;text-shadow: 0 0 10px rgba(245,158,11,0.3);">
+                —</div>
+            <div class="stat-label">Medium Risk</div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+            <div class="stat-value" id="lowRiskCount" style="color:#22c55e;text-shadow: 0 0 10px rgba(34,197,94,0.3);">—
             </div>
+            <div class="stat-label">Low Risk</div>
         </div>
-        <p style="font-size:13px; color:#64748b; line-height:1.6;"><b>GABBAR Insight:</b> This location exhibits high
-            spatial correlation with historical deforestation trends. Precision ground monitoring is recommended for
-            this sector.</p>
-        <button onclick="toggleSidebar(false)"
-            style="margin-top:10px; width:100%; padding:12px; background:rgba(255,255,255,0.05); border:none; color:#94a3b8; border-radius:10px; cursor:pointer; font-weight:700;">Close
-            Sidebar</button>
     </div>
+
+    <!-- Legend -->
+    <div id="legend">
+        <h3>Risk Classification</h3>
+        <div class="legend-row">
+            <div class="legend-dot" style="background:#22c55e; color:#22c55e;"></div>
+            <span class="legend-label">Low Risk (&lt; 165)</span>
+        </div>
+        <div class="legend-row">
+            <div class="legend-dot" style="background:#f59e0b; color:#f59e0b;"></div>
+            <span class="legend-label">Medium Risk (165-170)</span>
+        </div>
+        <div class="legend-row">
+            <div class="legend-dot" style="background:#ef4444; color:#ef4444;"></div>
+            <span class="legend-label">High Risk (&gt; 170)</span>
+        </div>
+    </div>
+
+    <!-- Chart -->
+    <div id="chartContainer">
+        <div id="chartTitle">Risk Distribution</div>
+        <canvas id="riskChart"></canvas>
+    </div>
+
+    <!-- Timeline / Animation Slider -->
+    <div id="timelineContainer">
+        <div id="timelineHeader">
+            <span id="timelineYear">2030</span>
+            <button id="playBtn" onclick="togglePlay()">▶ Play Animation</button>
+        </div>
+        <input type="range" id="timeSlider" min="2001" max="2030" value="2030" step="1"
+            oninput="updateYear(this.value)">
+    </div>
+
 
     <script>
-        let deckInstance, dataGlobal, heightScale = 0, currentMode = '3d', currentYear = 2030, isPlaying = false, playInterval, riskChartInstance;
-        const MAPBOX_TOKEN = "pk.eyJ1IjoibWFtZG91aGFobWVkMTU4MSIsImEiOiJjbTduaXVndjEwMDRsMm9zYXVhcHJ3eGt6In0.H_fBihpC9-p5Qp7q_WKgVw";
+
+        let deckInstance
+        let dataGlobal
+        let heightScale = 0
+        let currentMode = '3d'
+        let currentYear = 2030
+        let isPlaying = false
+        let playInterval
+        let riskChartInstance
+
+
+        // Map styles
         const DARK_MAP = "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
-
-        fetch("forest_data_clean.json").then(res => res.json()).then(data => {
-            dataGlobal = data;
-            data.forEach((p, i) => { p.event_year = 2001 + (i % 30); }); // Distribute points across 2001-2030
-            deckInstance = new deck.DeckGL({
-                container: "deck-container", mapStyle: DARK_MAP, mapboxApiAccessToken: MAPBOX_TOKEN,
-                initialViewState: { longitude: -62.73, latitude: -10.95, zoom: 2.0, pitch: 0, bearing: 0 }, controller: true,
-                getTooltip: ({ object }) => object && { html: `<div style="padding:15px; background:#0f172a; border:1px solid #3b82f6; border-radius:8px; box-shadow:0 10px 30px rgba(0,0,0,0.5);"><b>Risk Score:</b> <span style="color:#ef4444">${object.risk_score}</span><br><b>Spatial Year:</b> ${object.event_year}</div>` }
-            });
-            updateTemporalState(2030); startAnimation();
-            setTimeout(() => { document.getElementById("loadingOverlay").classList.add("fade-out") }, 1500);
-        });
-
-        function startAnimation() {
-            let frame = 0, totalFrames = 340;
-            const easeOutExpo = x => x === 1 ? 1 : 1 - Math.pow(2, -10 * x);
-            const easeInOutSine = x => -(Math.cos(Math.PI * x) - 1) / 2;
-
-            function animate() {
-                frame++;
-                let progress = frame / totalFrames;
-                let dropProgress = easeOutExpo(progress);
-
-                // Camera Drop with ViewState (Fix for User)
-                let zoom = 2.0 + (6.5 - 2.0) * dropProgress;
-                let pitch = 45 * easeInOutSine(Math.min(progress / 0.7, 1));
-                let bearing = -15 * easeOutExpo(Math.max(0, (progress - 0.5) / 0.5));
-
-                // Column Growth (Sync with drop)
-                heightScale = Math.min(progress * 2, 1);
-
-                deckInstance.setProps({
-                    viewState: { longitude: -62.73, latitude: -10.95, zoom, pitch, bearing, transitionDuration: 0 }
-                });
-                updateTemporalState(currentYear);
-
-                if (frame < totalFrames) requestAnimationFrame(animate);
-                else {
-                    heightScale = 1;
-                    deckInstance.setProps({ initialViewState: { longitude: -62.73, latitude: -10.95, zoom: 6.5, pitch: 45, bearing: -15 } });
-                    updateTemporalState(currentYear);
+        const SATELLITE_MAP = {
+            "version": 8,
+            "sources": {
+                "satellite": {
+                    "type": "raster",
+                    "tiles": ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],
+                    "tileSize": 256
                 }
-            }
-            setTimeout(animate, 600);
-        }
+            },
+            "layers": [{
+                "id": "satellite",
+                "type": "raster",
+                "source": "satellite",
+                "minzoom": 0,
+                "maxzoom": 22
+            }]
+        };
+        const MAPBOX_TOKEN = "pk.eyJ1IjoibWFtZG91aGFobWVkMTU4MSIsImEiOiJjbTduaXVndjEwMDRsMm9zYXVhcHJ3eGt6In0.H_fBihpC9-p5Qp7q_WKgVw";
 
-        function updateTemporalState(val) {
-            currentYear = parseInt(val);
-            document.getElementById("yearText").innerText = currentYear;
-            document.getElementById("timeSlider").value = currentYear;
+        fetch("forest_data_clean.json")
+            .then(res => res.json())
+            .then(data => {
 
-            // 1. Filter Data for Year
+                dataGlobal = data
+
+                // Assign a fake event year between 2001 and 2030 for spatial-temporal simulation
+                data.forEach(p => {
+                    p.event_year = 2001 + Math.floor(Math.random() * 30);
+                });
+
+                deckInstance = new deck.DeckGL({
+                    container: "deck-container",
+                    mapStyle: DARK_MAP,
+                    mapboxApiAccessToken: MAPBOX_TOKEN,
+                    initialViewState: {
+                        longitude: -40.0,
+                        latitude: -5.0,
+                        zoom: 2.5,
+                        pitch: 0,
+                        bearing: 0
+                    },
+                    controller: true,
+                    getTooltip: ({ object }) => object && {
+                        html: `<div style="line-height:1.6">
+                            <b style="color:#3b82f6">Risk Score:</b> ${object.risk_score}<br>
+                            <span style="color:#94a3b8">Detected:</span> ${object.event_year}<br>
+                            <span style="color:#94a3b8">Lat:</span> ${object.lat.toFixed(4)}<br>
+                            <span style="color:#94a3b8">Lon:</span> ${object.lon.toFixed(4)}<br>
+                            <div style="font-size:10px; margin-top:5px; color:#60a5fa">Click for Full Analysis →</div>
+                          </div>`,
+                        style: { color: 'white' }
+                    }
+                })
+
+                // Render layers which also updates stats and builds the chart
+                renderLayers();
+
+                // Start initial animations
+                startAnimation()
+                growColumns()
+
+                // Hide loader
+                setTimeout(() => {
+                    document.getElementById("loadingOverlay").classList.add("fade-out")
+                }, 500)
+
+            })
+
+        function renderLayers() {
+            if (!deckInstance) return;
+
+            // Filter data up to current year
             const activeData = dataGlobal.filter(d => d.event_year <= currentYear);
 
-            // 2. Count Dynamic Stats
-            let h = 0, m = 0, l = 0;
+            // Calculate stats based on actual data distribution
+            let low = 0, medium = 0, high = 0
             activeData.forEach(p => {
-                if (p.risk_score > 170) h++;
-                else if (p.risk_score > 165) m++;
-                else l++;
-            });
+                if (p.risk_score <= 165) low++
+                else if (p.risk_score <= 170) medium++
+                else high++
+            })
 
-            // 3. Update HUD
-            document.getElementById("stat-total").innerText = activeData.length.toLocaleString();
-            document.getElementById("stat-high").innerText = h.toLocaleString();
-            document.getElementById("stat-med").innerText = m.toLocaleString();
-            document.getElementById("stat-low").innerText = l.toLocaleString();
+            // Update stats bar
+            document.getElementById("totalPoints").textContent = activeData.length.toLocaleString()
+            document.getElementById("highRiskCount").textContent = high.toLocaleString()
+            document.getElementById("medRiskCount").textContent = medium.toLocaleString()
+            document.getElementById("lowRiskCount").textContent = low.toLocaleString()
 
-            // 4. Update Chart
-            updateChart(h, m, l, activeData.length || 1);
-
-            // 5. Render Map
-            renderLayers(activeData);
-        }
-
-        let pulseTime = 0;
-        function renderLayers(activeData) {
-            if (!deckInstance) return;
-            pulseTime += 0.1;
-            const pulse = 1 + 0.1 * Math.sin(pulseTime);
+            // Update or build chart
+            updateChartState(low, medium, high, activeData.length || 1);
 
             let layer;
             if (currentMode === "3d") {
                 layer = new deck.ColumnLayer({
-                    id: "risk-3d", data: activeData, getPosition: d => [d.lon, d.lat], getElevation: d => (d.risk_score - 150) * 150,
-                    getFillColor: d => d.color, radius: 180, extruded: true, elevationScale: heightScale, pickable: true,
-                    onClick: info => { if (info.object) toggleSidebar(true, info.object); }
+                    id: "risk-layer-3d",
+                    data: activeData,
+                    getPosition: d => [d.lon, d.lat],
+                    getElevation: d => (d.risk_score - 140) * 150,
+                    getFillColor: d => d.color,
+                    radius: 120,
+                    extruded: true,
+                    elevationScale: heightScale >= 1.2 ? 1.2 : heightScale,
+                    pickable: true,
+                    onClick: info => {
+                        if (info.object) toggleSidebar(true, info.object);
+                    },
+                    updateTriggers: { getFillColor: currentYear },
+                    material: { ambient: 0.6, diffuse: 0.7, shininess: 40 }
+                });
+            } else if (currentMode === "2d") {
+                layer = new deck.ScatterplotLayer({
+                    id: "risk-layer-2d",
+                    data: activeData,
+                    getPosition: d => [d.lon, d.lat],
+                    getFillColor: d => d.color,
+                    getRadius: 80,
+                    opacity: 0.7,
+                    pickable: true,
+                    onClick: info => {
+                        if (info.object) toggleSidebar(true, info.object);
+                    }
                 });
             } else if (currentMode === "heat") {
-                layer = new deck.HeatmapLayer({ id: "risk-heat", data: activeData, getPosition: d => [d.lon, d.lat], getWeight: d => d.risk_score, radiusPixels: 60 });
-            } else if (currentMode === "hotspot") {
-                const extremeData = activeData.filter(d => d.risk_score > 168);
-                layer = new deck.ColumnLayer({
-                    id: "risk-hotspot", data: extremeData, getPosition: d => [d.lon, d.lat], getElevation: d => (d.risk_score - 160) * 850 * pulse,
-                    getFillColor: [255, 30, 30, 220], radius: 250, extruded: true, elevationScale: heightScale, pickable: true
+                layer = new deck.HeatmapLayer({
+                    id: "risk-layer-heat",
+                    data: activeData,
+                    getPosition: d => [d.lon, d.lat],
+                    getWeight: d => d.risk_score,
+                    radiusPixels: 60,
+                    intensity: 1.2,
+                    threshold: 0.1
                 });
-            } else {
-                layer = new deck.ScatterplotLayer({ id: "risk-2d", data: activeData, getPosition: d => [d.lon, d.lat], getFillColor: d => d.color, getRadius: 100, pickable: true });
+            } else if (currentMode === "hotspot") {
+                layer = new deck.ScatterplotLayer({
+                    id: "risk-layer-hotspot",
+                    data: activeData.filter(d => d.risk_score > 160),
+                    getPosition: d => [d.lon, d.lat],
+                    getFillColor: [239, 68, 68, 200],
+                    getRadius: 150,
+                    opacity: 0.8,
+                    pickable: true,
+                    onClick: info => {
+                        if (info.object) toggleSidebar(true, info.object);
+                    },
+                    radiusMinPixels: 2,
+                    radiusMaxPixels: 8
+                });
             }
+
             deckInstance.setProps({ layers: [layer] });
-            if (currentMode === "hotspot") requestAnimationFrame(() => renderLayers(activeData));
         }
 
-        function updateChart(h, m, l, total) {
-            const ctx = document.getElementById("riskChart").getContext("2d");
-            if (riskChartInstance) riskChartInstance.destroy();
-            riskChartInstance = new Chart(ctx, {
-                type: 'doughnut', data: { datasets: [{ data: [h, m, l], backgroundColor: ['#ef4444', '#f59e0b', '#22c55e'], borderColor: '#0f172a', borderWidth: 2 }] },
-                options: { cutout: '78%', plugins: { legend: { display: false } }, animation: { duration: 0 } }
-            });
+        function updateYear(val) {
+            currentYear = parseInt(val);
+            document.getElementById("timelineYear").innerText = currentYear;
+            renderLayers();
         }
 
         function togglePlay() {
-            isPlaying = !isPlaying;
             if (isPlaying) {
-                if (currentYear >= 2030) { currentYear = 2001; updateTemporalState(currentYear); }
-                document.getElementById("playBtn").innerText = "⏸ PAUSE ANIMATION";
+                clearInterval(playInterval);
+                document.getElementById("playBtn").innerText = "▶ Play Animation";
+                document.getElementById("playBtn").style.background = "rgba(59, 130, 246, 0.15)";
+                document.getElementById("playBtn").style.color = "#60a5fa";
+                document.getElementById("playBtn").style.border = "1px solid rgba(59, 130, 246, 0.3)";
+            } else {
+                if (currentYear >= 2030) {
+                    currentYear = 2001;
+                    document.getElementById("timeSlider").value = 2001;
+                    document.getElementById("timelineYear").innerText = 2001;
+                }
+                document.getElementById("playBtn").innerText = "⏸ Pause";
+                document.getElementById("playBtn").style.background = "rgba(239, 68, 68, 0.15)";
+                document.getElementById("playBtn").style.color = "#f87171";
+                document.getElementById("playBtn").style.border = "1px solid rgba(239, 68, 68, 0.3)";
+
                 playInterval = setInterval(() => {
                     currentYear++;
-                    if (currentYear > 2030) { togglePlay(); return; }
-                    updateTemporalState(currentYear);
-                }, 400);
+                    if (currentYear > 2030) {
+                        togglePlay(); // stop exactly at 2030
+                    } else {
+                        document.getElementById("timeSlider").value = currentYear;
+                        document.getElementById("timelineYear").innerText = currentYear;
+                        renderLayers();
+                    }
+                }, 400); // 400ms per year
+            }
+            isPlaying = !isPlaying;
+        }
+
+        function growColumns() {
+            heightScale += 0.02
+            if (currentMode === '3d') {
+                renderLayers();
+            }
+            if (heightScale < 1.2) requestAnimationFrame(growColumns)
+        }
+
+        function startAnimation() {
+            let frame = 0
+            let totalFrames = 300 // ~5 seconds at 60fps
+
+            // Smooth deceleration easing function
+            function easeOutExpo(x) {
+                return x === 1 ? 1 : 1 - Math.pow(2, -10 * x);
+            }
+
+            // Smooth acceleration-deceleration for camera tilt
+            function easeInOutSine(x) {
+                return -(Math.cos(Math.PI * x) - 1) / 2;
+            }
+
+            function animate() {
+                frame++
+                let progress = frame / totalFrames
+                let dropProgress = easeOutExpo(progress)
+
+                // 1. Drop from space (zoom 2.0 -> 6.8 for better 3D perspective)
+                let zoom = 2.0 + (6.8 - 2.0) * dropProgress
+
+                // 2. NASA-style tilt: Look straight down from space, tilt up as we get close
+                let pitch = 0
+                if (progress > 0.3) {
+                    let pitchProgress = (progress - 0.3) / 0.7
+                    pitch = 55 * easeInOutSine(Math.min(pitchProgress, 1))
+                }
+
+                // 3. Cinematic slow pan around the Amazon as we land
+                let bearing = 0
+                if (progress > 0.5) {
+                    let bearingProgress = (progress - 0.5) / 0.5
+                    bearing = -15 * easeOutExpo(bearingProgress)
+                }
+
+                deckInstance.setProps({
+                    initialViewState: {
+                        latitude: -10.95,
+                        longitude: -62.73,
+                        zoom: zoom,
+                        pitch: pitch,
+                        bearing: bearing
+                    }
+                })
+                if (frame < totalFrames) requestAnimationFrame(animate)
+            }
+            // Start animation slightly delayed so data loads first
+            setTimeout(animate, 200)
+        }
+
+        function setMode(mode) {
+            if (!deckInstance) return
+
+            currentMode = mode
+
+            // Update button states
+            document.querySelectorAll('#modeSwitcher button').forEach(b => b.classList.remove('active'))
+            const btnId = { '3d': 'btn3d', '2d': 'btn2d', 'heat': 'btnHeat', 'hotspot': 'btnHotspot' }
+            document.getElementById(btnId[mode]).classList.add('active')
+
+            // Re-render layer for current mode
+            renderLayers();
+        }
+
+        function updateChartState(low, medium, high, total) {
+            if (riskChartInstance) {
+                riskChartInstance.data.labels = [
+                    `Low (${((low / total) * 100).toFixed(1)}%)`,
+                    `Medium (${((medium / total) * 100).toFixed(1)}%)`,
+                    `High (${((high / total) * 100).toFixed(1)}%)`
+                ];
+                riskChartInstance.data.datasets[0].data = [low, medium, high];
+                riskChartInstance.update();
             } else {
-                document.getElementById("playBtn").innerText = "▶ PLAY ANIMATION";
-                clearInterval(playInterval);
+                buildChart(low, medium, high, total);
             }
         }
 
-        function setMode(m) {
-            currentMode = m; heightScale = 0;
-            document.querySelectorAll('#modeSwitcher button').forEach(b => b.classList.remove('active'));
-            document.getElementById('btn' + m.charAt(0).toUpperCase() + m.slice(1)).classList.add('active');
-            updateTemporalState(currentYear);
-            if (m === '3d' || m === 'hotspot') { heightScale = 0; requestAnimationFrame(growIntroColumns); }
+        function buildChart(low, medium, high, total) {
+            const ctx = document.getElementById("riskChart").getContext("2d")
+
+            // Gradient fills
+            const greenGrad = ctx.createLinearGradient(0, 0, 0, 200)
+            greenGrad.addColorStop(0, 'rgba(34,197,94,0.9)')
+            greenGrad.addColorStop(1, 'rgba(34,197,94,0.3)')
+
+            const yellowGrad = ctx.createLinearGradient(0, 0, 0, 200)
+            yellowGrad.addColorStop(0, 'rgba(245,158,11,0.9)')
+            yellowGrad.addColorStop(1, 'rgba(245,158,11,0.3)')
+
+            const redGrad = ctx.createLinearGradient(0, 0, 0, 200)
+            redGrad.addColorStop(0, 'rgba(239,68,68,0.9)')
+            redGrad.addColorStop(1, 'rgba(239,68,68,0.3)')
+
+            riskChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: [
+                        `Low (${((low / total) * 100).toFixed(1)}%)`,
+                        `Medium (${((medium / total) * 100).toFixed(1)}%)`,
+                        `High (${((high / total) * 100).toFixed(1)}%)`
+                    ],
+                    datasets: [{
+                        data: [low, medium, high],
+                        backgroundColor: [greenGrad, yellowGrad, redGrad],
+                        borderColor: ['#22c55e', '#f59e0b', '#ef4444'],
+                        borderWidth: 1.5,
+                        hoverOffset: 6,
+                        spacing: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    cutout: '55%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#94a3b8',
+                                font: { family: 'Inter', size: 10 },
+                                padding: 10,
+                                usePointStyle: true,
+                                pointStyleWidth: 8
+                            }
+                        }
+                    },
+                    animation: {
+                        animateRotate: true,
+                        duration: 1200,
+                        easing: 'easeOutQuart'
+                    }
+                }
+            })
         }
 
-        function growIntroColumns() {
-            heightScale += 0.05;
-            updateTemporalState(currentYear);
-            if (heightScale < 1) requestAnimationFrame(growIntroColumns);
-            else { heightScale = 1; updateTemporalState(currentYear); }
+        function toggleMapStyle(style) {
+            const isSatellite = style === 'satellite';
+
+            // Reinitialize deck if style change isn't reflecting visually
+            deckInstance.setProps({
+                mapStyle: isSatellite ? SATELLITE_MAP : DARK_MAP
+            });
+
+            document.getElementById('styleDark').classList.toggle('active', !isSatellite);
+            document.getElementById('styleSatellite').classList.toggle('active', isSatellite);
+
+            // Force re-render of layers
+            renderLayers();
         }
-        function toggleModal(show) { document.getElementById('modalOverlay').classList.toggle('active', show); }
+
         function toggleSidebar(show, obj = null) {
             const sidebar = document.getElementById('analysisSidebar');
             if (show && obj) {
                 sidebar.classList.add('active');
-                document.getElementById('sideCoords').innerText = `${obj.lat.toFixed(4)}°N, ${obj.lon.toFixed(4)}°W`;
+
+                // Update Sidebar Data
+                document.getElementById('sideCoords').innerText = `LAT ${obj.lat.toFixed(4)} | LON ${obj.lon.toFixed(4)}`;
                 document.getElementById('sideRiskScore').innerText = obj.risk_score.toFixed(1);
-                document.getElementById('riskMeterFill').style.width = Math.min(((obj.risk_score - 150) / 30) * 100, 100) + '%';
-                document.getElementById('riskMeterFill').style.backgroundColor = obj.risk_score > 170 ? '#ef4444' : '#f59e0b';
-            } else sidebar.classList.remove('active');
+                document.getElementById('sideYear').innerText = obj.event_year;
+
+                // Update Meter
+                const meterFill = document.getElementById('riskMeterFill');
+                const riskPercent = Math.min(((obj.risk_score - 140) / (185 - 140)) * 100, 100);
+                meterFill.style.width = riskPercent + '%';
+                meterFill.style.background = obj.risk_score > 170 ? '#ef4444' : (obj.risk_score > 165 ? '#f59e0b' : '#22c55e');
+
+                // Generate Protocol
+                let advice = "";
+                if (obj.risk_score > 170) {
+                    advice = "<b>CRITICAL THREAT:</b> Immediate drone surveillance required. Coordinate indicates high likelihood of active fire or illegal road construction. Dispatch Task Force Bravo.";
+                } else if (obj.risk_score > 165) {
+                    advice = "<b>ELEVATED ALERT:</b> Probable agricultural expansion zone. Increase frequency of satellite re-visit (Daily). Monitor for heavy machinery movement.";
+                } else {
+                    advice = "<b>NOMINAL RISK:</b> Stable forest canopy. No immediate intervention needed. Continue baseline conservation monitoring.";
+                }
+                document.getElementById('sideAdvice').innerHTML = advice;
+
+            } else {
+                sidebar.classList.remove('active');
+            }
         }
+
+        function toggleModal(show) {
+            console.log("toggleModal called with:", show);
+            const modal = document.getElementById('modalOverlay');
+            if (show) {
+                modal.style.display = 'flex';
+                setTimeout(() => modal.classList.add('active'), 10);
+            } else {
+                modal.classList.remove('active');
+                setTimeout(() => modal.style.display = 'none', 400);
+            }
+        }
+
     </script>
+
 </body>
 
 </html>
