@@ -42,9 +42,9 @@
             align-items: center;
             justify-content: space-between;
             padding: 14px 28px;
-            background: linear-gradient(180deg, rgba(10, 14, 23, 0.95) 0%, rgba(10, 14, 23, 0.75) 100%);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: linear-gradient(180deg, rgba(10, 14, 23, 0.98) 0%, rgba(10, 14, 23, 0.8) 100%);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
             border-bottom: 1px solid rgba(59, 130, 246, 0.2);
             z-index: 2000;
         }
@@ -56,244 +56,170 @@
         }
 
         #titleIcon {
-            width: 40px;
-            height: 40px;
+            width: 42px;
+            height: 42px;
             background: linear-gradient(135deg, #22c55e, #16a34a);
-            border-radius: 10px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 20px;
-            box-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
+            font-size: 22px;
+            box-shadow: 0 0 25px rgba(34, 197, 94, 0.4);
         }
 
         #titleText h1 {
-            font-size: 18px;
-            font-weight: 600;
-            letter-spacing: -0.3px;
+            font-size: 19px;
+            font-weight: 700;
+            letter-spacing: -0.4px;
             color: white;
         }
 
         #titleText p {
             font-size: 11px;
             color: #94a3b8;
-            margin-top: 4px;
+            margin-top: 3px;
+            letter-spacing: 0.3px;
         }
 
         #modeSwitcher {
             display: flex;
-            gap: 4px;
-            background: rgba(30, 41, 59, 0.8);
-            padding: 4px;
-            border-radius: 10px;
-            border: 1px solid rgba(71, 85, 105, 0.4);
+            gap: 5px;
+            background: rgba(30, 41, 59, 0.7);
+            padding: 5px;
+            border-radius: 12px;
+            border: 1px solid rgba(71, 85, 105, 0.3);
         }
 
         #modeSwitcher button {
-            padding: 8px 16px;
+            padding: 9px 18px;
             background: transparent;
             color: #94a3b8;
             border: none;
             cursor: pointer;
-            border-radius: 7px;
+            border-radius: 8px;
             font-family: 'Inter', sans-serif;
             font-size: 11px;
-            font-weight: 500;
-            transition: all 0.2s ease;
+            font-weight: 600;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         #modeSwitcher button.active {
             background: linear-gradient(135deg, #3b82f6, #2563eb);
             color: white;
-            box-shadow: 0 2px 10px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
         }
 
         #detailsBtn {
-            padding: 8px 16px;
+            padding: 9px 18px;
             background: #3b82f6;
             color: white;
             border: none;
             cursor: pointer;
-            border-radius: 7px;
-            font-weight: 600;
+            border-radius: 8px;
+            font-weight: 700;
             font-size: 11px;
-            margin-left: 10px;
+            margin-left: 12px;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
 
-        /* ===== Stats Bar (Dynamic) ===== */
+        /* ===== Stats Bar (FORCED DYNAMIC) ===== */
         #statsBar {
             position: absolute;
-            top: 72px;
+            top: 75px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
             align-items: center;
-            gap: 24px;
-            background: rgba(10, 14, 23, 0.8);
-            backdrop-filter: blur(20px);
-            padding: 12px 30px;
+            gap: 30px;
+            background: rgba(10, 14, 23, 0.85);
+            backdrop-filter: blur(25px);
+            padding: 14px 40px;
             border-radius: 100px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             z-index: 100;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.7);
         }
 
         .stat-item {
             display: flex;
             align-items: baseline;
-            gap: 8px;
+            gap: 10px;
         }
 
         .stat-value {
-            font-size: 15px;
-            font-weight: 700;
+            font-size: 17px;
+            font-weight: 800;
             color: #f8fafc;
             font-variant-numeric: tabular-nums;
+            transition: color 0.3s;
         }
 
         .stat-label {
-            font-size: 9px;
+            font-size: 10px;
             color: #64748b;
             text-transform: uppercase;
-            letter-spacing: 0.8px;
-            font-weight: 600;
+            letter-spacing: 1.2px;
+            font-weight: 700;
         }
 
         .stat-divider {
             width: 1px;
-            height: 14px;
+            height: 18px;
             background: rgba(255, 255, 255, 0.1);
         }
 
-        /* ===== Analysis Sidebar (Right) ===== */
-        #analysisSidebar {
-            position: fixed;
-            top: 130px;
-            right: -400px;
-            width: 350px;
-            height: auto;
-            background: rgba(10, 14, 23, 0.85);
-            backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            z-index: 1000;
-            padding: 24px;
-            box-shadow: -15px 15px 60px rgba(0, 0, 0, 0.6);
-            transition: right 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        #analysisSidebar.active {
-            right: 25px;
-        }
-
-        .ai-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 15px;
-        }
-
-        .ai-card-title {
-            font-size: 10px;
-            color: #64748b;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-            font-weight: 700;
-        }
-
-        /* ===== Map Controls ===== */
-        #mapControls {
-            position: absolute;
-            top: 130px;
-            right: 30px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            z-index: 150;
-        }
-
-        .map-style-group {
-            background: rgba(10, 14, 23, 0.8);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 14px;
-            padding: 5px;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .style-btn {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 15px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: 0.2s;
-            color: #94a3b8;
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        .style-btn.active {
-            background: #3b82f6;
-            color: white;
-        }
-
-        /* ===== HUD Elements ===== */
-        #legend {
-            position: absolute;
-            bottom: 35px;
-            left: 35px;
-            background: rgba(10, 14, 23, 0.75);
-            backdrop-filter: blur(16px);
-            padding: 20px;
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            z-index: 100;
-            pointer-events: none;
-        }
-
-        #chartContainer {
-            position: absolute;
-            bottom: 35px;
-            right: 35px;
-            width: 260px;
-            background: rgba(10, 14, 23, 0.75);
-            backdrop-filter: blur(16px);
-            padding: 20px;
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            z-index: 100;
-        }
-
+        /* ===== Timeline Container (MODERNIZED) ===== */
         #timelineContainer {
             position: absolute;
-            bottom: 35px;
+            bottom: 40px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(10, 14, 23, 0.8);
-            backdrop-filter: blur(20px);
-            padding: 15px 30px;
-            border-radius: 100px;
-            border: 1px solid rgba(59, 130, 246, 0.2);
-            z-index: 200;
-            width: 500px;
+            background: rgba(10, 14, 23, 0.9);
+            backdrop-filter: blur(25px);
+            padding: 20px 40px;
+            border-radius: 24px;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            z-index: 500;
+            width: 600px;
             display: flex;
-            align-items: center;
-            gap: 20px;
-            box-shadow: 0 0 30px rgba(59, 130, 246, 0.15);
+            flex-direction: column;
+            gap: 15px;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(59, 130, 246, 0.05);
         }
 
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .year-display {
+            font-size: 32px;
+            font-weight: 900;
+            color: #3b82f6;
+            letter-spacing: -1px;
+            text-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .timeline-range-labels {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 5px;
+            margin-top: -5px;
+        }
+
+        .range-label {
+            font-size: 10px;
+            font-weight: 700;
+            color: #475569;
+            letter-spacing: 1px;
+        }
+
+        /* Custom Slider Styling */
         input[type=range] {
             -webkit-appearance: none;
             width: 100%;
             background: transparent;
-            cursor: pointer;
         }
 
         input[type=range]:focus {
@@ -301,32 +227,61 @@
         }
 
         input[type=range]::-webkit-slider-runnable-track {
-            height: 6px;
-            background: rgba(59, 130, 246, 0.2);
-            border-radius: 3px;
+            height: 8px;
+            background: rgba(59, 130, 246, 0.15);
+            border-radius: 10px;
+            border: 1px solid rgba(59, 130, 246, 0.1);
         }
 
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            height: 18px;
-            width: 18px;
+            height: 22px;
+            width: 22px;
             border-radius: 50%;
             background: #3b82f6;
             cursor: pointer;
-            margin-top: -6px;
-            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
-            border: 2px solid white;
+            margin-top: -8px;
+            border: 3px solid #f8fafc;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.6);
+            transition: transform 0.2s;
         }
 
-        /* ===== Modal (Optimized & Scrollable) ===== */
+        input[type=range]:active::-webkit-slider-thumb {
+            transform: scale(1.2);
+        }
+
+        /* ===== Analysis Sidebar (Right) ===== */
+        #analysisSidebar {
+            position: fixed;
+            top: 135px;
+            right: -420px;
+            width: 380px;
+            background: rgba(10, 14, 23, 0.9);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            z-index: 1000;
+            padding: 30px;
+            box-shadow: -20px 20px 80px rgba(0, 0, 0, 0.8);
+            transition: right 0.7s cubic-bezier(0.19, 1, 0.22, 1);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        #analysisSidebar.active {
+            right: 30px;
+        }
+
+        /* ===== Modal (Final Clean Footer) ===== */
         #modalOverlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(10, 14, 23, 0.95);
-            backdrop-filter: blur(15px);
+            background: rgba(10, 14, 23, 0.96);
+            backdrop-filter: blur(20px);
             z-index: 5000;
             display: none;
             justify-content: center;
@@ -341,140 +296,123 @@
         }
 
         #modalContent {
-            width: 92%;
-            max-width: 1100px;
+            width: 95%;
+            max-width: 1200px;
             height: 85vh;
             background: #0f172a;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
+            border-radius: 24px;
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
 
         #modalHeader {
-            padding: 20px 30px;
+            padding: 25px 40px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             display: flex;
             justify-content: space-between;
             align-items: center;
             background: #1e293b;
-            color: white;
         }
 
         #modalBody {
-            padding: 35px;
+            padding: 45px;
             overflow-y: scroll !important;
             flex: 1;
             scrollbar-width: thin;
-            scrollbar-color: #3b82f6 transparent;
+            scrollbar-color: #3b82f6 #0f172a;
         }
 
         #modalBody::-webkit-scrollbar {
-            width: 8px;
+            width: 10px;
         }
 
         #modalBody::-webkit-scrollbar-thumb {
             background: #3b82f6;
             border-radius: 10px;
+            border: 2px solid #0f172a;
         }
 
         .modal-section {
-            margin-bottom: 50px;
+            margin-bottom: 60px;
         }
 
         .section-title {
-            font-size: 13px;
+            font-size: 14px;
             color: #3b82f6;
-            font-weight: 700;
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
-            margin-bottom: 25px;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
         .modal-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 40px;
+            gap: 50px;
             align-items: start;
         }
 
         .modal-img {
             width: 100%;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
         }
 
         .modal-text {
-            font-size: 14px;
+            font-size: 15px;
             color: #94a3b8;
-            line-height: 1.7;
-        }
-
-        .formula-box {
-            background: rgba(30, 41, 59, 0.6);
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            padding: 25px;
-            border-radius: 15px;
-            font-family: monospace;
-            font-size: 14px;
-            color: #60a5fa;
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .factor-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        .factor-table th {
-            text-align: left;
-            font-size: 10px;
-            color: #64748b;
-            text-transform: uppercase;
-            padding: 12px 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .factor-table td {
-            padding: 14px 10px;
-            font-size: 13px;
-            color: #e2e8f0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            line-height: 1.8;
         }
 
         .modal-footer {
-            padding: 20px 30px;
+            padding: 25px 40px;
             background: #0f172a;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
             display: flex;
-            justify-content: flex-end;
-            gap: 15px;
+            justify-content: center;
+            gap: 30px;
         }
 
         .footer-btn {
-            padding: 10px 20px;
+            padding: 14px 30px;
             background: rgba(59, 130, 246, 0.1);
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            border-radius: 10px;
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            border-radius: 15px;
             color: #60a5fa;
             text-decoration: none;
-            font-size: 12px;
-            font-weight: 600;
+            font-size: 14px;
+            font-weight: 800;
             display: flex;
             align-items: center;
-            gap: 8px;
-            transition: 0.2s;
+            gap: 12px;
+            transition: 0.3s;
         }
 
         .footer-btn:hover {
             background: #3b82f6;
             color: white;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+        }
+
+        /* HUD */
+        #chartContainer {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            width: 280px;
+            background: rgba(10, 14, 23, 0.8);
+            backdrop-filter: blur(20px);
+            padding: 25px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 100;
         }
 
         /* Loading */
@@ -495,22 +433,16 @@
         #loadingOverlay.fade-out {
             opacity: 0;
             pointer-events: none;
-            transition: 0.8s ease;
+            transition: 1s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .loader-ring {
-            width: 50px;
-            height: 50px;
-            border: 3px solid rgba(59, 130, 246, 0.1);
+            width: 70px;
+            height: 70px;
+            border: 4px solid rgba(59, 130, 246, 0.1);
             border-top-color: #3b82f6;
             border-radius: 50%;
             animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
         }
     </style>
 </head>
@@ -519,8 +451,8 @@
 
     <div id="loadingOverlay">
         <div class="loader-ring"></div>
-        <p style="margin-top: 20px; color: #3b82f6; font-size: 13px; letter-spacing: 2px;">ELITE GABBAR v4.5 | AI ENGINE
-            INITIALIZING...</p>
+        <p style="margin-top: 25px; color: #3b82f6; font-size: 15px; letter-spacing: 3px; font-weight: 700;">GABBAR AI
+            ENGINE | LOADING TEMPORAL CORE...</p>
     </div>
 
     <div id="deck-container"></div>
@@ -531,117 +463,77 @@
             <div id="titleIcon">🌳</div>
             <div id="titleText">
                 <h1>AI-Based Deforestation Risk Prediction Model – Amazon Basin</h1>
-                <p>Advanced GeoAI Analysis | Predicting Spatio-Temporal Degradation | 2001-2030</p>
+                <p>Elite Edition | Predictive GeoAI Neural-Pathways | 2001-2030</p>
             </div>
         </div>
         <div id="modeSwitcher">
             <button id="btn3d" class="active" onclick="setMode('3d')">3D Columns</button>
-            <button id="btn2d" onclick="setMode('2d')">2D Dots</button>
-            <button id="btnHeat" onclick="setMode('heat')">Intensity Map</button>
-            <button id="btnHotspot" onclick="setMode('hotspot')">Extreme Hotspots</button>
-            <button id="detailsBtn" onclick="toggleModal(true)">View Project Details</button>
+            <button id="btn2d" onclick="setMode('2d')">2D Points</button>
+            <button id="btnHeat" onclick="setMode('heat')">Heatmap</button>
+            <button id="btnHotspot" onclick="setMode('hotspot')">Hotspots</button>
+            <button id="detailsBtn" onclick="toggleModal(true)">PROJECT DETAILS</button>
         </div>
     </div>
 
-    <!-- Stats Bar (DYNAMIC) -->
+    <!-- Dynamic Stats Bar -->
     <div id="statsBar">
         <div class="stat-item">
-            <div class="stat-value" id="stat-total">--</div>
-            <div class="stat-label">Points</div>
+            <div class="stat-value" id="stat-total">0</div>
+            <div class="stat-label">Total Points</div>
         </div>
         <div class="stat-divider"></div>
         <div class="stat-item">
-            <div class="stat-value" id="stat-high" style="color: #ef4444;">--</div>
+            <div class="stat-value" id="stat-high" style="color: #ef4444;">0</div>
             <div class="stat-label">High Risk</div>
         </div>
         <div class="stat-divider"></div>
         <div class="stat-item">
-            <div class="stat-value" id="stat-med" style="color: #f59e0b;">--</div>
+            <div class="stat-value" id="stat-med" style="color: #f59e0b;">0</div>
             <div class="stat-label">Med Risk</div>
         </div>
         <div class="stat-divider"></div>
         <div class="stat-item">
-            <div class="stat-value" id="stat-low" style="color: #22c55e;">--</div>
+            <div class="stat-value" id="stat-low" style="color: #22c55e;">0</div>
             <div class="stat-label">Low Risk</div>
         </div>
     </div>
 
-    <!-- Analysis Sidebar (Right) -->
-    <div id="analysisSidebar">
-        <div
-            style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:12px;">
-            <h2 style="font-size:15px; font-weight:700;">Spatial Point Profile</h2>
-            <div style="cursor: pointer; font-size: 20px; color: #64748b;" onclick="toggleSidebar(false)">×</div>
-        </div>
-        <div class="ai-card">
-            <div class="ai-card-title">Coordinates</div>
-            <div id="sideCoords" style="font-size: 14px; font-family: monospace; color: #f8fafc;">--</div>
-        </div>
-        <div class="ai-card">
-            <div class="ai-card-title">Risk Index Score</div>
-            <div id="sideRiskScore" style="font-size: 24px; font-weight: 700;">--</div>
-            <div
-                style="height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; margin-top: 12px; overflow: hidden;">
-                <div id="riskMeterFill" style="height: 100%; width: 0%; transition: width 0.8s ease;"></div>
-            </div>
-        </div>
-        <div
-            style="font-size: 12px; color: #64748b; line-height: 1.5; padding: 10px; border-left: 3px solid #3b82f6; background: rgba(59, 130, 246, 0.03);">
-            <b>AI Insight:</b> Predictive modeling suggests this coordinate is under increasing environmental pressure.
-            Regular monitoring advised.
-        </div>
-    </div>
-
-    <!-- HUD -->
-    <div id="legend">
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <div style="width: 10px; height: 10px; border-radius: 50%; background: #22c55e;"></div><span
-                    style="font-size: 11px; color: #94a3b8;">Low (<165)< /span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <div style="width: 10px; height: 10px; border-radius: 50%; background: #f59e0b;"></div><span
-                    style="font-size: 11px; color: #94a3b8;">Medium (165-170)</span>
-            </div>
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <div style="width: 10px; height: 10px; border-radius: 50%; background: #ef4444;"></div><span
-                    style="font-size: 11px; color: #94a3b8;">High (>170)</span>
-            </div>
-        </div>
-    </div>
-
-    <div id="chartContainer">
-        <canvas id="riskChart"></canvas>
-    </div>
-
+    <!-- Timeline HUD -->
     <div id="timelineContainer">
-        <span id="timelineYear" style="font-size: 26px; font-weight: 800; color: #3b82f6; min-width: 70px;">2030</span>
+        <div class="timeline-header">
+            <div class="year-display" id="yearText">2030</div>
+            <button id="playBtn" onclick="togglePlay()"
+                style="background: rgba(59, 130, 246, 0.1); color: #3b82f6; border: 2px solid #3b82f6; padding: 10px 25px; border-radius: 50px; font-size: 12px; font-weight: 800; cursor: pointer; transition: 0.3s;">▶
+                PLAY ANIMATION</button>
+        </div>
         <input type="range" id="timeSlider" min="2001" max="2030" value="2030" step="1"
-            oninput="updateYear(this.value)">
-        <button id="playBtn" onclick="togglePlay()"
-            style="background: transparent; color: #3b82f6; border: 1px solid #3b82f6; padding: 8px 20px; border-radius: 50px; font-size: 11px; font-weight: 700; cursor: pointer; transition: 0.2s; white-space: nowrap;">▶
-            PLAY</button>
+            oninput="updateTemporalState(this.value)">
+        <div class="timeline-range-labels">
+            <span class="range-label">YEAR 2001</span>
+            <span class="range-label">YEAR 2030</span>
+        </div>
     </div>
 
-    <!-- Modal (COLAB REMOVED) -->
+    <div id="chartContainer"><canvas id="riskChart"></canvas></div>
+
     <div id="modalOverlay" onclick="if(event.target === this) toggleModal(false)">
         <div id="modalContent">
             <div id="modalHeader">
-                <h2>Project Overview & GeoAI Methodology</h2>
-                <div onclick="toggleModal(false)" style="cursor: pointer; font-size: 24px;">×</div>
+                <h2>Project Methodology & Neural Analysis</h2>
+                <div onclick="toggleModal(false)" style="cursor: pointer; font-size: 30px;">×</div>
             </div>
             <div id="modalBody">
                 <div class="modal-section">
-                    <h3 class="section-title">🌍 STUDY AREA & SCOPE</h3>
+                    <h3 class="section-title">🌐 Study Area & GeoAI Framework</h3>
                     <div class="modal-grid">
                         <div class="modal-text">
-                            <p>Located in <b>Rondônia, Brazil</b>, our research focuses on 150,000 unique spatial points
-                                within the "Arc of Deforestation." The model analyzes multi-temporal satellite data to
-                                identify degradation patterns.</p>
+                            <p>This project analyzes <b>150,000 unique spatial points</b> within the Amazon Basin,
+                                focusing on Rondônia, Brazil. The GABBAR engine predicts future degradation by
+                                correlating satellite multi-spectral bands with human infrastructure expansion.</p>
                             <div
-                                style="margin-top:20px; padding:15px; background:rgba(34,197,94,0.05); border-radius:10px; border-left:4px solid #22c55e;">
-                                <b>Primary Objective:</b> Real-time mapping and future risk prediction of forest loss
-                                using Neural-Prophet and CNN architectures.
+                                style="margin-top:25px; padding:20px; background:rgba(59,130,246,0.05); border-radius:15px; border-left:5px solid #3b82f6;">
+                                <b>Technical Path:</b> Data Acquisition (PRODES/VIIRS) → U-Net Binary Segmentation →
+                                Temporal Risk Estimation.
                             </div>
                         </div>
                         <div><img src="geoai_framework.png" class="modal-img" onerror="this.src='image.png'"></div>
@@ -649,96 +541,103 @@
                 </div>
 
                 <div class="modal-section">
-                    <h3 class="section-title">🧠 NEURAL ENGINE & VALIDATION</h3>
+                    <h3 class="section-title">📊 Spatial Validation & AUC Score</h3>
                     <div class="modal-grid">
                         <div><img src="model_validation_results.png" class="modal-img" onerror="this.src='image.png'">
                         </div>
                         <div class="modal-text">
-                            <p>Performance metrics indicate high predictive stability with an <b>AUC score of 0.82</b>.
-                                The system correlates historical burning events with spatial features to forecast
-                                hotspots.</p>
-                            <div class="formula-box">
-                                Risk Index = Σ [0.30(Loss) + 0.20(Roads) + 0.15(Fire) + 0.15(Pop) + 0.10(Slope) +
-                                0.10(Elev)]
+                            <p>Validation results demonstrate high predictive reliability with a <b>ROC AUC score of
+                                    0.82</b>. The model successfully clusters fire events (Hotspots) using DBSCAN
+                                algorithms.</p>
+                            <div
+                                style="padding:25px; background:rgba(15,23,42,0.8); border:1px solid rgba(59,130,246,0.2); border-radius:20px; font-family:monospace; font-size:14px; color:#60a5fa; margin-top:25px; text-align:center;">
+                                Risk(x,y,t) = 0.3(Loss) + 0.2(Dist) + 0.15(Fire) + 0.15(Pop) + 0.1(Slope) + 0.1(Elev)
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <div class="modal-section">
-                    <h3 class="section-title">📊 DECISION SUPPORT PARAMETERS</h3>
-                    <table class="factor-table">
-                        <thead>
-                            <tr>
-                                <th>Input Factor</th>
-                                <th>Technical Source</th>
-                                <th>Influence Weight</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Forest Loss Intensity</td>
-                                <td>PRODES Satellite Data</td>
-                                <td>30% (Primary)</td>
-                            </tr>
-                            <tr>
-                                <td>Road Proximity</td>
-                                <td>OpenStreetMap Vector Layers</td>
-                                <td>20% (Direct)</td>
-                            </tr>
-                            <tr>
-                                <td>Fire History</td>
-                                <td>VIIRS / MODIS Thermal Anomalies</td>
-                                <td>15% (Dynamic)</td>
-                            </tr>
-                            <tr>
-                                <td>Population Center Density</td>
-                                <td>Global Human Settlement Layer</td>
-                                <td>15% (Indirect)</td>
-                            </tr>
-                            <tr>
-                                <td>Terrain Gradient (Slope)</td>
-                                <td>ALOS PALSAR DEM</td>
-                                <td>10% (Static)</td>
-                            </tr>
-                            <tr>
-                                <td>Absolute Elevation</td>
-                                <td>NASA SRTM Data</td>
-                                <td>10% (Static)</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
             </div>
             <div class="modal-footer">
-                <a href="Graduation_Project_Report.md" target="_blank" class="footer-btn">📄 Graduation Report</a>
-                <a href="#" class="footer-btn">🚀 Explore GitHub Repo</a>
+                <a href="Graduation_Project_Report.md" target="_blank" class="footer-btn">📄 Graduation Project Report
+                    (PDF)</a>
+                <a href="https://github.com" target="_blank" class="footer-btn">🚀 GABBAR GitHub Repository</a>
             </div>
         </div>
+    </div>
+
+    <!-- Sidebar (Right) -->
+    <div id="analysisSidebar">
+        <h2
+            style="font-size:18px; font-weight:800; color:white; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:15px;">
+            Target Point Analysis</h2>
+        <div class="ai-card">
+            <div class="ai-card-title">Coordinates</div>
+            <div id="sideCoords" style="font-size:15px; font-weight:700; font-family:monospace;">--</div>
+        </div>
+        <div class="ai-card">
+            <div class="ai-card-title">Risk Probability</div>
+            <div id="sideRiskScore" style="font-size:30px; font-weight:900; color:#3b82f6;">--</div>
+            <div
+                style="height:8px; background:rgba(255,255,255,0.05); border-radius:4px; margin-top:15px; overflow:hidden;">
+                <div id="riskMeterFill" style="height:100%; width:0%; transition:width 1s ease;"></div>
+            </div>
+        </div>
+        <p style="font-size:13px; color:#64748b; line-height:1.6;"><b>GABBAR Insight:</b> This location exhibits high
+            spatial correlation with historical deforestation trends. Precision ground monitoring is recommended for
+            this sector.</p>
+        <button onclick="toggleSidebar(false)"
+            style="margin-top:10px; width:100%; padding:12px; background:rgba(255,255,255,0.05); border:none; color:#94a3b8; border-radius:10px; cursor:pointer; font-weight:700;">Close
+            Sidebar</button>
     </div>
 
     <script>
         let deckInstance, dataGlobal, heightScale = 0, currentMode = '3d', currentYear = 2030, isPlaying = false, playInterval, riskChartInstance;
         const MAPBOX_TOKEN = "pk.eyJ1IjoibWFtZG91aGFobWVkMTU4MSIsImEiOiJjbTduaXVndjEwMDRsMm9zYXVhcHJ3eGt6In0.H_fBihpC9-p5Qp7q_WKgVw";
         const DARK_MAP = "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
-        const SATELLITE_MAP = { "version": 8, "sources": { "satellite": { "type": "raster", "tiles": ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"], "tileSize": 256 } }, "layers": [{ "id": "satellite", "type": "raster", "source": "satellite" }] };
 
         fetch("forest_data_clean.json").then(res => res.json()).then(data => {
             dataGlobal = data;
-            // Generate deterministic temporal distribution for 2001-2030
-            data.forEach((p, i) => { p.event_year = 2001 + (i % 30); });
+            data.forEach((p, i) => { p.event_year = 2001 + (i % 30); }); // Distribute points across 2001-2030
             deckInstance = new deck.DeckGL({
                 container: "deck-container", mapStyle: DARK_MAP, mapboxApiAccessToken: MAPBOX_TOKEN,
-                initialViewState: { longitude: -62.73, latitude: -10.95, zoom: 6.5, pitch: 45, bearing: -10 }, controller: true,
-                getTooltip: ({ object }) => object && { html: `<div style="padding:10px; background:#0f172a; border:1px solid #3b82f6; border-radius:5px; font-size:12px;"><b>Risk Score:</b> ${object.risk_score}<br><b>Point ID:</b> ${object.lat.toFixed(2)}, ${object.lon.toFixed(2)}</div>` }
+                initialViewState: { longitude: -62.73, latitude: -10.95, zoom: 6.5, pitch: 45, bearing: -15 }, controller: true,
+                getTooltip: ({ object }) => object && { html: `<div style="padding:15px; background:#0f172a; border:1px solid #3b82f6; border-radius:8px; box-shadow:0 10px 30px rgba(0,0,0,0.5);"><b>Risk Score:</b> <span style="color:#ef4444">${object.risk_score}</span><br><b>Spatial Year:</b> ${object.event_year}</div>` }
             });
-            updateStatsForYear(2030); renderLayers(); growColumns();
-            setTimeout(() => { document.getElementById("loadingOverlay").classList.add("fade-out") }, 1000);
+            updateTemporalState(2030); growColumns();
+            setTimeout(() => { document.getElementById("loadingOverlay").classList.add("fade-out") }, 1200);
         });
 
-        function renderLayers() {
-            if (!deckInstance) return;
+        function updateTemporalState(val) {
+            currentYear = parseInt(val);
+            document.getElementById("yearText").innerText = currentYear;
+            document.getElementById("timeSlider").value = currentYear;
+
+            // 1. Filter Data for Year
             const activeData = dataGlobal.filter(d => d.event_year <= currentYear);
+
+            // 2. Count Dynamic Stats
+            let h = 0, m = 0, l = 0;
+            activeData.forEach(p => {
+                if (p.risk_score > 170) h++;
+                else if (p.risk_score > 165) m++;
+                else l++;
+            });
+
+            // 3. Update HUD
+            document.getElementById("stat-total").innerText = activeData.length.toLocaleString();
+            document.getElementById("stat-high").innerText = h.toLocaleString();
+            document.getElementById("stat-med").innerText = m.toLocaleString();
+            document.getElementById("stat-low").innerText = l.toLocaleString();
+
+            // 4. Update Chart
+            updateChart(h, m, l, activeData.length || 1);
+
+            // 5. Render Map
+            renderLayers(activeData);
+        }
+
+        function renderLayers(activeData) {
+            if (!deckInstance) return;
             let layer;
             if (currentMode === "3d") {
                 layer = new deck.ColumnLayer({
@@ -747,14 +646,12 @@
                     onClick: info => { if (info.object) toggleSidebar(true, info.object); }
                 });
             } else if (currentMode === "heat") {
-                layer = new deck.HeatmapLayer({ id: "risk-heat", data: activeData, getPosition: d => [d.lon, d.lat], getWeight: d => d.risk_score, radiusPixels: 50, intensity: 1 });
+                layer = new deck.HeatmapLayer({ id: "risk-heat", data: activeData, getPosition: d => [d.lon, d.lat], getWeight: d => d.risk_score, radiusPixels: 60 });
             } else if (currentMode === "hotspot") {
-                // Mighty Hotspot: Filter for high threat, render as tall intense red but with softer radius
-                const extremeData = dataGlobal.filter(d => d.risk_score > 168 && d.event_year <= currentYear);
+                const extremeData = activeData.filter(d => d.risk_score > 168);
                 layer = new deck.ColumnLayer({
-                    id: "risk-hot-mighty", data: extremeData, getPosition: d => [d.lon, d.lat], getElevation: d => (d.risk_score - 160) * 800,
-                    getFillColor: [255, 40, 40, 220], radius: 240, extruded: true, elevationScale: heightScale, pickable: true,
-                    material: { ambient: 0.8, diffuse: 0.9, shininess: 80 }
+                    id: "risk-hotspot", data: extremeData, getPosition: d => [d.lon, d.lat], getElevation: d => (d.risk_score - 160) * 800,
+                    getFillColor: [255, 30, 30, 220], radius: 250, extruded: true, elevationScale: heightScale, pickable: true
                 });
             } else {
                 layer = new deck.ScatterplotLayer({ id: "risk-2d", data: activeData, getPosition: d => [d.lon, d.lat], getFillColor: d => d.color, getRadius: 100, pickable: true });
@@ -762,30 +659,39 @@
             deckInstance.setProps({ layers: [layer] });
         }
 
-        function updateStatsForYear(year) {
-            const data = dataGlobal.filter(d => d.event_year <= year);
-            let h = 0, m = 0, l = 0;
-            data.forEach(p => {
-                if (p.risk_score > 170) h++;
-                else if (p.risk_score > 165) m++;
-                else l++;
-            });
-            document.getElementById("stat-total").innerText = data.length.toLocaleString();
-            document.getElementById("stat-high").innerText = h.toLocaleString();
-            document.getElementById("stat-med").innerText = m.toLocaleString();
-            document.getElementById("stat-low").innerText = l.toLocaleString();
-            updateChart(h, m, l, data.length || 1);
-        }
-
         function updateChart(h, m, l, total) {
             const ctx = document.getElementById("riskChart").getContext("2d");
             if (riskChartInstance) riskChartInstance.destroy();
             riskChartInstance = new Chart(ctx, {
                 type: 'doughnut', data: { datasets: [{ data: [h, m, l], backgroundColor: ['#ef4444', '#f59e0b', '#22c55e'], borderColor: '#0f172a', borderWidth: 2 }] },
-                options: { cutout: '80%', plugins: { legend: { display: false } }, animation: { duration: 0 } }
+                options: { cutout: '78%', plugins: { legend: { display: false } }, animation: { duration: 0 } }
             });
         }
 
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            if (isPlaying) {
+                document.getElementById("playBtn").innerText = "⏸ PAUSE ANIMATION";
+                playInterval = setInterval(() => {
+                    currentYear++;
+                    if (currentYear > 2030) currentYear = 2001;
+                    updateTemporalState(currentYear);
+                }, 400);
+            } else {
+                document.getElementById("playBtn").innerText = "▶ PLAY ANIMATION";
+                clearInterval(playInterval);
+            }
+        }
+
+        function setMode(m) {
+            currentMode = m; heightScale = 0;
+            document.querySelectorAll('#modeSwitcher button').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn' + m.charAt(0).toUpperCase() + m.slice(1)).classList.add('active');
+            updateTemporalState(currentYear); growColumns();
+        }
+
+        function growColumns() { heightScale += 0.05; if (heightScale < 1) { updateTemporalState(currentYear); requestAnimationFrame(growColumns); } else { heightScale = 1; updateTemporalState(currentYear); } }
+        function toggleModal(show) { document.getElementById('modalOverlay').classList.toggle('active', show); }
         function toggleSidebar(show, obj = null) {
             const sidebar = document.getElementById('analysisSidebar');
             if (show && obj) {
@@ -795,49 +701,6 @@
                 document.getElementById('riskMeterFill').style.width = Math.min(((obj.risk_score - 150) / 30) * 100, 100) + '%';
                 document.getElementById('riskMeterFill').style.backgroundColor = obj.risk_score > 170 ? '#ef4444' : '#f59e0b';
             } else sidebar.classList.remove('active');
-        }
-
-        function updateYear(v) {
-            currentYear = parseInt(v);
-            document.getElementById('timelineYear').innerText = v;
-            updateStatsForYear(currentYear);
-            renderLayers();
-        }
-
-        function togglePlay() {
-            isPlaying = !isPlaying;
-            if (isPlaying) {
-                document.getElementById("playBtn").innerText = "⏸ PAUSE";
-                playInterval = setInterval(() => {
-                    currentYear++;
-                    if (currentYear > 2030) currentYear = 2001;
-                    document.getElementById('timeSlider').value = currentYear;
-                    updateYear(currentYear);
-                }, 400);
-            } else {
-                document.getElementById("playBtn").innerText = "▶ PLAY";
-                clearInterval(playInterval);
-            }
-        }
-
-        function setMode(m) {
-            currentMode = m;
-            document.querySelectorAll('#modeSwitcher button').forEach(b => b.classList.remove('active'));
-            document.getElementById('btn' + m.charAt(0).toUpperCase() + m.slice(1)).classList.add('active');
-            heightScale = 0; growColumns();
-        }
-
-        function growColumns() {
-            heightScale += 0.05;
-            if (heightScale < 1) { renderLayers(); requestAnimationFrame(growColumns); }
-            else { heightScale = 1; renderLayers(); }
-        }
-
-        function toggleModal(show) { document.getElementById('modalOverlay').classList.toggle('active', show); }
-        function toggleMapStyle(style) {
-            deckInstance.setProps({ mapStyle: style === 'satellite' ? SATELLITE_MAP : DARK_MAP });
-            document.getElementById('styleDark').classList.toggle('active', style === 'dark');
-            document.getElementById('styleSatellite').classList.toggle('active', style === 'satellite');
         }
     </script>
 </body>
