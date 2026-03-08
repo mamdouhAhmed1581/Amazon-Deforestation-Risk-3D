@@ -122,7 +122,7 @@
 
         #modeSwitcher button:hover {
             color: #e2e8f0;
-            background: rgba(59, 130, 246, 0.15);
+            background: rgba(239, 68, 68, 0.15);
         }
 
         #modeSwitcher button.active {
@@ -134,8 +134,8 @@
         #detailsBtn {
             padding: 8px 16px;
             background: rgba(59, 130, 246, 0.1);
-            color: #60a5fa;
-            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
             cursor: pointer;
             border-radius: 7px;
             font-family: 'Inter', sans-serif;
@@ -485,7 +485,7 @@
 
         .section-title {
             font-size: 13px;
-            color: #60a5fa;
+            color: #f87171;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 1.5px;
@@ -681,7 +681,7 @@
         .link-chip:hover {
             background: rgba(59, 130, 246, 0.1);
             border-color: #3b82f6;
-            color: #60a5fa;
+            color: #f87171;
         }
 
         .footer-links {
@@ -899,9 +899,9 @@
         }
 
         #playBtn {
-            background: rgba(59, 130, 246, 0.15);
-            color: #60a5fa;
-            border: 1px solid rgba(59, 130, 246, 0.3);
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
             padding: 6px 14px;
             border-radius: 6px;
             font-family: 'Inter', sans-serif;
@@ -1127,64 +1127,91 @@
             border-color: #10b981;
         }
 
-        /* ===== Premium Spatial Popup ===== */
-        #spatialPopup {
-            position: absolute;
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.98));
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(59, 130, 246, 0.6);
-            border-radius: 16px;
+        /* ===== Cinematic Intro UI Hiding ===== */
+        .ui-element {
+            transition: opacity 1.5s ease, transform 1.5s ease;
+        }
+
+        .ui-hidden {
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
+        .ui-hidden-up {
+            transform: translateY(-30px);
+        }
+
+        .ui-hidden-down {
+            transform: translateY(30px);
+        }
+
+        .ui-hidden-left {
+            transform: translateX(-30px);
+        }
+
+        .ui-hidden-right {
+            transform: translateX(30px);
+        }
+
+        /* ===== Analysis Sidebar (Restored & Red Themed) ===== */
+        #analysisSidebar {
+            position: fixed;
+            top: 130px;
+            right: -400px;
+            width: 360px;
+            height: calc(100vh - 250px);
+            background: rgba(10, 14, 23, 0.9);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 20px;
+            z-index: 1500;
             padding: 24px;
-            width: 280px;
-            z-index: 2000;
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.7), inset 0 0 20px rgba(59, 130, 246, 0.1);
-            display: none;
-            opacity: 0;
-            transform: scale(0.95) translateY(10px);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            pointer-events: auto;
-            /* Allow interactions like close button */
+            box-shadow: -15px 15px 60px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(239, 68, 68, 0.05);
+            transition: right 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
-        #spatialPopup.active {
-            display: block;
-            opacity: 1;
-            transform: scale(1) translateY(0);
+        #analysisSidebar.active {
+            right: 25px;
         }
 
-        #spatialPopup h3 {
-            font-size: 12px;
-            color: #3b82f6;
-            margin-bottom: 12px;
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(239, 68, 68, 0.2);
+            padding-bottom: 15px;
+        }
+
+        .sidebar-header h2 {
+            font-size: 15px;
+            font-weight: 700;
+            color: #ef4444;
+            /* Changed to red */
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
             display: flex;
-            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
         }
 
-        .popup-row {
-            display: flex;
-            justify-content: space-between;
+        .ai-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 16px;
+        }
+
+        .ai-card-title {
             font-size: 11px;
             color: #94a3b8;
-            margin-bottom: 8px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            padding-bottom: 4px;
-        }
-
-        .popup-row b {
-            color: #e2e8f0;
-        }
-
-        #popupClose {
-            cursor: pointer;
-            pointer-events: auto;
-            color: #64748b;
-        }
-
-        #popupClose:hover {
-            color: white;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
         }
     </style>
 </head>
@@ -1200,7 +1227,7 @@
     <div id="deck-container"></div>
 
     <!-- Redesigned Map Controls -->
-    <div id="mapControls">
+    <div id="mapControls" class="ui-element ui-hidden ui-hidden-right">
         <div class="map-style-group">
             <div id="styleDark" class="style-btn active" onclick="toggleMapStyle('dark')">
                 <span>🌑</span> Analytical View
@@ -1212,7 +1239,7 @@
     </div>
 
     <!-- Policy Simulator Panel -->
-    <div id="policySimulator">
+    <div id="policySimulator" class="ui-element ui-hidden ui-hidden-left">
         <div class="panel-header" style="display:flex; align-items:center; gap:8px;">
             <span style="font-size:16px;">🌍</span>
             <h2>What-If Policy Simulator</h2>
@@ -1246,35 +1273,57 @@
         </button>
     </div>
 
-    <!-- Floating Spatial Analysis Popup -->
-    <div id="spatialPopup">
-        <h3 style="border-bottom: 1px solid rgba(59,130,246,0.3); padding-bottom: 8px; font-size: 14px;">
-            <span>📍 SPATIAL PROFILE</span>
-            <span id="popupClose" onclick="closeSpatialPopup()" style="font-size: 18px;">×</span>
-        </h3>
-        <div class="popup-row" style="margin-top: 15px;"><span>Latitude:</span> <b id="popupLat"
-                style="font-family: monospace;">--</b></div>
-        <div class="popup-row"><span>Longitude:</span> <b id="popupLon" style="font-family: monospace;">--</b></div>
-        <div class="popup-row"
-            style="background: rgba(255,255,255,0.05); padding: 8px; border-radius: 6px; margin: 10px 0;">
-            <span>Estimated Year:</span>
-            <b id="popupYear" style="font-size: 14px; color: #38bdf8;">--</b>
+    <!-- Redesigned Right Sidebar for Spatial Profile -->
+    <div id="analysisSidebar" class="ui-element ui-hidden ui-hidden-right">
+        <div class="sidebar-header">
+            <h2><span>📍</span> Spatial Analysis Profile</h2>
+            <div style="cursor: pointer; font-size: 24px; color: #64748b; transition: 0.2s;"
+                onclick="toggleSidebar(false)" onmouseover="this.style.color='white'"
+                onmouseout="this.style.color='#64748b'">×</div>
         </div>
-        <div class="popup-row" style="margin-top: 10px; align-items: baseline;">
-            <span>Risk Score:</span>
-            <b id="popupRisk" style="font-size: 20px;">--</b>
+
+        <div class="ai-card">
+            <div class="ai-card-title">Location Coordinates</div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <span style="color: #64748b; font-size: 12px;">Latitude:</span>
+                <span id="sideLat"
+                    style="font-size: 14px; font-weight: 700; color: #f8fafc; font-family: monospace;">--</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span style="color: #64748b; font-size: 12px;">Longitude:</span>
+                <span id="sideLon"
+                    style="font-size: 14px; font-weight: 700; color: #f8fafc; font-family: monospace;">--</span>
+            </div>
         </div>
-        <div id="popupProtocol"
-            style="margin-top: 15px; background: rgba(239, 68, 68, 0.1); border-left: 3px solid #ef4444; padding: 12px; font-size: 11px; color: #fecaca; line-height: 1.5; border-radius: 4px;">
-            <b style="color: #f87171; display: block; margin-bottom: 4px;">Action Protocol:</b>
-            Execute immediate field validation and drone surveillance for this coordinate.
+
+        <div class="ai-card" style="border-color: rgba(239, 68, 68, 0.2); background: rgba(239, 68, 68, 0.02);">
+            <div class="ai-card-title" style="color: #ef4444;">Risk Probability & Year</div>
+            <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+                <div>
+                    <div style="font-size: 11px; color: #94a3b8; margin-bottom: 4px;">Detected Year</div>
+                    <div id="sideYear" style="font-size: 22px; font-weight: 700; color: #38bdf8;">--</div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 11px; color: #94a3b8; margin-bottom: 4px;">Risk Score</div>
+                    <div id="sideRiskScore" style="font-size: 28px; font-weight: 700; color: #f8fafc;">--</div>
+                </div>
+            </div>
+            <div
+                style="height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-top: 15px; overflow: hidden;">
+                <div id="riskMeterFill"
+                    style="height: 100%; width: 0%; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);"></div>
+            </div>
+        </div>
+
+        <div id="sideProtocol"
+            style="background: rgba(239, 68, 68, 0.1); border-left: 4px solid #ef4444; padding: 16px; border-radius: 12px; font-size: 13px; color: #fecaca; line-height: 1.6; margin-top: auto;">
+            <b style="color: #f87171; display: block; margin-bottom: 6px;">🛡️ Action Protocol:</b>
+            <span id="sideAdvice">Click on a 3D bar to generate an AI protection protocol.</span>
         </div>
     </div>
 
-    <!-- Sidebar Removed -->
-
     <!-- Title Bar -->
-    <div id="titleBar">
+    <div id="titleBar" class="ui-element ui-hidden ui-hidden-up">
         <div id="titleLeft">
             <div id="titleIcon">🌿</div>
             <div id="titleText">
@@ -1444,7 +1493,7 @@
                     Graduation Project Report
                 </a>
                 <a href="https://github.com" target="_blank"
-                    style="padding: 8px 16px; background: rgba(59, 130, 246, 0.1); border-radius: 6px; border: 1px solid rgba(59, 130, 246, 0.3); color: #60a5fa; font-size: 13px; text-decoration: none; font-weight: 600; transition: all 0.2s;">
+                    style="padding: 8px 16px; background: rgba(59, 130, 246, 0.1); border-radius: 6px; border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; font-size: 13px; text-decoration: none; font-weight: 600; transition: all 0.2s;">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round"
                         style="vertical-align: middle; margin-right: 6px;">
@@ -1458,7 +1507,7 @@
         </div>
     </div>
     <!-- Stats Bar -->
-    <div id="statsBar">
+    <div id="statsBar" class="ui-element ui-hidden ui-hidden-up">
         <div class="stat-item">
             <div class="stat-value" id="totalPoints">—</div>
             <div class="stat-label">Total Points</div>
@@ -1484,7 +1533,7 @@
     </div>
 
     <!-- Legend -->
-    <div id="legend">
+    <div id="legend" class="ui-element ui-hidden ui-hidden-down">
         <h3>Risk Classification</h3>
         <div class="legend-row">
             <div class="legend-dot" style="background:#22c55e; color:#22c55e;"></div>
@@ -1501,13 +1550,13 @@
     </div>
 
     <!-- Chart -->
-    <div id="chartContainer">
+    <div id="chartContainer" class="ui-element ui-hidden ui-hidden-right">
         <div id="chartTitle">Risk Distribution</div>
         <canvas id="riskChart"></canvas>
     </div>
 
     <!-- Timeline / Animation Slider -->
-    <div id="timelineContainer">
+    <div id="timelineContainer" class="ui-element ui-hidden ui-hidden-down">
         <div id="timelineHeader">
             <span id="timelineYear">2030</span>
             <button id="playBtn" onclick="togglePlay()">▶ Play Animation</button>
@@ -1575,7 +1624,7 @@
                     controller: true,
                     getTooltip: ({ object }) => object && {
                         html: `<div style="line-height:1.6; padding: 2px;">
-                            <h4 style="margin: 0 0 8px 0; color: #60a5fa; font-size: 13px; border-bottom: 1px solid rgba(59,130,246,0.3); padding-bottom: 4px;">📍 Event Detection Marker</h4>
+                            <h4 style="margin: 0 0 8px 0; color: #f87171; font-size: 13px; border-bottom: 1px solid rgba(59,130,246,0.3); padding-bottom: 4px;">📍 Event Detection Marker</h4>
                             <div style="display:flex; justify-content:space-between; width:160px; font-size: 12px;">
                                 <span style="color:#94a3b8">Estimated Year:</span> <b style="color: #f8fafc">${object.event_year}</b>
                             </div>
@@ -1716,7 +1765,7 @@
                     elevationScale: heightScale >= 1.2 ? 1.2 : heightScale,
                     pickable: true,
                     onClick: info => {
-                        if (info.object) showSpatialPopup(info);
+                        if (info.object) toggleSidebar(true, info.object);
                     },
                     updateTriggers: { getFillColor: currentYear },
                     material: { ambient: 0.6, diffuse: 0.7, shininess: 40 }
@@ -1731,7 +1780,7 @@
                     opacity: 0.7,
                     pickable: true,
                     onClick: info => {
-                        if (info.object) showSpatialPopup(info);
+                        if (info.object) toggleSidebar(true, info.object);
                     }
                 });
             } else if (currentMode === "heat") {
@@ -1755,7 +1804,7 @@
                     opacity: 0.8,
                     pickable: true,
                     onClick: info => {
-                        if (info.object) showSpatialPopup(info);
+                        if (info.object) toggleSidebar(true, info.object);
                     },
                     radiusMinPixels: 2,
                     radiusMaxPixels: 8
@@ -1765,53 +1814,47 @@
             deckInstance.setProps({ layers: [layer] });
         }
 
-        function showSpatialPopup(info) {
-            const popup = document.getElementById('spatialPopup');
-            const score = info.object.dynamic_score ? info.object.dynamic_score : info.object.risk_score;
+        function toggleSidebar(show, obj = null) {
+            const sidebar = document.getElementById('analysisSidebar');
+            if (show && obj) {
+                const score = obj.dynamic_score ? obj.dynamic_score : obj.risk_score;
 
-            document.getElementById('popupLat').innerText = info.object.lat.toFixed(4);
-            document.getElementById('popupLon').innerText = info.object.lon.toFixed(4);
-            document.getElementById('popupYear').innerText = info.object.event_year;
+                document.getElementById('sideLat').innerText = obj.lat.toFixed(4);
+                document.getElementById('sideLon').innerText = obj.lon.toFixed(4);
+                document.getElementById('sideYear').innerText = obj.event_year;
 
-            const riskEl = document.getElementById('popupRisk');
-            riskEl.innerText = score.toFixed(1);
+                const riskEl = document.getElementById('sideRiskScore');
+                riskEl.innerText = score.toFixed(1);
 
-            const protocolEl = document.getElementById('popupProtocol');
+                const protocolEl = document.getElementById('sideProtocol');
+                const adviceEl = document.getElementById('sideAdvice');
 
-            if (score > 170) {
-                riskEl.style.color = '#ef4444';
-                protocolEl.style.background = 'rgba(239, 68, 68, 0.1)';
-                protocolEl.style.borderLeftColor = '#ef4444';
-                protocolEl.innerHTML = '<b style="color: #f87171; display: block; margin-bottom: 4px;">CRITICAL PROTOCOL:</b> Immediate drone dispatch required. High probability of active clearing.';
-            } else if (score > 165) {
-                riskEl.style.color = '#f59e0b';
-                protocolEl.style.background = 'rgba(245, 158, 11, 0.1)';
-                protocolEl.style.borderLeftColor = '#f59e0b';
-                protocolEl.innerHTML = '<b style="color: #fbbf24; display: block; margin-bottom: 4px;">WARNING PROTOCOL:</b> Schedule satellite review within 7 days. Escalating risk factors detected.';
+                const fillPercent = Math.min(((score - 140) / 45) * 100, 100);
+                document.getElementById('riskMeterFill').style.width = fillPercent + '%';
+
+                if (score > 170) {
+                    riskEl.style.color = '#ef4444';
+                    document.getElementById('riskMeterFill').style.background = '#ef4444';
+                    protocolEl.style.background = 'rgba(239, 68, 68, 0.1)';
+                    protocolEl.style.borderLeftColor = '#ef4444';
+                    adviceEl.innerHTML = '<b style="color: #f87171; display: block; margin-bottom: 4px;">CRITICAL PROTOCOL:</b> Immediate drone dispatch required. High probability of active clearing.';
+                } else if (score > 165) {
+                    riskEl.style.color = '#f59e0b';
+                    document.getElementById('riskMeterFill').style.background = '#f59e0b';
+                    protocolEl.style.background = 'rgba(245, 158, 11, 0.1)';
+                    protocolEl.style.borderLeftColor = '#f59e0b';
+                    adviceEl.innerHTML = '<b style="color: #fbbf24; display: block; margin-bottom: 4px;">WARNING PROTOCOL:</b> Schedule satellite review within 7 days. Escalating risk factors detected.';
+                } else {
+                    riskEl.style.color = '#22c55e';
+                    document.getElementById('riskMeterFill').style.background = '#22c55e';
+                    protocolEl.style.background = 'rgba(34, 197, 94, 0.1)';
+                    protocolEl.style.borderLeftColor = '#22c55e';
+                    adviceEl.innerHTML = '<b style="color: #4ade80; display: block; margin-bottom: 4px;">MONITORING STATUS:</b> Standard monthly automated analysis is sufficient.';
+                }
+                sidebar.classList.add('active');
             } else {
-                riskEl.style.color = '#22c55e';
-                protocolEl.style.background = 'rgba(34, 197, 94, 0.1)';
-                protocolEl.style.borderLeftColor = '#22c55e';
-                protocolEl.innerHTML = '<b style="color: #4ade80; display: block; margin-bottom: 4px;">MONITORING STATUS:</b> Standard monthly automated analysis is sufficient.';
+                sidebar.classList.remove('active');
             }
-
-            // Position popup near click (offset slightly)
-            const popupWidth = 280;
-            const popupHeight = 220;
-            let left = info.x + 20;
-            let top = info.y + 20;
-
-            // Adjust if going off screen
-            if (left + popupWidth > window.innerWidth) left = info.x - popupWidth - 20;
-            if (top + popupHeight > window.innerHeight) top = info.y - popupHeight - 20;
-
-            popup.style.left = left + 'px';
-            popup.style.top = top + 'px';
-            popup.classList.add('active');
-        }
-
-        function closeSpatialPopup() {
-            document.getElementById('spatialPopup').classList.remove('active');
         }
 
         function updateYear(val) {
