@@ -1044,41 +1044,7 @@
         </div>
     </div>
 
-    <!-- Analysis Sidebar -->
-    <div id="analysisSidebar">
-        <div class="sidebar-header">
-            <h2>Spatial Analysis Profile</h2>
-            <div class="sidebar-close" onclick="toggleSidebar(false)">×</div>
-        </div>
-
-        <div class="analysis-card">
-            <div class="card-label">Selected Location</div>
-            <div id="sideCoords" class="card-value" style="font-size: 14px; font-family: monospace;">--</div>
-        </div>
-
-        <div class="analysis-card">
-            <div class="card-label">Risk Probability</div>
-            <div id="sideRiskScore" class="card-value">--</div>
-            <div class="risk-meter-container">
-                <div id="riskMeterFill"></div>
-            </div>
-        </div>
-
-        <div class="analysis-card">
-            <div class="card-label">Temporal Detection</div>
-            <div id="sideYear" class="card-value">--</div>
-        </div>
-
-        <div class="advice-box">
-            <b>🛡️ Action Protocol:</b>
-            <p id="sideAdvice">Click on a 3D bar to generate an environmental protection protocol based on the predicted
-                risk level.</p>
-        </div>
-
-        <div style="margin-top: auto; font-size: 10px; color: #475569; text-align: center;">
-            Elite Edition | GeoAI Predictive Framework
-        </div>
-    </div>
+    <!-- Sidebar Removed -->
 
     <!-- Title Bar -->
     <div id="titleBar">
@@ -1390,7 +1356,7 @@
                     elevationScale: heightScale >= 1.2 ? 1.2 : heightScale,
                     pickable: true,
                     onClick: info => {
-                        if (info.object) toggleSidebar(true, info.object);
+                        if (info.object) toggleModal(true);
                     },
                     updateTriggers: { getFillColor: currentYear },
                     material: { ambient: 0.6, diffuse: 0.7, shininess: 40 }
@@ -1405,7 +1371,7 @@
                     opacity: 0.7,
                     pickable: true,
                     onClick: info => {
-                        if (info.object) toggleSidebar(true, info.object);
+                        if (info.object) toggleModal(true);
                     }
                 });
             } else if (currentMode === "heat") {
@@ -1428,7 +1394,7 @@
                     opacity: 0.8,
                     pickable: true,
                     onClick: info => {
-                        if (info.object) toggleSidebar(true, info.object);
+                        if (info.object) toggleModal(true);
                     },
                     radiusMinPixels: 2,
                     radiusMaxPixels: 8
@@ -1635,37 +1601,7 @@
             renderLayers();
         }
 
-        function toggleSidebar(show, obj = null) {
-            const sidebar = document.getElementById('analysisSidebar');
-            if (show && obj) {
-                sidebar.classList.add('active');
-
-                // Update Sidebar Data
-                document.getElementById('sideCoords').innerText = `LAT ${obj.lat.toFixed(4)} | LON ${obj.lon.toFixed(4)}`;
-                document.getElementById('sideRiskScore').innerText = obj.risk_score.toFixed(1);
-                document.getElementById('sideYear').innerText = obj.event_year;
-
-                // Update Meter
-                const meterFill = document.getElementById('riskMeterFill');
-                const riskPercent = Math.min(((obj.risk_score - 140) / (185 - 140)) * 100, 100);
-                meterFill.style.width = riskPercent + '%';
-                meterFill.style.background = obj.risk_score > 170 ? '#ef4444' : (obj.risk_score > 165 ? '#f59e0b' : '#22c55e');
-
-                // Generate Protocol
-                let advice = "";
-                if (obj.risk_score > 170) {
-                    advice = "<b>CRITICAL THREAT:</b> Immediate drone surveillance required. Coordinate indicates high likelihood of active fire or illegal road construction. Dispatch Task Force Bravo.";
-                } else if (obj.risk_score > 165) {
-                    advice = "<b>ELEVATED ALERT:</b> Probable agricultural expansion zone. Increase frequency of satellite re-visit (Daily). Monitor for heavy machinery movement.";
-                } else {
-                    advice = "<b>NOMINAL RISK:</b> Stable forest canopy. No immediate intervention needed. Continue baseline conservation monitoring.";
-                }
-                document.getElementById('sideAdvice').innerHTML = advice;
-
-            } else {
-                sidebar.classList.remove('active');
-            }
-        }
+        // Sidebar logic removed
 
         function toggleModal(show) {
             console.log("toggleModal called with:", show);
