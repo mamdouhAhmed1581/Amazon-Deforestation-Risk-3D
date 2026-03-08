@@ -616,22 +616,22 @@
                 frame++;
                 let progress = frame / totalFrames;
                 let dropProgress = easeOutExpo(progress);
+
+                // Camera Drop
                 let zoom = 2.0 + (6.5 - 2.0) * dropProgress;
-                let pitch = 0;
-                if (progress > 0.3) {
-                    let pitchProgress = (progress - 0.3) / 0.7;
-                    pitch = 45 * easeInOutSine(Math.min(pitchProgress, 1));
-                }
-                let bearing = 0;
-                if (progress > 0.5) {
-                    let bearingProgress = (progress - 0.5) / 0.5;
-                    bearing = -15 * easeOutExpo(bearingProgress);
-                }
+                let pitch = 45 * easeInOutSine(Math.min(progress / 0.7, 1));
+                let bearing = -15 * easeOutExpo(Math.max(0, (progress - 0.5) / 0.5));
+
+                // Column Growth (Sync with drop)
+                heightScale = Math.min(progress * 2, 1);
+
                 deckInstance.setProps({ initialViewState: { longitude: -62.73, latitude: -10.95, zoom, pitch, bearing } });
+                updateTemporalState(currentYear);
+
                 if (frame < totalFrames) requestAnimationFrame(animate);
+                else { heightScale = 1; updateTemporalState(currentYear); }
             }
-            setTimeout(animate, 400);
-            heightScale = 0; growColumns();
+            setTimeout(animate, 500);
         }
 
         function updateTemporalState(val) {
@@ -663,8 +663,12 @@
             renderLayers(activeData);
         }
 
+        let pulseTime = 0;
         function renderLayers(activeData) {
             if (!deckInstance) return;
+            pulseTime += 0.1;
+            const pulse = 1 + 0.1 * Math.sin(pulseTime);
+
             let layer;
             if (currentMode === "3d") {
                 layer = new deck.ColumnLayer({
@@ -677,13 +681,14 @@
             } else if (currentMode === "hotspot") {
                 const extremeData = activeData.filter(d => d.risk_score > 168);
                 layer = new deck.ColumnLayer({
-                    id: "risk-hotspot", data: extremeData, getPosition: d => [d.lon, d.lat], getElevation: d => (d.risk_score - 160) * 800,
+                    id: "risk-hotspot", data: extremeData, getPosition: d => [d.lon, d.lat], getElevation: d => (d.risk_score - 160) * 850 * pulse,
                     getFillColor: [255, 30, 30, 220], radius: 250, extruded: true, elevationScale: heightScale, pickable: true
                 });
             } else {
                 layer = new deck.ScatterplotLayer({ id: "risk-2d", data: activeData, getPosition: d => [d.lon, d.lat], getFillColor: d => d.color, getRadius: 100, pickable: true });
             }
             deckInstance.setProps({ layers: [layer] });
+            if (currentMode === "hotspot") requestAnimationFrame(() => renderLayers(activeData));
         }
 
         function updateChart(h, m, l, total) {
@@ -698,10 +703,11 @@
         function togglePlay() {
             isPlaying = !isPlaying;
             if (isPlaying) {
+                if (currentYear >= 2030) { currentYear = 2001; updateTemporalState(currentYear); }
                 document.getElementById("playBtn").innerText = "⏸ PAUSE ANIMATION";
                 playInterval = setInterval(() => {
                     currentYear++;
-                    if (currentYear > 2030) currentYear = 2001;
+                    if (currentYear > 2030) { togglePlay(); return; }
                     updateTemporalState(currentYear);
                 }, 400);
             } else {
@@ -714,10 +720,16 @@
             currentMode = m; heightScale = 0;
             document.querySelectorAll('#modeSwitcher button').forEach(b => b.classList.remove('active'));
             document.getElementById('btn' + m.charAt(0).toUpperCase() + m.slice(1)).classList.add('active');
-            updateTemporalState(currentYear); growColumns();
+            updateTemporalState(currentYear);
+            if (m === '3d' || m === 'hotspot') { heightScale = 0; requestAnimationFrame(growIntroColumns); }
         }
 
-        function growColumns() { heightScale += 0.05; if (heightScale < 1) { updateTemporalState(currentYear); requestAnimationFrame(growColumns); } else { heightScale = 1; updateTemporalState(currentYear); } }
+        function growIntroColumns() {
+            heightScale += 0.05;
+            updateTemporalState(currentYear);
+            if (heightScale < 1) requestAnimationFrame(growIntroColumns);
+            else { heightScale = 1; updateTemporalState(currentYear); }
+        }
         function toggleModal(show) { document.getElementById('modalOverlay').classList.toggle('active', show); }
         function toggleSidebar(show, obj = null) {
             const sidebar = document.getElementById('analysisSidebar');
