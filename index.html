@@ -600,12 +600,39 @@
             data.forEach((p, i) => { p.event_year = 2001 + (i % 30); }); // Distribute points across 2001-2030
             deckInstance = new deck.DeckGL({
                 container: "deck-container", mapStyle: DARK_MAP, mapboxApiAccessToken: MAPBOX_TOKEN,
-                initialViewState: { longitude: -62.73, latitude: -10.95, zoom: 6.5, pitch: 45, bearing: -15 }, controller: true,
+                initialViewState: { longitude: -62.73, latitude: -10.95, zoom: 2.0, pitch: 0, bearing: 0 }, controller: true,
                 getTooltip: ({ object }) => object && { html: `<div style="padding:15px; background:#0f172a; border:1px solid #3b82f6; border-radius:8px; box-shadow:0 10px 30px rgba(0,0,0,0.5);"><b>Risk Score:</b> <span style="color:#ef4444">${object.risk_score}</span><br><b>Spatial Year:</b> ${object.event_year}</div>` }
             });
-            updateTemporalState(2030); growColumns();
-            setTimeout(() => { document.getElementById("loadingOverlay").classList.add("fade-out") }, 1200);
+            updateTemporalState(2030); startAnimation();
+            setTimeout(() => { document.getElementById("loadingOverlay").classList.add("fade-out") }, 1500);
         });
+
+        function startAnimation() {
+            let frame = 0, totalFrames = 340;
+            const easeOutExpo = x => x === 1 ? 1 : 1 - Math.pow(2, -10 * x);
+            const easeInOutSine = x => -(Math.cos(Math.PI * x) - 1) / 2;
+
+            function animate() {
+                frame++;
+                let progress = frame / totalFrames;
+                let dropProgress = easeOutExpo(progress);
+                let zoom = 2.0 + (6.5 - 2.0) * dropProgress;
+                let pitch = 0;
+                if (progress > 0.3) {
+                    let pitchProgress = (progress - 0.3) / 0.7;
+                    pitch = 45 * easeInOutSine(Math.min(pitchProgress, 1));
+                }
+                let bearing = 0;
+                if (progress > 0.5) {
+                    let bearingProgress = (progress - 0.5) / 0.5;
+                    bearing = -15 * easeOutExpo(bearingProgress);
+                }
+                deckInstance.setProps({ initialViewState: { longitude: -62.73, latitude: -10.95, zoom, pitch, bearing } });
+                if (frame < totalFrames) requestAnimationFrame(animate);
+            }
+            setTimeout(animate, 400);
+            heightScale = 0; growColumns();
+        }
 
         function updateTemporalState(val) {
             currentYear = parseInt(val);
