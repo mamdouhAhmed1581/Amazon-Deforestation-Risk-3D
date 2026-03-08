@@ -1019,6 +1019,112 @@
                 right: 15px;
             }
         }
+
+        /* ===== Policy Simulator ===== */
+        #policySimulator {
+            position: absolute;
+            top: 130px;
+            left: 30px;
+            width: 300px;
+            background: rgba(10, 14, 23, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 22px;
+            z-index: 100;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            animation: slideRight 0.8s ease forwards 0.4s;
+            opacity: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        @keyframes slideRight {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        #policySimulator h2 {
+            font-size: 14px;
+            color: #3b82f6;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 2px;
+        }
+
+        #policySimulator p {
+            font-size: 11px;
+            color: #94a3b8;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .slider-group {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 12px;
+            border-radius: 10px;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: #e2e8f0;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        #policySimulator input[type="range"] {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            -webkit-appearance: none;
+            outline: none;
+        }
+
+        #policySimulator input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            background: #3b82f6;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+
+        #policySimulator input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        #exportBtn {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 5px;
+            width: 100%;
+        }
+
+        #exportBtn:hover {
+            background: rgba(16, 185, 129, 0.3);
+            color: white;
+            border-color: #10b981;
+        }
     </style>
 </head>
 
@@ -1042,6 +1148,41 @@
                 <span>🛰️</span> Satellite Reality
             </div>
         </div>
+    </div>
+
+    <!-- Policy Simulator Panel -->
+    <div id="policySimulator">
+        <div class="panel-header" style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:16px;">🌍</span>
+            <h2>What-If Policy Simulator</h2>
+        </div>
+        <p>Adjust variables to simulate future scenarios and observe mathematical impact on deforestation risk.</p>
+
+        <div class="slider-group">
+            <div class="slider-header">
+                <span>Forest Loss Factor</span>
+                <span id="forestVal" style="color:#60a5fa;">1.0x</span>
+            </div>
+            <input type="range" id="forestWeight" min="0.5" max="2.0" step="0.1" value="1.0" oninput="updatePolicy()">
+        </div>
+
+        <div class="slider-group">
+            <div class="slider-header">
+                <span>Road Expansion Impact</span>
+                <span id="roadVal" style="color:#f43f5e;">1.0x</span>
+            </div>
+            <input type="range" id="roadWeight" min="0.5" max="3.0" step="0.1" value="1.0" oninput="updatePolicy()">
+        </div>
+
+        <button id="exportBtn" onclick="exportGeoJSON()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Export Vulnerable Zones
+        </button>
     </div>
 
     <!-- Sidebar Removed -->
@@ -1320,17 +1461,82 @@
 
             })
 
+        let forestW = 1.0;
+        let roadW = 1.0;
+
+        function updatePolicy() {
+            forestW = parseFloat(document.getElementById('forestWeight').value);
+            roadW = parseFloat(document.getElementById('roadWeight').value);
+            document.getElementById('forestVal').innerText = forestW.toFixed(1) + 'x';
+            document.getElementById('roadVal').innerText = roadW.toFixed(1) + 'x';
+            renderLayers();
+        }
+
+        function exportGeoJSON() {
+            if (!dataGlobal) return;
+            // Get current high risk data
+            const btn = document.getElementById("exportBtn");
+            const originalText = btn.innerHTML;
+            btn.innerHTML = "⏳ Processing GeoJSON...";
+
+            setTimeout(() => {
+                const highRiskData = dataGlobal
+                    .filter(d => d.event_year <= currentYear)
+                    .map(d => {
+                        let score = d.risk_score + ((roadW - 1) * 12) - ((forestW - 1) * 15);
+                        score = Math.max(130, Math.min(190, score));
+                        return { ...d, dynamic_score: score };
+                    })
+                    .filter(d => d.dynamic_score > 165);
+
+                const geojson = {
+                    type: "FeatureCollection",
+                    features: highRiskData.map(d => ({
+                        type: "Feature",
+                        geometry: { type: "Point", coordinates: [d.lon, d.lat] },
+                        properties: {
+                            risk_score: d.dynamic_score.toFixed(2),
+                            estimated_year: d.event_year,
+                            alert_level: d.dynamic_score > 170 ? "CRITICAL" : "HIGH"
+                        }
+                    }))
+                };
+
+                const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(geojson));
+                const dlAnchorElem = document.createElement('a');
+                dlAnchorElem.setAttribute("href", dataStr);
+                dlAnchorElem.setAttribute("download", `Gabbar_Vulnerable_Zones_${currentYear}.geojson`);
+                dlAnchorElem.click();
+
+                btn.innerHTML = "✅ Download Complete";
+                setTimeout(() => { btn.innerHTML = originalText; }, 2000);
+            }, 500);
+        }
+
         function renderLayers() {
             if (!deckInstance) return;
 
-            // Filter data up to current year
-            const activeData = dataGlobal.filter(d => d.event_year <= currentYear);
+            // Filter data up to current year and apply dynamic policy multipliers
+            const activeData = dataGlobal.filter(d => d.event_year <= currentYear).map(d => {
+                let dynamic_score = d.risk_score + ((roadW - 1) * 12) - ((forestW - 1) * 15);
+                dynamic_score = Math.max(130, Math.min(190, dynamic_score));
+
+                let dColor = [34, 197, 94, 200];
+                if (dynamic_score > 170) dColor = [239, 68, 68, 200];
+                else if (dynamic_score > 165) dColor = [245, 158, 11, 200];
+
+                return {
+                    ...d,
+                    dynamic_score: dynamic_score,
+                    dynamic_color: dColor
+                };
+            });
 
             // Calculate stats based on actual data distribution
             let low = 0, medium = 0, high = 0
             activeData.forEach(p => {
-                if (p.risk_score <= 165) low++
-                else if (p.risk_score <= 170) medium++
+                if (p.dynamic_score <= 165) low++
+                else if (p.dynamic_score <= 170) medium++
                 else high++
             })
 
@@ -1349,8 +1555,8 @@
                     id: "risk-layer-3d",
                     data: activeData,
                     getPosition: d => [d.lon, d.lat],
-                    getElevation: d => (d.risk_score - 140) * 150,
-                    getFillColor: d => d.color,
+                    getElevation: d => (d.dynamic_score - 140) * 150,
+                    getFillColor: d => d.dynamic_color,
                     radius: 120,
                     extruded: true,
                     elevationScale: heightScale >= 1.2 ? 1.2 : heightScale,
@@ -1366,7 +1572,7 @@
                     id: "risk-layer-2d",
                     data: activeData,
                     getPosition: d => [d.lon, d.lat],
-                    getFillColor: d => d.color,
+                    getFillColor: d => d.dynamic_color,
                     getRadius: 80,
                     opacity: 0.7,
                     pickable: true,
@@ -1379,7 +1585,7 @@
                     id: "risk-layer-heat",
                     data: activeData,
                     getPosition: d => [d.lon, d.lat],
-                    getWeight: d => d.risk_score,
+                    getWeight: d => d.dynamic_score,
                     radiusPixels: 60,
                     intensity: 1.2,
                     threshold: 0.1
@@ -1387,7 +1593,7 @@
             } else if (currentMode === "hotspot") {
                 layer = new deck.ScatterplotLayer({
                     id: "risk-layer-hotspot",
-                    data: activeData.filter(d => d.risk_score > 160),
+                    data: activeData.filter(d => d.dynamic_score > 160),
                     getPosition: d => [d.lon, d.lat],
                     getFillColor: [239, 68, 68, 200],
                     getRadius: 150,
