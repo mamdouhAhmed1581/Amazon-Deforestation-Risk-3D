@@ -1023,14 +1023,15 @@
         /* ===== Policy Simulator ===== */
         #policySimulator {
             position: absolute;
-            top: 130px;
-            left: 30px;
-            width: 300px;
-            background: rgba(10, 14, 23, 0.85);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            top: 75px;
+            left: 20px;
+            width: 290px;
+            background: linear-gradient(135deg, rgba(10, 14, 23, 0.8), rgba(20, 25, 40, 0.85));
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
             border-radius: 16px;
-            padding: 22px;
+            padding: 20px;
             z-index: 100;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             animation: slideRight 0.8s ease forwards 0.4s;
@@ -1126,29 +1127,30 @@
             border-color: #10b981;
         }
 
-        /* ===== Floating Spatial Popup ===== */
+        /* ===== Premium Spatial Popup ===== */
         #spatialPopup {
             position: absolute;
-            background: rgba(10, 14, 23, 0.95);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(59, 130, 246, 0.5);
-            border-radius: 12px;
-            padding: 20px;
-            width: 250px;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.98));
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(59, 130, 246, 0.6);
+            border-radius: 16px;
+            padding: 24px;
+            width: 280px;
             z-index: 2000;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.7), inset 0 0 20px rgba(59, 130, 246, 0.1);
             display: none;
             opacity: 0;
-            transform: translateY(10px);
-            transition: opacity 0.3s, transform 0.3s;
-            pointer-events: none;
-            /* Ignore clicks inside so it doesn't block map */
+            transform: scale(0.95) translateY(10px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: auto;
+            /* Allow interactions like close button */
         }
 
         #spatialPopup.active {
             display: block;
             opacity: 1;
-            transform: translateY(0);
+            transform: scale(1) translateY(0);
         }
 
         #spatialPopup h3 {
@@ -1246,15 +1248,26 @@
 
     <!-- Floating Spatial Analysis Popup -->
     <div id="spatialPopup">
-        <h3>Spatial Profile <span id="popupClose" onclick="closeSpatialPopup()">×</span></h3>
-        <div class="popup-row"><span>Latitude:</span> <b id="popupLat">--</b></div>
-        <div class="popup-row"><span>Longitude:</span> <b id="popupLon">--</b></div>
-        <div class="popup-row" style="margin-top: 10px;"><span>Risk Score:</span> <b id="popupRisk"
-                style="font-size: 16px;">--</b></div>
-        <div
-            style="margin-top: 15px; background: rgba(239, 68, 68, 0.1); border-left: 3px solid #ef4444; padding: 10px; font-size: 10px; color: #fecaca; line-height: 1.4;">
-            <b style="color: #f87171;">Action Protocol:</b> Execute immediate field validation and drone surveillance
-            for this coordinate.
+        <h3 style="border-bottom: 1px solid rgba(59,130,246,0.3); padding-bottom: 8px; font-size: 14px;">
+            <span>📍 SPATIAL PROFILE</span>
+            <span id="popupClose" onclick="closeSpatialPopup()" style="font-size: 18px;">×</span>
+        </h3>
+        <div class="popup-row" style="margin-top: 15px;"><span>Latitude:</span> <b id="popupLat"
+                style="font-family: monospace;">--</b></div>
+        <div class="popup-row"><span>Longitude:</span> <b id="popupLon" style="font-family: monospace;">--</b></div>
+        <div class="popup-row"
+            style="background: rgba(255,255,255,0.05); padding: 8px; border-radius: 6px; margin: 10px 0;">
+            <span>Estimated Year:</span>
+            <b id="popupYear" style="font-size: 14px; color: #38bdf8;">--</b>
+        </div>
+        <div class="popup-row" style="margin-top: 10px; align-items: baseline;">
+            <span>Risk Score:</span>
+            <b id="popupRisk" style="font-size: 20px;">--</b>
+        </div>
+        <div id="popupProtocol"
+            style="margin-top: 15px; background: rgba(239, 68, 68, 0.1); border-left: 3px solid #ef4444; padding: 12px; font-size: 11px; color: #fecaca; line-height: 1.5; border-radius: 4px;">
+            <b style="color: #f87171; display: block; margin-bottom: 4px;">Action Protocol:</b>
+            Execute immediate field validation and drone surveillance for this coordinate.
         </div>
     </div>
 
@@ -1702,6 +1715,9 @@
                     extruded: true,
                     elevationScale: heightScale >= 1.2 ? 1.2 : heightScale,
                     pickable: true,
+                    onClick: info => {
+                        if (info.object) showSpatialPopup(info);
+                    },
                     updateTriggers: { getFillColor: currentYear },
                     material: { ambient: 0.6, diffuse: 0.7, shininess: 40 }
                 });
@@ -1713,7 +1729,10 @@
                     getFillColor: d => d.dynamic_color,
                     getRadius: 80,
                     opacity: 0.7,
-                    pickable: true
+                    pickable: true,
+                    onClick: info => {
+                        if (info.object) showSpatialPopup(info);
+                    }
                 });
             } else if (currentMode === "heat") {
                 // ... heatmap doesn't typically have object click unless picking is enabled.
@@ -1734,6 +1753,10 @@
                     getFillColor: [239, 68, 68, 200],
                     getRadius: 150,
                     opacity: 0.8,
+                    pickable: true,
+                    onClick: info => {
+                        if (info.object) showSpatialPopup(info);
+                    },
                     radiusMinPixels: 2,
                     radiusMaxPixels: 8
                 });
@@ -1744,19 +1767,43 @@
 
         function showSpatialPopup(info) {
             const popup = document.getElementById('spatialPopup');
+            const score = info.object.dynamic_score ? info.object.dynamic_score : info.object.risk_score;
+
             document.getElementById('popupLat').innerText = info.object.lat.toFixed(4);
             document.getElementById('popupLon').innerText = info.object.lon.toFixed(4);
-            document.getElementById('popupRisk').innerText = info.object.dynamic_score ? info.object.dynamic_score.toFixed(1) : info.object.risk_score.toFixed(1);
+            document.getElementById('popupYear').innerText = info.object.event_year;
+
+            const riskEl = document.getElementById('popupRisk');
+            riskEl.innerText = score.toFixed(1);
+
+            const protocolEl = document.getElementById('popupProtocol');
+
+            if (score > 170) {
+                riskEl.style.color = '#ef4444';
+                protocolEl.style.background = 'rgba(239, 68, 68, 0.1)';
+                protocolEl.style.borderLeftColor = '#ef4444';
+                protocolEl.innerHTML = '<b style="color: #f87171; display: block; margin-bottom: 4px;">CRITICAL PROTOCOL:</b> Immediate drone dispatch required. High probability of active clearing.';
+            } else if (score > 165) {
+                riskEl.style.color = '#f59e0b';
+                protocolEl.style.background = 'rgba(245, 158, 11, 0.1)';
+                protocolEl.style.borderLeftColor = '#f59e0b';
+                protocolEl.innerHTML = '<b style="color: #fbbf24; display: block; margin-bottom: 4px;">WARNING PROTOCOL:</b> Schedule satellite review within 7 days. Escalating risk factors detected.';
+            } else {
+                riskEl.style.color = '#22c55e';
+                protocolEl.style.background = 'rgba(34, 197, 94, 0.1)';
+                protocolEl.style.borderLeftColor = '#22c55e';
+                protocolEl.innerHTML = '<b style="color: #4ade80; display: block; margin-bottom: 4px;">MONITORING STATUS:</b> Standard monthly automated analysis is sufficient.';
+            }
 
             // Position popup near click (offset slightly)
-            const popupWidth = 250;
-            const popupHeight = 150;
-            let left = info.x + 15;
-            let top = info.y + 15;
+            const popupWidth = 280;
+            const popupHeight = 220;
+            let left = info.x + 20;
+            let top = info.y + 20;
 
             // Adjust if going off screen
-            if (left + popupWidth > window.innerWidth) left = info.x - popupWidth - 15;
-            if (top + popupHeight > window.innerHeight) top = info.y - popupHeight - 15;
+            if (left + popupWidth > window.innerWidth) left = info.x - popupWidth - 20;
+            if (top + popupHeight > window.innerHeight) top = info.y - popupHeight - 20;
 
             popup.style.left = left + 'px';
             popup.style.top = top + 'px';
