@@ -1289,143 +1289,128 @@
                     ×</div>
             </div>
 
-            <div id="modalBody"
-                style="padding: 0; background: #0a0e17; height: 100%; display: flex; flex-direction: column;">
+            <div id="modalBody">
+                <!-- User Exact Request Integration -->
+                <div class="modal-section" style="width: 100%;">
+                    <h3
+                        style="color:#10b981; font-size:18px; margin-bottom:20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; display:flex; align-items:center; gap:10px;">
+                        <span>🌟</span>
+                        مراحل المشروع (الترتيب الحقيقي للشغل)
+                    </h3>
 
-                <!-- Hero Header -->
-                <div
-                    style="padding: 30px 40px; background: linear-gradient(90deg, rgba(16, 185, 129, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%); border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: space-between;">
-                    <div>
-                        <div class="ai-badge" style="font-size: 12px; padding: 4px 12px; margin-bottom: 10px;">GeoAI
-                            Research Project Focus</div>
-                        <h2 style="font-size: 24px; color: #f8fafc; font-weight: 700; margin: 0;">AI-Based Deforestation
-                            Risk Prediction</h2>
-                        <p style="color: #94a3b8; font-size: 14px; margin-top: 8px;">Amazon Basin | Neural-Prophet
-                            Engine | ROC AUC: 0.82</p>
-                    </div>
-                </div>
-
-                <div style="display: flex; flex: 1; overflow: hidden;">
-                    <!-- Left Column: Methodology Steps -->
-                    <div
-                        style="width: 45%; padding: 30px 40px; overflow-y: auto; border-right: 1px solid rgba(255,255,255,0.05); background: #0f172a;">
-                        <h3
-                            style="color:#10b981; font-size:16px; margin-bottom:25px; display:flex; align-items:center; gap:10px; text-transform: uppercase; letter-spacing: 1px;">
-                            <span>🛠</span> Project Workflow
-                        </h3>
-
-                        <div
-                            style="position: relative; padding-left: 20px; border-left: 2px solid rgba(59, 130, 246, 0.3); display: flex; flex-direction: column; gap: 30px;">
-                            <div style="position: relative;">
-                                <div
-                                    style="position: absolute; left: -27px; top: 0; width: 12px; height: 12px; border-radius: 50%; background: #3b82f6; border: 2px solid #0f172a;">
-                                </div>
-                                <h4 style="color:#e2e8f0; font-size: 15px; margin-bottom: 8px;">1. The Core Problem</h4>
-                                <p style="font-size:13px; color:#cbd5e1; line-height: 1.6; margin:0;">Predicting
-                                    deforestation risk using multidimensional spatial and environmental variables to act
-                                    proactively.</p>
+                    <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 30px;">
+                        <!-- Column 1: Details -->
+                        <div style="display:flex; flex-direction:column; gap:15px;">
+                            <div class="highlight-box">
+                                <h4 style="color:#3b82f6; margin-bottom: 8px; font-size: 15px;">1️⃣ المشكلة
+                                    (Deforestation)</h4>
+                                <p style="font-size:13px; color:#cbd5e1; margin:0;"><b>The model predicts deforestation
+                                        risk using spatial and environmental variables.</b></p>
                             </div>
 
-                            <div style="position: relative;">
-                                <div
-                                    style="position: absolute; left: -27px; top: 0; width: 12px; height: 12px; border-radius: 50%; background: #8b5cf6; border: 2px solid #0f172a;">
-                                </div>
-                                <h4 style="color:#e2e8f0; font-size: 15px; margin-bottom: 8px;">2. Data Foundation</h4>
-                                <p style="font-size:13px; color:#cbd5e1; line-height: 1.6; margin:0;">Target dataset:
-                                    <code>forest_data_clean.json</code> comprising <b>150,000 spatial coordinates</b>,
-                                    each containing geospatial traits, risk indices, and topographical elevation.</p>
-                            </div>
-
-                            <div style="position: relative;">
-                                <div
-                                    style="position: absolute; left: -27px; top: 0; width: 12px; height: 12px; border-radius: 50%; background: #f59e0b; border: 2px solid #0f172a;">
-                                </div>
-                                <h4 style="color:#e2e8f0; font-size: 15px; margin-bottom: 8px;">3. The Risk Engine</h4>
-                                <p style="font-size:13px; color:#cbd5e1; margin-bottom: 10px;">Weighted parameter
-                                    algorithm simulating environmental threat vectors:</p>
-                                <div
-                                    style="font-size:12px; color:#60a5fa; font-family: monospace; background: rgba(0,0,0,0.4); padding: 12px; border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.2);">
-                                    Risk = 0.30(Loss) + 0.20(Roads) <br>
-                                    + 0.15(Pop.) + 0.15(Fire) <br>
-                                    + 0.10(Slope) + 0.10(Elev)
-                                </div>
-                            </div>
-
-                            <div style="position: relative;">
-                                <div
-                                    style="position: absolute; left: -27px; top: 0; width: 12px; height: 12px; border-radius: 50%; background: #ef4444; border: 2px solid #0f172a;">
-                                </div>
-                                <h4 style="color:#e2e8f0; font-size: 15px; margin-bottom: 8px;">4. Spatial Validation
-                                </h4>
-                                <p style="font-size:13px; color:#cbd5e1; line-height: 1.6; margin:0;">
-                                    Cross-referencing active risk zones against historical fire registries and hotspot
-                                    clusters utilizing DBSCAN.
-                                    <span
-                                        style="display:block; margin-top: 5px; color: #10b981; font-weight: 700;">Performance:
-                                        ROC AUC = 0.82</span>
+                            <div class="highlight-box">
+                                <h4 style="color:#3b82f6; margin-bottom: 8px; font-size: 15px;">2️⃣ البيانات</h4>
+                                <p style="font-size:13px; color:#cbd5e1; margin:0;">الملف:
+                                    <code>forest_data_clean.json</code> يحتوي على <b>150000 نقطة</b><br>كل نقطة تمثل:
+                                    موقع + درجة خطر (lat, lon, risk_score, elevation, color).
                                 </p>
                             </div>
 
-                            <div style="position: relative;">
+                            <div class="highlight-box">
+                                <h4 style="color:#3b82f6; margin-bottom: 8px; font-size: 15px;">3️⃣ Risk Model</h4>
+                                <p style="font-size:13px; color:#cbd5e1; margin-bottom: 8px;">كلما زادت العوامل الآتية
+                                    يزيد خطر إزالة الغابات:</p>
                                 <div
-                                    style="position: absolute; left: -27px; top: 0; width: 12px; height: 12px; border-radius: 50%; background: #ec4899; border: 2px solid #0f172a;">
+                                    style="font-size:11px; color:#e2e8f0; font-family: monospace; background: rgba(0,0,0,0.5); padding: 8px; border-radius: 6px; border-left: 2px solid #3b82f6;">
+                                    Risk Index =<br>
+                                    0.30 Forest Loss + 0.20 Distance to Roads<br>
+                                    + 0.15 Population Density + 0.15 Fire History<br>
+                                    + 0.10 Slope + 0.10 Elevation
                                 </div>
-                                <h4 style="color:#e2e8f0; font-size: 15px; margin-bottom: 8px;">5. Final Conclusions
+                            </div>
+                        </div>
+
+                        <!-- Column 2: Analysis & Results -->
+                        <div style="display:flex; flex-direction:column; gap:15px;">
+                            <div class="highlight-box">
+                                <h4 style="color:#3b82f6; margin-bottom: 8px; font-size: 15px;">4️⃣ 3D Map & 5️⃣ Heatmap
+                                    & 6️⃣ Hotspots</h4>
+                                <ul style="margin:0; padding-left: 20px; font-size:13px; color:#cbd5e1;">
+                                    <li><b>3D Map:</b> أعمدة تمثل ارتفاع العمود = risk_score</li>
+                                    <li><b>Heatmap:</b> توضح الجحيم الأخضر (مناطق الخطر العالية)</li>
+                                    <li><b>Hotspots:</b> تحدد أهم تجمعات الخطر باستخدام DBSCAN</li>
+                                    <li><b>Pie Chart:</b> High Risk ≈ 64%, Medium ≈ 22%, Low ≈ 14%</li>
+                                </ul>
+                            </div>
+
+                            <div class="highlight-box">
+                                <h4 style="color:#3b82f6; margin-bottom: 8px; font-size: 15px;">7️⃣ Model Validation
+                                    (ROC Curve)</h4>
+                                <p style="font-size:13px; color:#cbd5e1; margin:0;">الكود يقيس صحة الموديل
+                                    <code>analysis.py</code>. قارنا المناطق الخطرة بالحرائق.
+                                </p>
+                                <p style="font-size:14px; color:#10b981; margin:8px 0 0 0; font-weight:700;">النتيجة:
+                                    AUC = 0.82 (موديل قوي جداً)</p>
+                                <p style="font-size:13px; color:#e2e8f0; margin-top:5px;"><b>The model achieved an AUC
+                                        score of 0.82, indicating strong predictive performance.</b></p>
+                            </div>
+
+                            <div class="highlight-box"
+                                style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3);">
+                                <h4 style="color:#ef4444; margin-bottom: 8px; font-size: 15px;">8️⃣ النتائج النهائية
                                 </h4>
-                                <div
-                                    style="background: rgba(239, 68, 68, 0.1); border-left: 3px solid #ef4444; padding: 12px; font-size: 13px; color: #fecaca; line-height: 1.5; border-radius: 0 8px 8px 0;">
-                                    High-risk areas are predominantly concentrated along developing road networks and
-                                    agricultural expansion zones spanning the Southeastern Amazon.
-                                </div>
+                                <p style="font-size:13px; color:#f8fafc; margin:0;">
+                                    المناطق الأكثر عرضة لإزالة الغابات توجد في <b>جنوب وشرق الأمازون</b> والسبب الرئيسي
+                                    هو (الطرق، الزراعة، الحرائق).<br><br>
+                                    <b>High-risk areas are mainly concentrated along road networks and agricultural
+                                        expansion zones.</b>
+                                </p>
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- Right Column: Visualizations -->
-                    <div
-                        style="width: 55%; padding: 30px 40px; overflow-y: auto; background: #0a0e17; display: flex; flex-direction: column; gap: 30px;">
-                        <div>
-                            <h3
-                                style="color:#3b82f6; font-size:16px; margin-bottom:15px; text-transform: uppercase; letter-spacing: 1px; display:flex; align-items:center; gap:8px;">
-                                <span>📊</span> Methodology Framework
-                            </h3>
-                            <div
-                                style="background: rgba(255,255,255,0.02); padding: 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
-                                <img src="geoai_framework.png" style="width: 100%; border-radius: 8px;"
-                                    onerror="this.src='image.png'" alt="GeoAI Framework Diagram">
-                            </div>
-                            <p style="text-align: center; color: #64748b; font-size: 12px; margin-top: 10px;">Figure 1:
-                                End-to-end data processing and model validation pipeline.</p>
-                        </div>
-
-                        <div>
-                            <h3
-                                style="color:#3b82f6; font-size:16px; margin-bottom:15px; text-transform: uppercase; letter-spacing: 1px; display:flex; align-items:center; gap:8px;">
-                                <span>📈</span> Performance & Validation
-                            </h3>
-                            <div
-                                style="background: rgba(255,255,255,0.02); padding: 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
-                                <img src="model_validation_results.png" style="width: 100%; border-radius: 8px;"
-                                    onerror="this.src='image.png'" alt="Validation Metrics">
-                            </div>
-                            <p style="text-align: center; color: #64748b; font-size: 12px; margin-top: 10px;">Figure 2:
-                                ROC Curve analysis and hotspot distribution clusters.</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Footer Links -->
-                <div
-                    style="padding: 15px 40px; background: rgba(15, 23, 42, 0.95); border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: flex-end; gap: 15px;">
-                    <a href="Graduation_Project_Report.md" target="_blank"
-                        style="padding: 10px 20px; background: rgba(255,255,255,0.05); border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); color: #cbd5e1; font-size: 13px; text-decoration: none; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; gap: 8px;">
-                        📄 View Academic Report
-                    </a>
-                    <a href="https://github.com/mamdouh1581" target="_blank"
-                        style="padding: 10px 20px; background: rgba(59, 130, 246, 0.15); border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.4); color: #60a5fa; font-size: 13px; text-decoration: none; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; gap: 8px;">
-                        💻 Explore GitHub Repository
-                    </a>
+                <!-- Diagrams Section -->
+                <div class="modal-section" style="margin-top:20px;">
+                    <h3
+                        style="color:#3b82f6; font-size:16px; margin-bottom:15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
+                        📊 AI Visualization & Framework</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <img src="geoai_framework.png" class="modal-image" onerror="this.src='image.png'"
+                            alt="GeoAI Framework">
+                        <img src="model_validation_results.png" class="modal-image" onerror="this.src='image.png'"
+                            alt="Validation Charts">
+                    </div>
                 </div>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer"
+                style="padding: 15px 30px; background: rgba(0,0,0,0.3); border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: flex-end; gap: 15px;">
+                <a href="Graduation_Project_Report.md" target="_blank"
+                    style="padding: 8px 16px; background: rgba(255,255,255,0.05); border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); color: #94a3b8; font-size: 13px; text-decoration: none; font-weight: 600; transition: all 0.2s;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round"
+                        style="vertical-align: middle; margin-right: 6px;">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    Graduation Project Report
+                </a>
+                <a href="https://github.com" target="_blank"
+                    style="padding: 8px 16px; background: rgba(59, 130, 246, 0.1); border-radius: 6px; border: 1px solid rgba(59, 130, 246, 0.3); color: #60a5fa; font-size: 13px; text-decoration: none; font-weight: 600; transition: all 0.2s;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round"
+                        style="vertical-align: middle; margin-right: 6px;">
+                        <path
+                            d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
+                        </path>
+                    </svg>
+                    GitHub Repository
+                </a>
             </div>
         </div>
     </div>
