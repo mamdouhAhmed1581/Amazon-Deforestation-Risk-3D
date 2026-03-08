@@ -1125,6 +1125,65 @@
             color: white;
             border-color: #10b981;
         }
+
+        /* ===== Floating Spatial Popup ===== */
+        #spatialPopup {
+            position: absolute;
+            background: rgba(10, 14, 23, 0.95);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(59, 130, 246, 0.5);
+            border-radius: 12px;
+            padding: 20px;
+            width: 250px;
+            z-index: 2000;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+            display: none;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.3s, transform 0.3s;
+            pointer-events: none;
+            /* Ignore clicks inside so it doesn't block map */
+        }
+
+        #spatialPopup.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #spatialPopup h3 {
+            font-size: 12px;
+            color: #3b82f6;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .popup-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: #94a3b8;
+            margin-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 4px;
+        }
+
+        .popup-row b {
+            color: #e2e8f0;
+        }
+
+        #popupClose {
+            cursor: pointer;
+            pointer-events: auto;
+            color: #64748b;
+        }
+
+        #popupClose:hover {
+            color: white;
+        }
     </style>
 </head>
 
@@ -1185,6 +1244,20 @@
         </button>
     </div>
 
+    <!-- Floating Spatial Analysis Popup -->
+    <div id="spatialPopup">
+        <h3>Spatial Profile <span id="popupClose" onclick="closeSpatialPopup()">×</span></h3>
+        <div class="popup-row"><span>Latitude:</span> <b id="popupLat">--</b></div>
+        <div class="popup-row"><span>Longitude:</span> <b id="popupLon">--</b></div>
+        <div class="popup-row" style="margin-top: 10px;"><span>Risk Score:</span> <b id="popupRisk"
+                style="font-size: 16px;">--</b></div>
+        <div
+            style="margin-top: 15px; background: rgba(239, 68, 68, 0.1); border-left: 3px solid #ef4444; padding: 10px; font-size: 10px; color: #fecaca; line-height: 1.4;">
+            <b style="color: #f87171;">Action Protocol:</b> Execute immediate field validation and drone surveillance
+            for this coordinate.
+        </div>
+    </div>
+
     <!-- Sidebar Removed -->
 
     <!-- Title Bar -->
@@ -1216,106 +1289,143 @@
                     ×</div>
             </div>
 
-            <div id="modalBody">
-                <div class="modal-grid" style="grid-template-columns: 1fr 1.5fr;">
+            <div id="modalBody"
+                style="padding: 0; background: #0a0e17; height: 100%; display: flex; flex-direction: column;">
 
-                    <!-- Left Column -->
-                    <div class="modal-left">
-
-                        <!-- Analysis & Validation -->
-                        <div class="modal-section">
-                            <h3 class="section-title">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981"
-                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-                                </svg>
-                                ANALYSIS & VALIDATION
-                            </h3>
-                            <div class="modal-text">
-                                <p>The model reached an <b style="color:white; font-weight:700;">AUC score of 0.82</b>,
-                                    indicating strong predictive performance. Spatial validation was performed by
-                                    correlating high-risk predictions with active fire events and historical hotspots.
-                                </p>
-
-                                <div
-                                    style="margin-top:20px; padding:15px 20px; background:rgba(15,23,42,0.8); border:1px solid rgba(255,255,255,0.05); border-radius:8px;">
-                                    <p style="margin:0; font-size:14px;"><span
-                                            style="color:#ef4444; font-weight:600;">Hotspot Clusters:</span> Identified
-                                        using DBSCAN clustering to correlate fire intensity with predicted risk zones.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="modal-section" style="margin-top: 50px;">
-                            <h3 class="section-title">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f43f5e"
-                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path
-                                        d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z" />
-                                    <path
-                                        d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z" />
-                                </svg>
-                                DEEP LEARNING & MATHEMATICAL MODEL
-                            </h3>
-                            <div class="modal-text">
-                                <span
-                                    style="display:inline-block; padding:4px 10px; background:rgba(59,130,246,0.15); color:#93c5fd; border: 1px solid rgba(59,130,246,0.3); border-radius:4px; font-size:10px; font-weight:700; letter-spacing:1px; margin-bottom:15px; text-transform:uppercase;">SEMANTIC
-                                    SEGMENTATION</span>
-                                <p>The core engine uses a <b style="color:white; font-weight:700;">U-Net
-                                        architecture</b> for binary segmentation. The model was trained using 150,000
-                                    spatial samples with multi-temporal features.</p>
-
-                                <div
-                                    style="margin-top:20px; padding:20px; background:#040810; border-radius:8px; border-left:3px solid #3b82f6; font-family:'Courier New', monospace; font-size:13px; color:#e2e8f0; font-weight:600; line-height: 1.6;">
-                                    Risk Index = <span style="color:#60a5fa">0.30</span> (FL) + <span
-                                        style="color:#60a5fa">0.20</span> (DR) + <span style="color:#60a5fa">0.15</span>
-                                    (PD) + <br><span style="padding-left: 95px;"></span><span
-                                        style="color:#60a5fa">0.15</span> (FH) + <span style="color:#60a5fa">0.10</span>
-                                    (SL) + <span style="color:#60a5fa">0.10</span> (EL)
-                                </div>
-                            </div>
-                        </div>
-
+                <!-- Hero Header -->
+                <div
+                    style="padding: 30px 40px; background: linear-gradient(90deg, rgba(16, 185, 129, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%); border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: space-between;">
+                    <div>
+                        <div class="ai-badge" style="font-size: 12px; padding: 4px 12px; margin-bottom: 10px;">GeoAI
+                            Research Project Focus</div>
+                        <h2 style="font-size: 24px; color: #f8fafc; font-weight: 700; margin: 0;">AI-Based Deforestation
+                            Risk Prediction</h2>
+                        <p style="color: #94a3b8; font-size: 14px; margin-top: 8px;">Amazon Basin | Neural-Prophet
+                            Engine | ROC AUC: 0.82</p>
                     </div>
-
-                    <!-- Right Column (Charts Image) -->
-                    <div class="modal-right" style="display:flex; justify-content:center; align-items:flex-start;">
-                        <img src="model_validation_results.png"
-                            style="width:100%; max-width: 900px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);"
-                            onerror="this.src='image.png'" alt="Model Validation Images">
-                    </div>
-
                 </div>
-            </div>
 
-            <!-- Modal footer -->
-            <div class="modal-footer"
-                style="padding: 15px 30px; background: rgba(0,0,0,0.3); border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: flex-end; gap: 15px;">
-                <a href="Graduation_Project_Report.md" target="_blank"
-                    style="padding: 8px 16px; background: rgba(255,255,255,0.05); border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); color: #94a3b8; font-size: 13px; text-decoration: none; font-weight: 600; transition: all 0.2s;">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round"
-                        style="vertical-align: middle; margin-right: 6px;">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
-                        <line x1="16" y1="13" x2="8" y2="13"></line>
-                        <line x1="16" y1="17" x2="8" y2="17"></line>
-                        <polyline points="10 9 9 9 8 9"></polyline>
-                    </svg>
-                    Graduation Project Report
-                </a>
-                <a href="https://github.com" target="_blank"
-                    style="padding: 8px 16px; background: rgba(59, 130, 246, 0.1); border-radius: 6px; border: 1px solid rgba(59, 130, 246, 0.3); color: #60a5fa; font-size: 13px; text-decoration: none; font-weight: 600; transition: all 0.2s;">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round"
-                        style="vertical-align: middle; margin-right: 6px;">
-                        <path
-                            d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
-                        </path>
-                    </svg>
-                    GitHub Repository
-                </a>
+                <div style="display: flex; flex: 1; overflow: hidden;">
+                    <!-- Left Column: Methodology Steps -->
+                    <div
+                        style="width: 45%; padding: 30px 40px; overflow-y: auto; border-right: 1px solid rgba(255,255,255,0.05); background: #0f172a;">
+                        <h3
+                            style="color:#10b981; font-size:16px; margin-bottom:25px; display:flex; align-items:center; gap:10px; text-transform: uppercase; letter-spacing: 1px;">
+                            <span>🛠</span> Project Workflow
+                        </h3>
+
+                        <div
+                            style="position: relative; padding-left: 20px; border-left: 2px solid rgba(59, 130, 246, 0.3); display: flex; flex-direction: column; gap: 30px;">
+                            <div style="position: relative;">
+                                <div
+                                    style="position: absolute; left: -27px; top: 0; width: 12px; height: 12px; border-radius: 50%; background: #3b82f6; border: 2px solid #0f172a;">
+                                </div>
+                                <h4 style="color:#e2e8f0; font-size: 15px; margin-bottom: 8px;">1. The Core Problem</h4>
+                                <p style="font-size:13px; color:#cbd5e1; line-height: 1.6; margin:0;">Predicting
+                                    deforestation risk using multidimensional spatial and environmental variables to act
+                                    proactively.</p>
+                            </div>
+
+                            <div style="position: relative;">
+                                <div
+                                    style="position: absolute; left: -27px; top: 0; width: 12px; height: 12px; border-radius: 50%; background: #8b5cf6; border: 2px solid #0f172a;">
+                                </div>
+                                <h4 style="color:#e2e8f0; font-size: 15px; margin-bottom: 8px;">2. Data Foundation</h4>
+                                <p style="font-size:13px; color:#cbd5e1; line-height: 1.6; margin:0;">Target dataset:
+                                    <code>forest_data_clean.json</code> comprising <b>150,000 spatial coordinates</b>,
+                                    each containing geospatial traits, risk indices, and topographical elevation.</p>
+                            </div>
+
+                            <div style="position: relative;">
+                                <div
+                                    style="position: absolute; left: -27px; top: 0; width: 12px; height: 12px; border-radius: 50%; background: #f59e0b; border: 2px solid #0f172a;">
+                                </div>
+                                <h4 style="color:#e2e8f0; font-size: 15px; margin-bottom: 8px;">3. The Risk Engine</h4>
+                                <p style="font-size:13px; color:#cbd5e1; margin-bottom: 10px;">Weighted parameter
+                                    algorithm simulating environmental threat vectors:</p>
+                                <div
+                                    style="font-size:12px; color:#60a5fa; font-family: monospace; background: rgba(0,0,0,0.4); padding: 12px; border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.2);">
+                                    Risk = 0.30(Loss) + 0.20(Roads) <br>
+                                    + 0.15(Pop.) + 0.15(Fire) <br>
+                                    + 0.10(Slope) + 0.10(Elev)
+                                </div>
+                            </div>
+
+                            <div style="position: relative;">
+                                <div
+                                    style="position: absolute; left: -27px; top: 0; width: 12px; height: 12px; border-radius: 50%; background: #ef4444; border: 2px solid #0f172a;">
+                                </div>
+                                <h4 style="color:#e2e8f0; font-size: 15px; margin-bottom: 8px;">4. Spatial Validation
+                                </h4>
+                                <p style="font-size:13px; color:#cbd5e1; line-height: 1.6; margin:0;">
+                                    Cross-referencing active risk zones against historical fire registries and hotspot
+                                    clusters utilizing DBSCAN.
+                                    <span
+                                        style="display:block; margin-top: 5px; color: #10b981; font-weight: 700;">Performance:
+                                        ROC AUC = 0.82</span>
+                                </p>
+                            </div>
+
+                            <div style="position: relative;">
+                                <div
+                                    style="position: absolute; left: -27px; top: 0; width: 12px; height: 12px; border-radius: 50%; background: #ec4899; border: 2px solid #0f172a;">
+                                </div>
+                                <h4 style="color:#e2e8f0; font-size: 15px; margin-bottom: 8px;">5. Final Conclusions
+                                </h4>
+                                <div
+                                    style="background: rgba(239, 68, 68, 0.1); border-left: 3px solid #ef4444; padding: 12px; font-size: 13px; color: #fecaca; line-height: 1.5; border-radius: 0 8px 8px 0;">
+                                    High-risk areas are predominantly concentrated along developing road networks and
+                                    agricultural expansion zones spanning the Southeastern Amazon.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column: Visualizations -->
+                    <div
+                        style="width: 55%; padding: 30px 40px; overflow-y: auto; background: #0a0e17; display: flex; flex-direction: column; gap: 30px;">
+                        <div>
+                            <h3
+                                style="color:#3b82f6; font-size:16px; margin-bottom:15px; text-transform: uppercase; letter-spacing: 1px; display:flex; align-items:center; gap:8px;">
+                                <span>📊</span> Methodology Framework
+                            </h3>
+                            <div
+                                style="background: rgba(255,255,255,0.02); padding: 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                                <img src="geoai_framework.png" style="width: 100%; border-radius: 8px;"
+                                    onerror="this.src='image.png'" alt="GeoAI Framework Diagram">
+                            </div>
+                            <p style="text-align: center; color: #64748b; font-size: 12px; margin-top: 10px;">Figure 1:
+                                End-to-end data processing and model validation pipeline.</p>
+                        </div>
+
+                        <div>
+                            <h3
+                                style="color:#3b82f6; font-size:16px; margin-bottom:15px; text-transform: uppercase; letter-spacing: 1px; display:flex; align-items:center; gap:8px;">
+                                <span>📈</span> Performance & Validation
+                            </h3>
+                            <div
+                                style="background: rgba(255,255,255,0.02); padding: 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                                <img src="model_validation_results.png" style="width: 100%; border-radius: 8px;"
+                                    onerror="this.src='image.png'" alt="Validation Metrics">
+                            </div>
+                            <p style="text-align: center; color: #64748b; font-size: 12px; margin-top: 10px;">Figure 2:
+                                ROC Curve analysis and hotspot distribution clusters.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Links -->
+                <div
+                    style="padding: 15px 40px; background: rgba(15, 23, 42, 0.95); border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: flex-end; gap: 15px;">
+                    <a href="Graduation_Project_Report.md" target="_blank"
+                        style="padding: 10px 20px; background: rgba(255,255,255,0.05); border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); color: #cbd5e1; font-size: 13px; text-decoration: none; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; gap: 8px;">
+                        📄 View Academic Report
+                    </a>
+                    <a href="https://github.com/mamdouh1581" target="_blank"
+                        style="padding: 10px 20px; background: rgba(59, 130, 246, 0.15); border-radius: 8px; border: 1px solid rgba(59, 130, 246, 0.4); color: #60a5fa; font-size: 13px; text-decoration: none; font-weight: 600; transition: all 0.2s; display: flex; align-items: center; gap: 8px;">
+                        💻 Explore GitHub Repository
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -1562,7 +1672,7 @@
                     elevationScale: heightScale >= 1.2 ? 1.2 : heightScale,
                     pickable: true,
                     onClick: info => {
-                        if (info.object) toggleModal(true);
+                        if (info.object) showSpatialPopup(info);
                     },
                     updateTriggers: { getFillColor: currentYear },
                     material: { ambient: 0.6, diffuse: 0.7, shininess: 40 }
@@ -1577,10 +1687,11 @@
                     opacity: 0.7,
                     pickable: true,
                     onClick: info => {
-                        if (info.object) toggleModal(true);
+                        if (info.object) showSpatialPopup(info);
                     }
                 });
             } else if (currentMode === "heat") {
+                // ... heatmap doesn't typically have object click unless picking is enabled.
                 layer = new deck.HeatmapLayer({
                     id: "risk-layer-heat",
                     data: activeData,
@@ -1600,7 +1711,7 @@
                     opacity: 0.8,
                     pickable: true,
                     onClick: info => {
-                        if (info.object) toggleModal(true);
+                        if (info.object) showSpatialPopup(info);
                     },
                     radiusMinPixels: 2,
                     radiusMaxPixels: 8
@@ -1608,6 +1719,31 @@
             }
 
             deckInstance.setProps({ layers: [layer] });
+        }
+
+        function showSpatialPopup(info) {
+            const popup = document.getElementById('spatialPopup');
+            document.getElementById('popupLat').innerText = info.object.lat.toFixed(4);
+            document.getElementById('popupLon').innerText = info.object.lon.toFixed(4);
+            document.getElementById('popupRisk').innerText = info.object.dynamic_score ? info.object.dynamic_score.toFixed(1) : info.object.risk_score.toFixed(1);
+
+            // Position popup near click (offset slightly)
+            const popupWidth = 250;
+            const popupHeight = 150;
+            let left = info.x + 15;
+            let top = info.y + 15;
+
+            // Adjust if going off screen
+            if (left + popupWidth > window.innerWidth) left = info.x - popupWidth - 15;
+            if (top + popupHeight > window.innerHeight) top = info.y - popupHeight - 15;
+
+            popup.style.left = left + 'px';
+            popup.style.top = top + 'px';
+            popup.classList.add('active');
+        }
+
+        function closeSpatialPopup() {
+            document.getElementById('spatialPopup').classList.remove('active');
         }
 
         function updateYear(val) {
