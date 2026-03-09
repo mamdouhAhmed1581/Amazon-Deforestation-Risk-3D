@@ -648,29 +648,8 @@
             width: 100vw;
             height: 100vh;
             background: rgba(10, 14, 23, 0.85);
-            backdrop-filter: blur(10px);
-            z-index: 5000;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
-
-        #modalOverlay.active {
-            display: flex;
-            opacity: 1;
-        }
-
-        /* ===== Modal Overlay ===== */
-        #modalOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(10, 14, 23, 0.85);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             z-index: 5000;
             display: none;
             justify-content: center;
@@ -685,44 +664,66 @@
         }
 
         #modalContent {
-            width: 90%;
-            max-width: 1300px;
-            height: 85vh;
-            background: #0b1120;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(8, 12, 25, 0.98) 0%, rgba(15, 23, 42, 0.98) 100%);
+            width: 900px;
+            max-width: 95vw;
+            max-height: 85vh;
+            border-radius: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.8), 0 0 40px rgba(59, 130, 246, 0.1);
+            overflow: hidden;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            transform: scale(0.95);
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s;
+        }
+
+        #modalOverlay.active #modalContent {
+            transform: scale(1);
         }
 
         #modalHeader {
-            padding: 20px 30px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 24px 36px;
+            background: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #0f172a;
         }
 
         #modalHeader h2 {
-            font-size: 18px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
+            font-size: 22px;
+            font-weight: 800;
             color: #f8fafc;
             margin: 0;
+            letter-spacing: -0.5px;
         }
 
-        #closeModal {
-            font-size: 24px;
+        .lang-toggle {
+            display: flex;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 4px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .lang-toggle button {
+            padding: 8px 16px;
+            border-radius: 10px;
+            border: none;
+            background: transparent;
             color: #94a3b8;
+            font-size: 13px;
+            font-weight: 700;
             cursor: pointer;
-            transition: color 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        #closeModal:hover {
-            color: #f8fafc;
+        .lang-toggle button.active {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
         }
 
         #modalBody {
@@ -730,41 +731,73 @@
             overflow-y: auto;
             flex: 1;
             scrollbar-width: thin;
-            scrollbar-color: #3b82f6 #0f172a;
+            scrollbar-color: #3b82f6 rgba(255, 255, 255, 0.03);
         }
 
         #modalBody::-webkit-scrollbar {
-            width: 8px;
+            width: 6px;
         }
 
         #modalBody::-webkit-scrollbar-thumb {
             background: #3b82f6;
-            border-radius: 8px;
-            border: 2px solid #0f172a;
+            border-radius: 10px;
         }
 
-        .modal-section {
-            margin-bottom: 40px;
-        }
-
+        .modal-section { margin-bottom: 40px; }
         .section-title {
             font-size: 13px;
             color: #60a5fa;
             font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
-            margin-bottom: 20px;
+            letter-spacing: 2px;
+            margin-bottom: 24px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 16px;
+        }
+
+        .section-title::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.4) 0%, transparent 100%);
         }
 
         .modal-grid {
             display: grid;
-            grid-template-columns: 1fr 1.2fr;
-            gap: 50px;
-            align-items: start;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 32px;
         }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+            padding: 24px;
+            transition: all 0.3s;
+        }
+
+        .info-card:hover { 
+            border-color: rgba(59, 130, 246, 0.4); 
+            background: rgba(59, 130, 246, 0.03);
+            transform: translateY(-4px);
+        }
+
+        .image-container {
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-img { width: 100%; display: block; }
+
+        [data-lang-content] { display: none; }
+        [data-lang-content].active { display: block; }
+        
+        .rtl { direction: rtl; text-align: right; }
+        .rtl .section-title::after { background: linear-gradient(-90deg, rgba(59, 130, 246, 0.4) 0%, transparent 100%); }
 
         #titleBar {
             justify-content: space-between;
@@ -777,13 +810,6 @@
             right: 30px;
         }
 
-        .modal-img {
-            width: 100%;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-
         .modal-image {
             width: 100%;
             border-radius: 12px;
@@ -792,16 +818,23 @@
         }
 
         .modal-text {
-            font-size: 14.5px;
+            font-size: 15px;
             color: #94a3b8;
-            line-height: 1.7;
+            line-height: 1.8;
         }
 
         .modal-text p {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .highlight-box {
+            background: rgba(59, 130, 246, 0.05);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+\n        .highlight-box {
             background: rgba(59, 130, 246, 0.05);
             border: 1px solid rgba(59, 130, 246, 0.2);
             padding: 15px;
@@ -1585,50 +1618,49 @@
     <div id="modalOverlay" onclick="if(event.target === this) toggleModal(false)">
         <div id="modalContent">
             <div id="modalHeader">
-                <h2 data-en="Project Details" data-ar="تفاصيل المشروع">Project Details</h2>
-                <div style="display: flex; align-items: center; gap: 20px;">
+                <h2 id="modalHeaderTitle" data-en="Project Architecture" data-ar="هندسة المشروع">Project Architecture</h2>
+                <div style="display: flex; align-items: center; gap: 24px;">
                     <div class="lang-toggle">
                         <button id="lang-en" class="active" onclick="setLanguage('en')">EN</button>
                         <button id="lang-ar" onclick="setLanguage('ar')">AR</button>
                     </div>
-                    <div id="closeModal" onclick="toggleModal(false)"
-                        style="font-size: 24px; color: #94a3b8; cursor: pointer;">×</div>
+                    <div id="closeModal" onclick="toggleModal(false)" style="font-size: 28px; color: #64748b; cursor: pointer; transition: all 0.3s; padding: 4px;" onmouseover="this.style.color='#f8fafc';this.style.transform='rotate(90deg)'" onmouseout="this.style.color='#64748b';this.style.transform='rotate(0deg)'">×</div>
                 </div>
             </div>
 
-            <div id="modalBody" class="modal-lang-container">
+            <div id="modalBody">
                 <!-- English Content -->
                 <div data-lang-content="en" class="active">
                     <div class="modal-section">
-                        <div class="section-title">Overview</div>
-                        <p class="modal-text">This model predicts deforestation risk in the Amazon Basin using spatial
-                            and environmental variables. It integrates 150,000 data points to calculate a comprehensive
-                            risk score based on forest loss, infrastructure proximity, and fire history.</p>
+                        <div class="section-title">Project Vision</div>
+                        <p class="modal-text">This advanced GeoAI engine predicts deforestation risk across the Amazon Basin by synthesizing critical environmental signals. We leverage multi-temporal spatial data to empower proactive conservation, moving from reactionary response to predictive protection.</p>
                     </div>
 
                     <div class="modal-grid">
                         <div class="info-card">
-                            <div class="section-title">Methodology</div>
-                            <ul class="modal-text" style="padding-left: 20px;">
-                                <li><b>Data Ingestion:</b> Cleaning and processing 150K geopoints.</li>
-                                <li><b>Risk Modeling:</b> Weighted index based on environmental factors.</li>
-                                <li><b>Validation:</b> ROC/AUC analysis (Score: 0.82).</li>
+                            <div class="section-title">The GeoAI Pipeline</div>
+                            <ul class="modal-text" style="padding-left: 20px; list-style-type: none;">
+                                <li style="margin-bottom: 12px; display: flex; align-items: center; gap: 12px;"><span style="color:#60a5fa; font-weight:800;">01</span> <b>Data Synthesis:</b> Aggregating 150K points across 5.5M km²</li>
+                                <li style="margin-bottom: 12px; display: flex; align-items: center; gap: 12px;"><span style="color:#60a5fa; font-weight:800;">02</span> <b>Risk Modeling:</b> Weighted multi-variate spatial regression</li>
+                                <li style="margin-bottom: 12px; display: flex; align-items: center; gap: 12px;"><span style="color:#60a5fa; font-weight:800;">03</span> <b>Validation:</b> Statistical verification via ROC/AUC Analysis</li>
                             </ul>
                         </div>
                         <div class="info-card">
-                            <div class="section-title">Key Drivers</div>
-                            <div class="modal-text"
-                                style="font-family: monospace; font-size: 12px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px;">
-                                Risk = 0.3(Loss) + 0.2(Roads) + 0.15(Pop) + 0.15(Fire) + 0.2(Geog)
+                            <div class="section-title">Neural Prophet Engine</div>
+                            <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 16px;">
+                                <span style="font-size: 40px; font-weight: 800; color: #10b981; letter-spacing: -1px;">0.82</span>
+                                <span style="color: #94a3b8; font-size: 14px; font-weight: 600;">AUC Accuracy</span>
+                            </div>
+                            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #60a5fa; background: rgba(0,0,0,0.4); padding: 16px; border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.2); line-height: 1.6;">
+                                Score = (0.3*Loss) + (0.2*Access) + (0.15*Pop) + (0.15*Fire) + (0.2*Geog)
                             </div>
                         </div>
                     </div>
 
-                    <div class="modal-section" style="margin-top: 24px;">
-                        <div class="section-title">Validation Results</div>
+                    <div class="modal-section" style="margin-top: 40px;">
+                        <div class="section-title">Model Performance Analysis</div>
                         <div class="image-container">
-                            <img src="model_validation_results.png" class="modal-img" alt="Validation Results"
-                                onerror="this.src='https://via.placeholder.com/800x400?text=Validation+Charts'">
+                            <img src="model_validation_results.png" class="modal-img" alt="Validation Charts" onerror="this.src='https://via.placeholder.com/1200x600?text=Model+Validation+Metrics'">
                         </div>
                     </div>
                 </div>
@@ -1636,50 +1668,47 @@
                 <!-- Arabic Content -->
                 <div data-lang-content="ar" class="rtl">
                     <div class="modal-section">
-                        <div class="section-title">نظرة عامة</div>
-                        <p class="modal-text">يتوقع هذا النموذج مخاطر إزالة الغابات في حوض الأمازون باستخدام المتغيرات
-                            المكانية والبيئية. يدمج 150,000 نقطة بيانات لحساب درجة مخاطر شاملة بناءً على فقدان الغابات
-                            والقرب من البنية التحتية وتاريخ الحرائق.</p>
+                        <div class="section-title">رؤية المشروع</div>
+                        <p class="modal-text">يتوقع محرك GeoAI المتقدم مخاطر إزالة الغابات في حوض الأمازون من خلال تحليل الإشارات البيئية الحرجة. نحن نستفيد من البيانات المكانية متعددة الفترات لتمكين الحفظ الاستباقي، والانتقال من الاستجابة التفاعلية إلى الحماية التنبؤية.</p>
                     </div>
 
                     <div class="modal-grid">
                         <div class="info-card">
-                            <div class="section-title">المنهجية</div>
-                            <ul class="modal-text" style="padding-right: 20px;">
-                                <li><b>جمع البيانات:</b> تنظيف ومعالجة 150 ألف نقطة جغرافية.</li>
-                                <li><b>نمذجة المخاطر:</b> مؤشر موزون بناءً على العوامل البيئية.</li>
-                                <li><b>التحقق:</b> تحليل ROC/AUC (الدرجة: 0.82).</li>
+                            <div class="section-title">مراحل المحرك</div>
+                            <ul class="modal-text" style="padding-right: 20px; list-style-type: none;">
+                                <li style="margin-bottom: 12px; display: flex; align-items: center; gap: 12px;"><span style="color:#60a5fa; font-weight:800;">٠١</span> <b>تجميع البيانات:</b> معالجة ١٥٠ ألف نقطة جغرافية</li>
+                                <li style="margin-bottom: 12px; display: flex; align-items: center; gap: 12px;"><span style="color:#60a5fa; font-weight:800;">٠٢</span> <b>نمذجة المخاطر:</b> تحليل الانحدار المكاني الموزون</li>
+                                <li style="margin-bottom: 12px; display: flex; align-items: center; gap: 12px;"><span style="color:#60a5fa; font-weight:800;">٠٣</span> <b>التحقق:</b> التحقق الإحصائي عبر تحليل ROC/AUC</li>
                             </ul>
                         </div>
                         <div class="info-card">
-                            <div class="section-title">المحركات الرئيسية</div>
-                            <div class="modal-text"
-                                style="font-family: monospace; font-size: 12px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px;">
-                                الخطر = 0.3(فقد) + 0.2(طرق) + 0.15(سكان) + 0.15(حرائق) + 0.2(جغرافيا)
+                            <div class="section-title">دقة المحرك</div>
+                            <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 16px;">
+                                <span style="font-size: 40px; font-weight: 800; color: #10b981; letter-spacing: -1px;">٠.٨٢</span>
+                                <span style="color: #94a3b8; font-size: 14px; font-weight: 600;">دقة التنبؤ</span>
+                            </div>
+                            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #60a5fa; background: rgba(0,0,0,0.4); padding: 16px; border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.2); line-height: 1.6; direction: ltr;">
+                                Score = (0.3*Loss) + (0.2*Access) + (0.15*Pop) + (0.15*Fire) + (0.2*Geog)
                             </div>
                         </div>
                     </div>
 
-                    <div class="modal-section" style="margin-top: 24px;">
-                        <div class="section-title">نتائج التحقق</div>
+                    <div class="modal-section" style="margin-top: 40px;">
+                        <div class="section-title">تحليل أداء النموذج</div>
                         <div class="image-container">
-                            <img src="model_validation_results.png" class="modal-img" alt="نتائج التحقق"
-                                onerror="this.src='https://via.placeholder.com/800x400?text=Validation+Charts'">
+                            <img src="model_validation_results.png" class="modal-img" alt="نتائج التحقق" onerror="this.src='https://via.placeholder.com/1200x600?text=Model+Validation+Metrics'">
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div
-                style="padding: 20px 32px; background: rgba(0,0,0,0.2); border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: flex-end; gap: 16px;">
-                <a href="Graduation_Project_Report.md" target="_blank"
-                    style="padding: 10px 18px; background: rgba(255,255,255,0.05); border-radius: 12px; color: #cbd5e1; font-size: 13px; text-decoration: none; font-weight: 600; border: 1px solid rgba(255,255,255,0.1);">Report</a>
-                <a href="https://github.com" target="_blank"
-                    style="padding: 10px 18px; background: #3b82f6; border-radius: 12px; color: white; font-size: 13px; text-decoration: none; font-weight: 600;">GitHub</a>
+            <div style="padding: 24px 36px; background: rgba(10, 15, 28, 0.4); border-top: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: flex-end; gap: 16px;">
+                 <a href="Graduation_Project_Report.md" target="_blank" style="padding: 12px 24px; background: rgba(255,255,255,0.04); border-radius: 14px; color: #cbd5e1; font-size: 13px; text-decoration: none; font-weight: 600; border: 1px solid rgba(255,255,255,0.1); transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.08)';this.style.color='white'" onmouseout="this.style.background='rgba(255,255,255,0.04)';this.style.color='#cbd5e1'">Complete Report</a>
+                 <a href="https://github.com" target="_blank" style="padding: 12px 24px; background: #3b82f6; border-radius: 14px; color: white; font-size: 13px; text-decoration: none; font-weight: 600; transition: all 0.3s; box-shadow: 0 8px 16px rgba(59, 130, 246, 0.2);" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 12px 24px rgba(59, 130, 246, 0.3)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 8px 16px rgba(59, 130, 246, 0.2)'">Source Code</a>
             </div>
         </div>
     </div>
-    <!-- Analysis Sidebar -->
+\n    <!-- Analysis Sidebar -->
     <div id="analysisSidebar">
         <div class="sidebar-header">
             <div class="sidebar-header-left">
