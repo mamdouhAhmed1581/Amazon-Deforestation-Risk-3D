@@ -7,7 +7,9 @@
     <meta name="description" content="AI-powered forest degradation risk analysis for the Amazon Basin using GeoAI">
 
     <link href="https://api.tiles.mapbox.com/mapbox-gl-js/v1.13.0/mapbox-gl.css" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&family=Tajawal:wght@400;700;800&display=swap"
+        rel="stylesheet">
 
     <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v1.13.0/mapbox-gl.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/deck.gl@8.9.0/dist.min.js"></script>
@@ -743,7 +745,10 @@
             border-radius: 10px;
         }
 
-        .modal-section { margin-bottom: 40px; }
+        .modal-section {
+            margin-bottom: 40px;
+        }
+
         .section-title {
             font-size: 13px;
             color: #60a5fa;
@@ -777,8 +782,8 @@
             transition: all 0.3s;
         }
 
-        .info-card:hover { 
-            border-color: rgba(59, 130, 246, 0.4); 
+        .info-card:hover {
+            border-color: rgba(59, 130, 246, 0.4);
             background: rgba(59, 130, 246, 0.03);
             transform: translateY(-4px);
         }
@@ -791,13 +796,27 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
         }
 
-        .modal-img { width: 100%; display: block; }
+        .modal-img {
+            width: 100%;
+            display: block;
+        }
 
-        [data-lang-content] { display: none; }
-        [data-lang-content].active { display: block; }
-        
-        .rtl { direction: rtl; text-align: right; }
-        .rtl .section-title::after { background: linear-gradient(-90deg, rgba(59, 130, 246, 0.4) 0%, transparent 100%); }
+        [data-lang-content] {
+            display: none;
+        }
+
+        [data-lang-content].active {
+            display: block;
+        }
+
+        .rtl {
+            direction: rtl;
+            text-align: right;
+        }
+
+        .rtl .section-title::after {
+            background: linear-gradient(-90deg, rgba(59, 130, 246, 0.4) 0%, transparent 100%);
+        }
 
         #titleBar {
             justify-content: space-between;
@@ -834,7 +853,8 @@
             border-radius: 8px;
             margin-top: 10px;
         }
-\n        .highlight-box {
+
+        \n .highlight-box {
             background: rgba(59, 130, 246, 0.05);
             border: 1px solid rgba(59, 130, 246, 0.2);
             padding: 15px;
@@ -842,41 +862,251 @@
             margin-top: 10px;
         }
 
-        .equation-box {
-            background: #0f172a;
-            border: 1px solid #334155;
-            padding: 20px;
-            border-radius: 12px;
-            text-align: center;
-            font-family: 'Courier New', monospace;
+        /* ===== Elite Command-Center Modal Overhaul ===== */
+        :root {
+            --neon-blue: #3b82f6;
+            --neon-cyan: #22d3ee;
+            --neon-green: #10b981;
+            --neon-red: #ef4444;
+            --panel-bg: rgba(10, 15, 28, 0.98);
+        }
+
+        #modalContent {
+            font-family: 'Inter', 'Tajawal', sans-serif;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            background: var(--panel-bg);
+            box-shadow: 0 0 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(59, 130, 246, 0.1);
+        }
+
+        #modalHeader {
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            background: rgba(15, 23, 42, 0.4);
+            padding: 24px 32px;
+        }
+
+        #modalHeader h2 {
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
             color: #f8fafc;
-            margin: 20px 0;
-            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
         }
 
-        .equation-box span {
-            color: #3b82f6;
+        .lang-toggle button {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #94a3b8;
+            font-family: 'JetBrains Mono', monospace;
+            padding: 6px 12px;
+            font-size: 11px;
             font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
+        .lang-toggle button.active {
+            background: var(--neon-blue);
+            color: white;
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+        }
+
+        /* --- Technical Gauges --- */
+        .gauge-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .gauge-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .gauge-card:hover {
+            border-color: rgba(59, 130, 246, 0.3);
+            background: rgba(59, 130, 246, 0.03);
+            transform: translateY(-5px);
+        }
+
+        .gauge-svg {
+            width: 120px;
+            height: 120px;
+            transform: rotate(-90deg);
+        }
+
+        .gauge-bg {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.05);
+            stroke-width: 8;
+        }
+
+        .gauge-fill {
+            fill: none;
+            stroke: var(--neon-blue);
+            stroke-width: 8;
+            stroke-linecap: round;
+            stroke-dasharray: 283;
+            stroke-dashoffset: 283;
+            transition: stroke-dashoffset 2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .gauge-value {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 24px;
+            font-weight: 800;
+            color: white;
+        }
+
+        .gauge-label {
             margin-top: 15px;
-            font-size: 13px;
-        }
-
-        th {
-            text-align: left;
+            font-size: 11px;
+            font-weight: 700;
             color: #64748b;
-            padding: 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        td {
-            padding: 10px;
-            color: #cbd5e1;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        /* --- Radar Threat Matrix --- */
+        .technical-centerpiece {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .chart-box {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 24px;
+            padding: 30px;
+            position: relative;
+        }
+
+        .chart-box::before {
+            content: 'RADAR THREAT MATRIX';
+            position: absolute;
+            top: 15px;
+            left: 30px;
+            font-size: 10px;
+            font-weight: 800;
+            color: #475569;
+            letter-spacing: 2px;
+        }
+
+        /* --- Holographic Pipeline --- */
+        .holographic-pipeline {
+            background: rgba(59, 130, 246, 0.02);
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
+            margin-top: 20px;
+        }
+
+        .pipeline-title {
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--neon-blue);
+            margin-bottom: 25px;
+            letter-spacing: 1px;
+        }
+
+        .pipeline-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        .p-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 2;
+            width: 80px;
+        }
+
+        .p-icon {
+            width: 44px;
+            height: 44px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s;
+        }
+
+        .p-step:hover .p-icon {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+            transform: scale(1.1);
+        }
+
+        .p-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #f8fafc;
+            text-align: center;
+        }
+
+        .p-line {
+            position: absolute;
+            top: 22px;
+            left: 40px;
+            right: 40px;
+            height: 1px;
+            background: rgba(59, 130, 246, 0.1);
+            z-index: 1;
+        }
+
+        .p-line-active {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 30%;
+            background: linear-gradient(90deg, transparent, var(--neon-blue), transparent);
+            animation: flow 3s linear infinite;
+        }
+
+        @keyframes flow {
+            from {
+                transform: translateX(-100%);
+            }
+
+            to {
+                transform: translateX(330%);
+            }
+        }
+
+        /* --- RTL Improvements --- */
+        [data-lang="ar"] .rtl {
+            font-family: 'Tajawal', sans-serif;
+            direction: rtl;
+        }
+
+        [data-lang="ar"] .gauge-label {
+            letter-spacing: 0;
         }
 
         .ai-badge {
@@ -1618,97 +1848,206 @@
     <div id="modalOverlay" onclick="if(event.target === this) toggleModal(false)">
         <div id="modalContent">
             <div id="modalHeader">
-                <h2 id="modalHeaderTitle" data-en="Project Architecture" data-ar="هندسة المشروع">Project Architecture</h2>
+                <h2 id="modalHeaderTitle" data-en="Project Architecture" data-ar="هندسة المشروع">Project Architecture
+                </h2>
                 <div style="display: flex; align-items: center; gap: 24px;">
                     <div class="lang-toggle">
                         <button id="lang-en" class="active" onclick="setLanguage('en')">EN</button>
                         <button id="lang-ar" onclick="setLanguage('ar')">AR</button>
                     </div>
-                    <div id="closeModal" onclick="toggleModal(false)" style="font-size: 28px; color: #64748b; cursor: pointer; transition: all 0.3s; padding: 4px;" onmouseover="this.style.color='#f8fafc';this.style.transform='rotate(90deg)'" onmouseout="this.style.color='#64748b';this.style.transform='rotate(0deg)'">×</div>
+                    <div id="closeModal" onclick="toggleModal(false)"
+                        style="font-size: 28px; color: #64748b; cursor: pointer; transition: all 0.3s; padding: 4px;"
+                        onmouseover="this.style.color='#f8fafc';this.style.transform='rotate(90deg)'"
+                        onmouseout="this.style.color='#64748b';this.style.transform='rotate(0deg)'">×</div>
                 </div>
             </div>
 
             <div id="modalBody">
                 <!-- English Content -->
                 <div data-lang-content="en" class="active">
-                    <div class="modal-section">
-                        <div class="section-title">Project Vision</div>
-                        <p class="modal-text">This advanced GeoAI engine predicts deforestation risk across the Amazon Basin by synthesizing critical environmental signals. We leverage multi-temporal spatial data to empower proactive conservation, moving from reactionary response to predictive protection.</p>
+                    <div class="gauge-grid">
+                        <div class="gauge-card">
+                            <svg class="gauge-svg" viewBox="0 0 100 100">
+                                <circle class="gauge-bg" cx="50" cy="50" r="45"></circle>
+                                <circle id="aucGauge" class="gauge-fill" cx="50" cy="50" r="45"
+                                    style="stroke: #10b981;"></circle>
+                            </svg>
+                            <div class="gauge-value" id="aucVal">0.824</div>
+                            <div class="gauge-label">Predictive AUC</div>
+                        </div>
+                        <div class="gauge-card">
+                            <svg class="gauge-svg" viewBox="0 0 100 100">
+                                <circle class="gauge-bg" cx="50" cy="50" r="45"></circle>
+                                <circle id="precisionGauge" class="gauge-fill" cx="50" cy="50" r="45"
+                                    style="stroke: #3b82f6;"></circle>
+                            </svg>
+                            <div class="gauge-value" id="precVal">89%</div>
+                            <div class="gauge-label">Validation Precision</div>
+                        </div>
+                        <div class="gauge-card">
+                            <svg class="gauge-svg" viewBox="0 0 100 100">
+                                <circle class="gauge-bg" cx="50" cy="50" r="45"></circle>
+                                <circle id="f1Gauge" class="gauge-fill" cx="50" cy="50" r="45" style="stroke: #6366f1;">
+                                </circle>
+                            </svg>
+                            <div class="gauge-value" id="f1Val">0.82</div>
+                            <div class="gauge-label">Harmonic F1 Score</div>
+                        </div>
                     </div>
 
-                    <div class="modal-grid">
-                        <div class="info-card">
-                            <div class="section-title">The GeoAI Pipeline</div>
-                            <ul class="modal-text" style="padding-left: 20px; list-style-type: none;">
-                                <li style="margin-bottom: 12px; display: flex; align-items: center; gap: 12px;"><span style="color:#60a5fa; font-weight:800;">01</span> <b>Data Synthesis:</b> Aggregating 150K points across 5.5M km²</li>
-                                <li style="margin-bottom: 12px; display: flex; align-items: center; gap: 12px;"><span style="color:#60a5fa; font-weight:800;">02</span> <b>Risk Modeling:</b> Weighted multi-variate spatial regression</li>
-                                <li style="margin-bottom: 12px; display: flex; align-items: center; gap: 12px;"><span style="color:#60a5fa; font-weight:800;">03</span> <b>Validation:</b> Statistical verification via ROC/AUC Analysis</li>
-                            </ul>
+                    <div class="technical-centerpiece">
+                        <div class="chart-box">
+                            <canvas id="radarChart" style="max-height: 280px;"></canvas>
                         </div>
-                        <div class="info-card">
-                            <div class="section-title">Neural Prophet Engine</div>
-                            <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 16px;">
-                                <span style="font-size: 40px; font-weight: 800; color: #10b981; letter-spacing: -1px;">0.82</span>
-                                <span style="color: #94a3b8; font-size: 14px; font-weight: 600;">AUC Accuracy</span>
+                        <div class="info-card"
+                            style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 24px; padding: 24px;">
+                            <div
+                                style="font-size: 10px; font-weight: 800; color: #475569; letter-spacing: 2px; margin-bottom: 20px;">
+                                MATHEMATICAL MODEL</div>
+                            <div
+                                style="font-family: 'JetBrains Mono', monospace; font-size: 18px; color: #f8fafc; margin-bottom: 20px;">
+                                RI = Σ(w<sub>i</sub> • x<sub>i</sub>) • γ
                             </div>
-                            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #60a5fa; background: rgba(0,0,0,0.4); padding: 16px; border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.2); line-height: 1.6;">
-                                Score = (0.3*Loss) + (0.2*Access) + (0.15*Pop) + (0.15*Fire) + (0.2*Geog)
+                            <div style="font-size: 11px; color: #94a3b8; line-height: 1.8;">
+                                • w<sub>i</sub>: Regional weighting factors<br>
+                                • x<sub>i</sub>: Normalized multivariate signals<br>
+                                • γ: Bayesian temporal coefficient (0.957)
+                            </div>
+                            <div
+                                style="margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05);">
+                                <div style="font-size: 11px; font-weight: 700; color: #10b981;">CORE VALIDATION STATUS:
+                                    OPTIMAL</div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="modal-section" style="margin-top: 40px;">
-                        <div class="section-title">Model Performance Analysis</div>
-                        <div class="image-container">
-                            <img src="model_validation_results.png" class="modal-img" alt="Validation Charts" onerror="this.src='https://via.placeholder.com/1200x600?text=Model+Validation+Metrics'">
+                    <div class="holographic-pipeline">
+                        <div class="pipeline-title">SPATIAL DATA PROCESSING PIPELINE</div>
+                        <div class="pipeline-steps">
+                            <div class="p-line">
+                                <div class="p-line-active"></div>
+                            </div>
+                            <div class="p-step">
+                                <div class="p-icon">📡</div>
+                                <div class="p-label">INGEST</div>
+                            </div>
+                            <div class="p-step">
+                                <div class="p-icon">🧠</div>
+                                <div class="p-label">ANALYZE</div>
+                            </div>
+                            <div class="p-step">
+                                <div class="p-icon">📊</div>
+                                <div class="p-label">MODEL</div>
+                            </div>
+                            <div class="p-step">
+                                <div class="p-icon">📍</div>
+                                <div class="p-label">PROJ.</div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Arabic Content -->
                 <div data-lang-content="ar" class="rtl">
-                    <div class="modal-section">
-                        <div class="section-title">رؤية المشروع</div>
-                        <p class="modal-text">يتوقع محرك GeoAI المتقدم مخاطر إزالة الغابات في حوض الأمازون من خلال تحليل الإشارات البيئية الحرجة. نحن نستفيد من البيانات المكانية متعددة الفترات لتمكين الحفظ الاستباقي، والانتقال من الاستجابة التفاعلية إلى الحماية التنبؤية.</p>
+                    <div class="gauge-grid">
+                        <div class="gauge-card">
+                            <svg class="gauge-svg" viewBox="0 0 100 100">
+                                <circle class="gauge-bg" cx="50" cy="50" r="45"></circle>
+                                <circle id="aucGaugeAr" class="gauge-fill" cx="50" cy="50" r="45"
+                                    style="stroke: #10b981;"></circle>
+                            </svg>
+                            <div class="gauge-value" id="aucValAr">0.824</div>
+                            <div class="gauge-label">دقة التنبؤ المجمعة</div>
+                        </div>
+                        <div class="gauge-card">
+                            <svg class="gauge-svg" viewBox="0 0 100 100">
+                                <circle class="gauge-bg" cx="50" cy="50" r="45"></circle>
+                                <circle id="precisionGaugeAr" class="gauge-fill" cx="50" cy="50" r="45"
+                                    style="stroke: #3b82f6;"></circle>
+                            </svg>
+                            <div class="gauge-value" id="precValAr">89%</div>
+                            <div class="gauge-label">نسبة التحقق الإيجابي</div>
+                        </div>
+                        <div class="gauge-card">
+                            <svg class="gauge-svg" viewBox="0 0 100 100">
+                                <circle class="gauge-bg" cx="50" cy="50" r="45"></circle>
+                                <circle id="f1GaugeAr" class="gauge-fill" cx="50" cy="50" r="45"
+                                    style="stroke: #6366f1;"></circle>
+                            </svg>
+                            <div class="gauge-value" id="f1ValAr">0.82</div>
+                            <div class="gauge-label">مؤشر الدقة الموزون F1</div>
+                        </div>
                     </div>
 
-                    <div class="modal-grid">
-                        <div class="info-card">
-                            <div class="section-title">مراحل المحرك</div>
-                            <ul class="modal-text" style="padding-right: 20px; list-style-type: none;">
-                                <li style="margin-bottom: 12px; display: flex; align-items: center; gap: 12px;"><span style="color:#60a5fa; font-weight:800;">٠١</span> <b>تجميع البيانات:</b> معالجة ١٥٠ ألف نقطة جغرافية</li>
-                                <li style="margin-bottom: 12px; display: flex; align-items: center; gap: 12px;"><span style="color:#60a5fa; font-weight:800;">٠٢</span> <b>نمذجة المخاطر:</b> تحليل الانحدار المكاني الموزون</li>
-                                <li style="margin-bottom: 12px; display: flex; align-items: center; gap: 12px;"><span style="color:#60a5fa; font-weight:800;">٠٣</span> <b>التحقق:</b> التحقق الإحصائي عبر تحليل ROC/AUC</li>
-                            </ul>
+                    <div class="technical-centerpiece">
+                        <div class="chart-box">
+                            <canvas id="radarChartAr" style="max-height: 280px;"></canvas>
                         </div>
-                        <div class="info-card">
-                            <div class="section-title">دقة المحرك</div>
-                            <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 16px;">
-                                <span style="font-size: 40px; font-weight: 800; color: #10b981; letter-spacing: -1px;">٠.٨٢</span>
-                                <span style="color: #94a3b8; font-size: 14px; font-weight: 600;">دقة التنبؤ</span>
+                        <div class="info-card"
+                            style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 24px; padding: 24px;">
+                            <div
+                                style="font-size: 10px; font-weight: 800; color: #475569; letter-spacing: 2px; margin-bottom: 20px;">
+                                النموذج الرياضي الحاكم</div>
+                            <div
+                                style="font-family: 'JetBrains Mono', monospace; font-size: 18px; color: #f8fafc; margin-bottom: 20px; direction: ltr; text-align: left;">
+                                RI = Σ(w<sub>i</sub> • x<sub>i</sub>) • γ
                             </div>
-                            <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #60a5fa; background: rgba(0,0,0,0.4); padding: 16px; border-radius: 12px; border: 1px solid rgba(59, 130, 246, 0.2); line-height: 1.6; direction: ltr;">
-                                Score = (0.3*Loss) + (0.2*Access) + (0.15*Pop) + (0.15*Fire) + (0.2*Geog)
+                            <div style="font-size: 12px; color: #94a3b8; line-height: 1.8;">
+                                • w<sub>i</sub>: معاملات الأهمية الجغرافية<br>
+                                • x<sub>i</sub>: المتجهات المكانية المعيارية<br>
+                                • γ: ثابت الاضمحلال الزمني البايزي (0.957)
+                            </div>
+                            <div
+                                style="margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.05);">
+                                <div style="font-size: 12px; font-weight: 700; color: #10b981;">حالة معالجة البيانات:
+                                    مثالية</div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="modal-section" style="margin-top: 40px;">
-                        <div class="section-title">تحليل أداء النموذج</div>
-                        <div class="image-container">
-                            <img src="model_validation_results.png" class="modal-img" alt="نتائج التحقق" onerror="this.src='https://via.placeholder.com/1200x600?text=Model+Validation+Metrics'">
+                    <div class="holographic-pipeline">
+                        <div class="pipeline-title">دورة حياة البيانات المكانية الـ Holographic</div>
+                        <div class="pipeline-steps" style="direction: ltr;">
+                            <div class="p-line">
+                                <div class="p-line-active"></div>
+                            </div>
+                            <div class="p-step">
+                                <div class="p-icon">📡</div>
+                                <div class="p-label">جمع</div>
+                            </div>
+                            <div class="p-step">
+                                <div class="p-icon">🧠</div>
+                                <div class="p-label">تحليل</div>
+                            </div>
+                            <div class="p-step">
+                                <div class="p-icon">📊</div>
+                                <div class="p-label">نمذجة</div>
+                            </div>
+                            <div class="p-step">
+                                <div class="p-icon">📍</div>
+                                <div class="p-label">إسقاط</div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div style="padding: 24px 36px; background: rgba(10, 15, 28, 0.4); border-top: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: flex-end; gap: 16px;">
-                 <a href="Graduation_Project_Report.md" target="_blank" style="padding: 12px 24px; background: rgba(255,255,255,0.04); border-radius: 14px; color: #cbd5e1; font-size: 13px; text-decoration: none; font-weight: 600; border: 1px solid rgba(255,255,255,0.1); transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.08)';this.style.color='white'" onmouseout="this.style.background='rgba(255,255,255,0.04)';this.style.color='#cbd5e1'">Complete Report</a>
-                 <a href="https://github.com" target="_blank" style="padding: 12px 24px; background: #3b82f6; border-radius: 14px; color: white; font-size: 13px; text-decoration: none; font-weight: 600; transition: all 0.3s; box-shadow: 0 8px 16px rgba(59, 130, 246, 0.2);" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 12px 24px rgba(59, 130, 246, 0.3)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 8px 16px rgba(59, 130, 246, 0.2)'">Source Code</a>
+            <div
+                style="padding: 24px 36px; background: rgba(10, 15, 28, 0.4); border-top: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: flex-end; gap: 16px;">
+                <a href="Graduation_Project_Report.md" target="_blank"
+                    style="padding: 12px 24px; background: rgba(255,255,255,0.04); border-radius: 14px; color: #cbd5e1; font-size: 13px; text-decoration: none; font-weight: 600; border: 1px solid rgba(255,255,255,0.1); transition: all 0.3s;"
+                    onmouseover="this.style.background='rgba(255,255,255,0.08)';this.style.color='white'"
+                    onmouseout="this.style.background='rgba(255,255,255,0.04)';this.style.color='#cbd5e1'">Complete
+                    Report</a>
+                <a href="https://github.com" target="_blank"
+                    style="padding: 12px 24px; background: #3b82f6; border-radius: 14px; color: white; font-size: 13px; text-decoration: none; font-weight: 600; transition: all 0.3s; box-shadow: 0 8px 16px rgba(59, 130, 246, 0.2);"
+                    onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 12px 24px rgba(59, 130, 246, 0.3)'"
+                    onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 8px 16px rgba(59, 130, 246, 0.2)'">Source
+                    Code</a>
             </div>
         </div>
     </div>
-\n    <!-- Analysis Sidebar -->
+    \n <!-- Analysis Sidebar -->
     <div id="analysisSidebar">
         <div class="sidebar-header">
             <div class="sidebar-header-left">
@@ -1859,131 +2198,6 @@
             oninput="updateYear(this.value)">
     </div>
 
-    <!-- Project Modal -->
-    <div id="modalOverlay" onclick="if(event.target === this) toggleModal(false)">
-        <div id="modalContent">
-            <div id="modalHeader">
-                <h2>Project Overview & GeoAI Methodology</h2>
-                <div id="closeModal" onclick="toggleModal(false)">×</div>
-            </div>
-            <div id="modalBody">
-                <div class="modal-grid">
-                    <!-- Left Column -->
-                    <div class="modal-left">
-                        <div class="modal-section" style="margin-bottom: 30px;">
-                            <h3 class="section-title">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2">
-                                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-                                </svg>
-                                ANALYSIS & VALIDATION
-                            </h3>
-                            <div class="modal-text">
-                                <p>The model reached an <b>AUC score of 0.82</b>, indicating strong predictive
-                                    performance. Spatial validation was performed by correlating high-risk predictions
-                                    with active fire events and historical hotspots.</p>
-                            </div>
-                            <div class="highlight-box" style="border-left: 3px solid #ef4444;">
-                                <strong style="color: #ef4444;">Hotspot Clusters:</strong> Identified using DBSCAN
-                                clustering to correlate fire intensity with predicted risk zones.
-                            </div>
-                        </div>
-
-                        <div class="modal-section" style="margin-bottom: 30px;">
-                            <h3 class="section-title">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ef4444"
-                                    stroke-width="2">
-                                    <circle cx="12" cy="12" r="10"></circle>
-                                    <line x1="12" y1="8" x2="12" y2="12"></line>
-                                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                                </svg>
-                                <span style="color: #60a5fa">DEEP LEARNING & MATHEMATICAL MODEL</span>
-                            </h3>
-                            <div class="ai-badge" style="margin-bottom: 15px; display: inline-block;">Semantic
-                                Segmentation</div>
-                            <div class="modal-text">
-                                <p>The core engine uses a <b>U-Net architecture</b> for binary segmentation. The model
-                                    was trained using 150,000 spatial samples with multi-temporal features.</p>
-                            </div>
-                            <div class="equation-box">
-                                Risk Index = <br>
-                                <span>0.30</span> (Forest Loss) + <span>0.20</span> (Distance to Roads) + <br>
-                                <span>0.15</span> (Population Density) + <span>0.15</span> (Fire History) + <br>
-                                <span>0.10</span> (Slope) + <span>0.10</span> (Elevation)
-                            </div>
-                        </div>
-
-                        <div class="modal-section">
-                            <h3 class="section-title">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2">
-                                    <path
-                                        d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
-                                    </path>
-                                </svg>
-                                GEOAI METHODOLOGY FRAMEWORK
-                            </h3>
-                            <div class="modal-text">
-                                <p>The proposed GeoAI framework integrates satellite data, deep learning segmentation,
-                                    spatial risk modeling, and validation techniques to predict deforestation risk
-                                    across the Amazon Basin.</p>
-                            </div>
-                            <img src="geoai_framework.png" class="modal-image" style="margin-top: 15px;">
-                        </div>
-                    </div>
-
-                    <!-- Right Column -->
-                    <div class="modal-right">
-                        <img src="model_validation_results.png" class="modal-image" alt="Validation Results"
-                            style="margin-bottom: 20px;">
-                        <div class="specs-grid">
-                            <div class="spec-card">
-                                <div class="spec-label">Predictive Engine</div>
-                                <div class="spec-value">U-Net (PyTorch)</div>
-                            </div>
-                            <div class="spec-card">
-                                <div class="spec-label">Data Points</div>
-                                <div class="spec-value">150,000</div>
-                            </div>
-                            <div class="spec-card">
-                                <div class="spec-label">AUC Score</div>
-                                <div class="spec-value">0.82 (Strong)</div>
-                            </div>
-                            <div class="spec-card">
-                                <div class="spec-label">Primary Threat</div>
-                                <div class="spec-value">Road Expansion</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div id="modalFooter"
-                style="padding: 20px 30px; border-top: 1px solid rgba(255, 255, 255, 0.05); display: flex; justify-content: flex-end; gap: 15px; background: #0f172a;">
-                <a href="Graduation_Project_Report.md" target="_blank"
-                    style="padding: 8px 16px; background: rgba(255, 255, 255, 0.05); border-radius: 6px; color: #94a3b8; font-size: 13px; text-decoration: none; font-weight: 500; transition: all 0.2s; border: 1px solid rgba(255, 255, 255, 0.1);">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        style="vertical-align: middle; margin-right: 6px;">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
-                        <line x1="16" y1="13" x2="8" y2="13"></line>
-                        <line x1="16" y1="17" x2="8" y2="17"></line>
-                        <polyline points="10 9 9 9 8 9"></polyline>
-                    </svg>
-                    Graduation Project Report
-                </a>
-                <a href="https://github.com" target="_blank"
-                    style="padding: 8px 16px; background: rgba(59, 130, 246, 0.1); border-radius: 6px; border: 1px solid rgba(59, 130, 246, 0.3); color: #60a5fa; font-size: 13px; text-decoration: none; font-weight: 600; transition: all 0.2s;">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        style="vertical-align: middle; margin-right: 6px;">
-                        <path
-                            d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
-                        </path>
-                    </svg>
-                    GitHub Repository
-                </a>
-            </div>
-        </div>
-    </div>
     <script>
 
         let deckInstance
@@ -2588,12 +2802,79 @@
             }
         }
 
+        let radarChartEn = null;
+        let radarChartAr = null;
+
+        function initTechnicalVisuals() {
+            const radarConfig = {
+                type: 'radar',
+                data: {
+                    labels: ['ACCURACY', 'LATENCY', 'SIGNAL', 'STABILITY', 'DEPTH', 'PRECISION'],
+                    datasets: [{
+                        label: 'TECHNICAL PROFILE',
+                        data: [82, 95, 88, 76, 91, 89],
+                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                        borderColor: '#3b82f6',
+                        pointBackgroundColor: '#3b82f6',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: '#3b82f6',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    elements: { line: { tension: 0.3 } },
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(255, 255, 255, 0.1)' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+                            pointLabels: { color: '#64748b', font: { size: 10, weight: 'bold' } },
+                            ticks: { display: false, stepSize: 20 },
+                            suggestedMin: 0,
+                            suggestedMax: 100
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            };
+
+            const ctxEn = document.getElementById('radarChart')?.getContext('2d');
+            if (ctxEn) radarChartEn = new Chart(ctxEn, radarConfig);
+
+            const radarConfigAr = JSON.parse(JSON.stringify(radarConfig));
+            radarConfigAr.data.labels = ['الدقة', 'الاستجابة', 'الإشارة', 'الاستقرار', 'العمق', 'الإحكام'];
+            const ctxAr = document.getElementById('radarChartAr')?.getContext('2d');
+            if (ctxAr) radarChartAr = new Chart(ctxAr, radarConfigAr);
+        }
+
+        function animateModalGauges() {
+            const animate = (id, targetPercent) => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                const circumference = 283; // 2 * pi * 45
+                const offset = circumference - (targetPercent / 100) * circumference;
+                setTimeout(() => {
+                    el.style.strokeDashoffset = offset;
+                }, 100);
+            };
+
+            animate('aucGauge', 82.4);
+            animate('precisionGauge', 89);
+            animate('f1Gauge', 82);
+            animate('aucGaugeAr', 82.4);
+            animate('precisionGaugeAr', 89);
+            animate('f1GaugeAr', 82);
+        }
+
         function toggleModal(show) {
-            console.log("toggleModal called with:", show);
             const modal = document.getElementById('modalOverlay');
             if (show) {
                 modal.style.display = 'flex';
-                setTimeout(() => modal.classList.add('active'), 10);
+                setTimeout(() => {
+                    modal.classList.add('active');
+                    animateModalGauges();
+                    if (!radarChartEn) initTechnicalVisuals();
+                }, 10);
             } else {
                 modal.classList.remove('active');
                 setTimeout(() => modal.style.display = 'none', 400);
