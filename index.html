@@ -1585,164 +1585,97 @@
     <div id="modalOverlay" onclick="if(event.target === this) toggleModal(false)">
         <div id="modalContent">
             <div id="modalHeader">
-                <h2>Project Overview & GeoAI Methodology</h2>
-                <div onclick="toggleModal(false)"
-                    style="cursor: pointer; font-size: 24px; color: #94a3b8; font-weight: 300; background: rgba(255,255,255,0.05); padding: 5px 12px; border-radius: 8px;">
-                    ×</div>
-            </div>
-
-            <div id="modalBody">
-                <h3
-                    style="color:#10b981; font-size:18px; margin-bottom:20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; display:flex; align-items:center; gap:10px;">
-                    <span>🌟</span>
-                    المشروع: AI-Based Deforestation Risk Prediction – Amazon Basin
-                </h3>
-
-                <div style="display: flex; flex-direction: column; gap: 20px;">
-                    <!-- الفكرة -->
-                    <div class="highlight-box">
-                        <h4 style="color:#3b82f6; margin-bottom: 8px; font-size: 15px;">الفكرة الرئيسية</h4>
-                        <p style="font-size:14px; color:#cbd5e1; margin:0;">
-                            نتوقع المناطق المعرضة لإزالة الغابات باستخدام Spatial Analysis + AI.<br>
-                            <b>The model predicts deforestation risk using spatial and environmental variables.</b>
-                        </p>
+                <h2 data-en="Project Details" data-ar="تفاصيل المشروع">Project Details</h2>
+                <div style="display: flex; align-items: center; gap: 20px;">
+                    <div class="lang-toggle">
+                        <button id="lang-en" class="active" onclick="setLanguage('en')">EN</button>
+                        <button id="lang-ar" onclick="setLanguage('ar')">AR</button>
                     </div>
-
-                    <!-- مراحل المشروع -->
-                    <div class="highlight-box">
-                        <h4 style="color:#3b82f6; margin-bottom: 8px; font-size: 15px;">مراحل المشروع (الترتيب الحقيقي
-                            للشغل)</h4>
-                        <div
-                            style="font-size:13px; color:#e2e8f0; font-family: monospace; background: rgba(0,0,0,0.5); padding: 12px; border-radius: 6px; text-align: center;">
-                            Data ➔ Risk Model ➔ Visualization ➔ Spatial Analysis ➔ Model Validation
-                        </div>
-                    </div>
-
-                    <!-- المرحلة الأولى -->
-                    <div class="highlight-box">
-                        <h4 style="color:#3b82f6; margin-bottom: 8px; font-size: 15px;">1️⃣ المرحلة الأولى — البيانات
-                        </h4>
-                        <p style="font-size:13px; color:#cbd5e1; margin:0;">
-                            الملف: <code>forest_data_clean.json</code> | <b>150,000 نقطة</b><br>
-                            كل نقطة فيها: (موقع + درجة خطر) lat, lon, risk_score, risk_norm, elevation, color
-                        </p>
-                    </div>
-
-                    <!-- المرحلة الثانية -->
-                    <div class="highlight-box">
-                        <h4 style="color:#3b82f6; margin-bottom: 8px; font-size: 15px;">2️⃣ المرحلة الثانية — حساب الخطر
-                            (Risk Model)</h4>
-                        <p style="font-size:13px; color:#cbd5e1; margin-bottom: 8px;">الموديل يعمل حسب Risk Score. كلما
-                            زادت العوامل أدناه، يزيد خطر إزالة الغابات:</p>
-                        <div
-                            style="font-size:12px; color:#e2e8f0; font-family: monospace; background: rgba(0,0,0,0.5); padding: 10px; border-radius: 6px; border-left: 3px solid #3b82f6;">
-                            Risk Index =<br>
-                            0.30 Forest Loss + 0.20 Distance to Roads<br>
-                            + 0.15 Population Density + 0.15 Fire History<br>
-                            + 0.10 Slope + 0.10 Elevation
-                        </div>
-                    </div>
-
-                    <!-- المرحلة الثالثة -->
-                    <div class="highlight-box">
-                        <h4 style="color:#3b82f6; margin-bottom: 8px; font-size: 15px;">3️⃣ المرحلة الثالثة — الخريطة
-                            التفاعلية</h4>
-                        <ul style="margin:0; padding-left: 20px; font-size:13px; color:#cbd5e1; line-height: 1.8;">
-                            <li><b>3D Risk Map:</b> أعمدة تمثل ارتفاع العمود = risk_score</li>
-                            <li><b>Heatmap:</b> توضح مناطق الخطر العالية.</li>
-                            <li><b>Hotspots:</b> تحدد أهم تجمعات الخطر.</li>
-                            <li><b>Pie Chart:</b> يبين توزيع الخطر (مثال: High Risk ≈ 64%, Medium ≈ 22%, Low ≈ 14%)</li>
-                        </ul>
-                    </div>
-
-                    <!-- المرحلة الرابعة -->
-                    <div class="highlight-box">
-                        <h4 style="color:#3b82f6; margin-bottom: 8px; font-size: 15px;">4️⃣ المرحلة الرابعة — التحليل
-                        </h4>
-                        <p style="font-size:13px; color:#cbd5e1; margin:0; line-height: 1.6;">
-                            الكود <code>analysis.py</code> يعمل الآتي:<br>
-                            <b>1. ROC Curve:</b> يقيس هل الموديل صحيح؟ (النتيجة: AUC ≈ 0.82 وده ممتاز)<br>
-                            <b>2. DBSCAN:</b> يحدد Hotspots (تجمعات إزالة الغابات)<br>
-                            <b>3. Fire Validation:</b> يقارن بين المناطق الخطرة والحرائق للتحقق المستقل.
-                        </p>
-                    </div>
-
-                    <!-- المرحلة الخامسة -->
-                    <div class="highlight-box">
-                        <h4 style="color:#3b82f6; margin-bottom: 8px; font-size: 15px;">5️⃣ المرحلة الخامسة — التحقق من
-                            الموديل (Model Validation)</h4>
-                        <div style="display: flex; gap: 20px; align-items: center;">
-                            <div style="flex: 1; font-size:13px; color:#cbd5e1;">
-                                <p>المقياس: AUC Score<br>النتيجة: <b style="color: #10b981;">AUC = 0.82</b></p>
-                                <p style="margin-top: 10px;">التفسير:<br>0.5 = ضعيف | 0.7 = جيد | 0.8 = <b>قوي</b>
-                                    (موديلك قوي جداً).</p>
-                                <p style="margin-top: 10px;"><b>The model achieved an AUC score of 0.82, indicating
-                                        strong predictive performance.</b></p>
-                            </div>
-                            <div style="flex: 1;">
-                                <img src="model_validation_results.png"
-                                    style="width: 100%; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);"
-                                    onerror="this.src='image.png'" alt="Validation Charts">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- النتائج النهائية -->
-                    <div class="highlight-box"
-                        style="background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.3);">
-                        <h4 style="color:#ef4444; margin-bottom: 8px; font-size: 15px;">🏆 النتائج النهائية</h4>
-                        <p style="font-size:14px; color:#f8fafc; margin:0; line-height: 1.6;">
-                            <b>المناطق الأكثر عرضة لإزالة الغابات:</b> توجد في جنوب وشرق الأمازون.<br>
-                            <b>السبب:</b> الطرق، الزراعة، الحرائق.<br><br>
-                            <span style="color:#fecaca;">High-risk areas are mainly concentrated along road networks and
-                                agricultural expansion zones.</span>
-                        </p>
-                    </div>
-
-                    <!-- Methodology Framework -->
-                    <div class="highlight-box" style="text-align: center;">
-                        <h4 style="color:#3b82f6; margin-bottom: 15px; font-size: 15px;">GeoAI Risk Prediction Framework
-                        </h4>
-                        <img src="geoai_framework.png"
-                            style="max-width: 60%; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);"
-                            onerror="this.style.display='none'" alt="Framework">
-                        <p style="font-size:12px; color:#94a3b8; margin-top: 15px; padding: 0 40px;">
-                            The proposed GeoAI framework integrates satellite data, deep learning segmentation, spatial
-                            risk modeling, and validation techniques to predict deforestation risk across the Amazon
-                            Basin.
-                        </p>
-                    </div>
-
+                    <div id="closeModal" onclick="toggleModal(false)"
+                        style="font-size: 24px; color: #94a3b8; cursor: pointer;">×</div>
                 </div>
             </div>
 
-            <!-- Modal footer -->
-            <div class="modal-footer"
-                style="padding: 15px 30px; background: rgba(0,0,0,0.3); border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: flex-end; gap: 15px;">
+            <div id="modalBody" class="modal-lang-container">
+                <!-- English Content -->
+                <div data-lang-content="en" class="active">
+                    <div class="modal-section">
+                        <div class="section-title">Overview</div>
+                        <p class="modal-text">This model predicts deforestation risk in the Amazon Basin using spatial
+                            and environmental variables. It integrates 150,000 data points to calculate a comprehensive
+                            risk score based on forest loss, infrastructure proximity, and fire history.</p>
+                    </div>
+
+                    <div class="modal-grid">
+                        <div class="info-card">
+                            <div class="section-title">Methodology</div>
+                            <ul class="modal-text" style="padding-left: 20px;">
+                                <li><b>Data Ingestion:</b> Cleaning and processing 150K geopoints.</li>
+                                <li><b>Risk Modeling:</b> Weighted index based on environmental factors.</li>
+                                <li><b>Validation:</b> ROC/AUC analysis (Score: 0.82).</li>
+                            </ul>
+                        </div>
+                        <div class="info-card">
+                            <div class="section-title">Key Drivers</div>
+                            <div class="modal-text"
+                                style="font-family: monospace; font-size: 12px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px;">
+                                Risk = 0.3(Loss) + 0.2(Roads) + 0.15(Pop) + 0.15(Fire) + 0.2(Geog)
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-section" style="margin-top: 24px;">
+                        <div class="section-title">Validation Results</div>
+                        <div class="image-container">
+                            <img src="model_validation_results.png" class="modal-img" alt="Validation Results"
+                                onerror="this.src='https://via.placeholder.com/800x400?text=Validation+Charts'">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Arabic Content -->
+                <div data-lang-content="ar" class="rtl">
+                    <div class="modal-section">
+                        <div class="section-title">نظرة عامة</div>
+                        <p class="modal-text">يتوقع هذا النموذج مخاطر إزالة الغابات في حوض الأمازون باستخدام المتغيرات
+                            المكانية والبيئية. يدمج 150,000 نقطة بيانات لحساب درجة مخاطر شاملة بناءً على فقدان الغابات
+                            والقرب من البنية التحتية وتاريخ الحرائق.</p>
+                    </div>
+
+                    <div class="modal-grid">
+                        <div class="info-card">
+                            <div class="section-title">المنهجية</div>
+                            <ul class="modal-text" style="padding-right: 20px;">
+                                <li><b>جمع البيانات:</b> تنظيف ومعالجة 150 ألف نقطة جغرافية.</li>
+                                <li><b>نمذجة المخاطر:</b> مؤشر موزون بناءً على العوامل البيئية.</li>
+                                <li><b>التحقق:</b> تحليل ROC/AUC (الدرجة: 0.82).</li>
+                            </ul>
+                        </div>
+                        <div class="info-card">
+                            <div class="section-title">المحركات الرئيسية</div>
+                            <div class="modal-text"
+                                style="font-family: monospace; font-size: 12px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px;">
+                                الخطر = 0.3(فقد) + 0.2(طرق) + 0.15(سكان) + 0.15(حرائق) + 0.2(جغرافيا)
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-section" style="margin-top: 24px;">
+                        <div class="section-title">نتائج التحقق</div>
+                        <div class="image-container">
+                            <img src="model_validation_results.png" class="modal-img" alt="نتائج التحقق"
+                                onerror="this.src='https://via.placeholder.com/800x400?text=Validation+Charts'">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                style="padding: 20px 32px; background: rgba(0,0,0,0.2); border-top: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: flex-end; gap: 16px;">
                 <a href="Graduation_Project_Report.md" target="_blank"
-                    style="padding: 8px 16px; background: rgba(255,255,255,0.05); border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); color: #94a3b8; font-size: 13px; text-decoration: none; font-weight: 600; transition: all 0.2s;">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round"
-                        style="vertical-align: middle; margin-right: 6px;">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                        <polyline points="14 2 14 8 20 8"></polyline>
-                        <line x1="16" y1="13" x2="8" y2="13"></line>
-                        <line x1="16" y1="17" x2="8" y2="17"></line>
-                        <polyline points="10 9 9 9 8 9"></polyline>
-                    </svg>
-                    Graduation Project Report
-                </a>
+                    style="padding: 10px 18px; background: rgba(255,255,255,0.05); border-radius: 12px; color: #cbd5e1; font-size: 13px; text-decoration: none; font-weight: 600; border: 1px solid rgba(255,255,255,0.1);">Report</a>
                 <a href="https://github.com" target="_blank"
-                    style="padding: 8px 16px; background: rgba(59, 130, 246, 0.1); border-radius: 6px; border: 1px solid rgba(59, 130, 246, 0.3); color: #60a5fa; font-size: 13px; text-decoration: none; font-weight: 600; transition: all 0.2s;">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round"
-                        style="vertical-align: middle; margin-right: 6px;">
-                        <path
-                            d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22">
-                        </path>
-                    </svg>
-                    GitHub Repository
-                </a>
+                    style="padding: 10px 18px; background: #3b82f6; border-radius: 12px; color: white; font-size: 13px; text-decoration: none; font-weight: 600;">GitHub</a>
             </div>
         </div>
     </div>
@@ -2055,13 +1988,20 @@
         };
         const MAPBOX_TOKEN = "pk.eyJ1IjoibWFtZG91aGFobWVkMTU4MSIsImEiOiJjbTduaXVndjEwMDRsMm9zYXVhcHJ3eGt6In0.H_fBihpC9-p5Qp7q_WKgVw";
 
+        const setLoadMsg = (msg, pct) => {
+            const el = document.getElementById('loadStatus');
+            const bar = document.getElementById('loadBar');
+            if (el) el.innerText = msg;
+            if (bar) bar.style.width = pct + '%';
+        };
+
         fetch("forest_data_clean.json")
             .then(res => {
-                document.querySelector('#loadingOverlay p').innerText = 'Parsing 150,000 data points...';
+                setLoadMsg('Parsing 150,000 data points...', 25);
                 return res.json();
             })
             .then(data => {
-                document.querySelector('#loadingOverlay p').innerText = 'Initializing 3D engine...';
+                setLoadMsg('Initializing 3D engine...', 50);
 
                 dataGlobal = data;
 
@@ -2082,7 +2022,7 @@
 
                 // Defer the heavy data processing so the browser can paint the 3D canvas first
                 setTimeout(() => {
-                    document.querySelector('#loadingOverlay p').innerText = 'Building spatio-temporal index...';
+                    setLoadMsg('Building spatio-temporal index...', 70);
 
                     // Assign event years off-frame using chunked processing
                     const chunkSize = 10000;
@@ -2097,7 +2037,7 @@
                             requestAnimationFrame(processChunk);
                         } else {
                             // All chunks done — now render and animate
-                            document.querySelector('#loadingOverlay p').innerText = 'Rendering risk layers...';
+                            setLoadMsg('Rendering risk layers...', 90);
                             requestAnimationFrame(() => {
                                 renderLayers();
                                 growColumns();
@@ -2106,7 +2046,10 @@
 
                                 // Fade out loading overlay
                                 setTimeout(() => {
-                                    document.getElementById("loadingOverlay").classList.add("fade-out");
+                                    setLoadMsg('Ready.', 100);
+                                    setTimeout(() => {
+                                        document.getElementById("loadingOverlay").classList.add("fade-out");
+                                    }, 250);
                                 }, 400);
                             });
                         }
@@ -2115,7 +2058,7 @@
                 }, 100);
             })
             .catch(err => {
-                document.querySelector('#loadingOverlay p').innerText = 'Error loading data. Check forest_data_clean.json';
+                setLoadMsg('Error loading data. Check forest_data_clean.json', 0);
                 console.error('Data load error:', err);
             });
 
@@ -2128,6 +2071,20 @@
             document.getElementById('forestVal').innerText = forestW.toFixed(1) + 'x';
             document.getElementById('roadVal').innerText = roadW.toFixed(1) + 'x';
             renderLayers();
+        }
+
+        function resetCamera() {
+            if (!deckInstance) return;
+            deckInstance.setProps({
+                initialViewState: {
+                    latitude: -10.95,
+                    longitude: -62.73,
+                    zoom: 6.5,
+                    pitch: 50,
+                    bearing: -15,
+                    transitionDuration: 1200
+                }
+            });
         }
 
         function exportGeoJSON() {
@@ -2583,6 +2540,22 @@
                 sidebar.classList.add('active');
             } else {
                 sidebar.classList.remove('active');
+            }
+        }
+
+        function setLanguage(lang) {
+            const contents = document.querySelectorAll('[data-lang-content]');
+            contents.forEach(el => {
+                el.classList.toggle('active', el.getAttribute('data-lang-content') === lang);
+            });
+
+            document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+            document.getElementById('lang-ar').classList.toggle('active', lang === 'ar');
+
+            // Update title
+            const titleEl = document.getElementById('modalHeaderTitle');
+            if (titleEl) {
+                titleEl.innerText = titleEl.getAttribute(`data-${lang}`);
             }
         }
 
