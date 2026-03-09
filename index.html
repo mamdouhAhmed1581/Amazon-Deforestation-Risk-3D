@@ -2016,16 +2016,16 @@
         const MAPBOX_TOKEN = "pk.eyJ1IjoibWFtZG91aGFobWVkMTU4MSIsImEiOiJjbTduaXVndjEwMDRsMm9zYXVhcHJ3eGt6In0.H_fBihpC9-p5Qp7q_WKgVw";
 
         fetch("forest_data_clean.json")
-            .then(res => res.json())
+            .then(res => {
+                document.querySelector('#loadingOverlay p').innerText = 'Parsing 150,000 data points...';
+                return res.json();
+            })
             .then(data => {
+                document.querySelector('#loadingOverlay p').innerText = 'Initializing 3D engine...';
 
-                dataGlobal = data
+                dataGlobal = data;
 
-                // Assign a fake event year between 2001 and 2030 for spatial-temporal simulation
-                data.forEach(p => {
-                    p.event_year = 2001 + Math.floor(Math.random() * 30);
-                });
-
+                // Create DeckGL instance FIRST so the map base tiles start loading
                 deckInstance = new deck.DeckGL({
                     container: "deck-container",
                     mapStyle: DARK_MAP,
@@ -2037,23 +2037,47 @@
                         pitch: 0,
                         bearing: 0
                     },
-                    controller: true,
                     controller: true
-                })
+                });
 
-                // Render layers which also updates stats and builds the chart
-                renderLayers();
-
-                // Start initial animations
-                startAnimation()
-                growColumns()
-
-                // Hide loader
+                // Defer the heavy data processing so the browser can paint the 3D canvas first
                 setTimeout(() => {
-                    document.getElementById("loadingOverlay").classList.add("fade-out")
-                }, 500)
+                    document.querySelector('#loadingOverlay p').innerText = 'Building spatio-temporal index...';
 
+                    // Assign event years off-frame using chunked processing
+                    const chunkSize = 10000;
+                    let i = 0;
+                    function processChunk() {
+                        const end = Math.min(i + chunkSize, data.length);
+                        for (; i < end; i++) {
+                            data[i].event_year = 2001 + Math.floor(Math.random() * 30);
+                        }
+                        if (i < data.length) {
+                            // Yield to browser between chunks to avoid jank
+                            requestAnimationFrame(processChunk);
+                        } else {
+                            // All chunks done — now render and animate
+                            document.querySelector('#loadingOverlay p').innerText = 'Rendering risk layers...';
+                            requestAnimationFrame(() => {
+                                renderLayers();
+                                growColumns();
+                                // Start the cinematic animation AFTER the first frame is drawn
+                                requestAnimationFrame(() => startAnimation());
+
+                                // Fade out loading overlay
+                                setTimeout(() => {
+                                    document.getElementById("loadingOverlay").classList.add("fade-out");
+                                }, 400);
+                            });
+                        }
+                    }
+                    processChunk();
+                }, 100);
             })
+            .catch(err => {
+                document.querySelector('#loadingOverlay p').innerText = 'Error loading data. Check forest_data_clean.json';
+                console.error('Data load error:', err);
+            });
 
         let forestW = 1.0;
         let roadW = 1.0;
