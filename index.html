@@ -2329,28 +2329,44 @@
 
         function startAnimation() {
             let frame = 0;
-            // 130 frames = ~2.2 seconds at 60fps — punchy & snappy cinematic entrance
-            let totalFrames = 130;
+            // Phase 1: Fast drop  → Phase 2: Majestic tilt → Phase 3: Slow cinematic pan & settle
+            // Total: ~220 frames ≈ 3.7s at 60fps — dramatic and smooth
+            let totalFrames = 220;
 
-            function easeOutCubic(x) { return 1 - Math.pow(1 - x, 3); }
-            function easeInOutQuad(x) { return x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2; }
+            // Easing functions
+            function easeOutExpo(x) { return x === 1 ? 1 : 1 - Math.pow(2, -10 * x); }
+            function easeOutQuart(x) { return 1 - Math.pow(1 - x, 4); }
+            function easeInOutSine(x) { return -(Math.cos(Math.PI * x) - 1) / 2; }
 
             function animate() {
                 frame++;
-                let progress = frame / totalFrames;
-                let dropProgress = easeOutCubic(progress);
+                let p = frame / totalFrames;  // 0 → 1
 
-                // Zoom: From very far out (2.5) to final 3D view (6.5)
-                let zoom = 2.5 + (6.5 - 2.5) * dropProgress;
+                let zoom, pitch, bearing;
 
-                // Pitch: Tilt starts at 40% of the animation and ramps to 50 degrees
-                let pitch = 0;
-                if (progress > 0.4) {
-                    pitch = 50 * easeInOutQuad((progress - 0.4) / 0.6);
+                // ── PHASE 1 (0-45%): Rocket drop from outer space ──
+                if (p < 0.45) {
+                    let t = p / 0.45;
+                    // Zoom from global view (1.5) down to treetop level (6.8)
+                    zoom = 1.5 + (6.8 - 1.5) * easeOutExpo(t);
+                    pitch = 0;   // Looking straight down from space
+                    bearing = 0;
                 }
-
-                // Bearing: Quick sweeping pan
-                let bearing = -20 * easeOutCubic(progress);
+                // ── PHASE 2 (45-70%): System tilts to 3D perspective ──
+                else if (p < 0.70) {
+                    let t = (p - 0.45) / 0.25;
+                    zoom = 6.8;  // Locked zoom
+                    pitch = 55 * easeInOutSine(t);  // 0° → 55° dramatic tilt
+                    bearing = -30 * easeOutQuart(t); // Sweeping pan
+                }
+                // ── PHASE 3 (70-100%): Cinematic slow swoop & settle ──
+                else {
+                    let t = (p - 0.70) / 0.30;
+                    // Slowly pull back slightly (6.8 → 6.5) for final framing
+                    zoom = 6.8 - 0.3 * easeInOutSine(t);
+                    pitch = 55 - 5 * easeInOutSine(t); // Settle to 50°
+                    bearing = -30 + 15 * easeInOutSine(t); // Settle to -15°
+                }
 
                 deckInstance.setProps({
                     initialViewState: {
@@ -2363,7 +2379,7 @@
                 });
                 if (frame < totalFrames) requestAnimationFrame(animate);
             }
-            setTimeout(animate, 80);
+            setTimeout(animate, 60); // Tiny delay so data loads first
         }
 
         function setMode(mode) {
