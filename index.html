@@ -1452,8 +1452,37 @@
 
     <!-- Loading Screen -->
     <div id="loadingOverlay">
-        <div class="loader-ring"></div>
-        <p>Loading Amazon Basin data...</p>
+        <div style="text-align: center; display: flex; flex-direction: column; align-items: center; gap: 20px;">
+            <!-- Animated rings -->
+            <div style="position:relative; width:60px; height:60px;">
+                <div
+                    style="position:absolute;inset:0;border-radius:50%;border:2px solid rgba(59,130,246,0.15);border-top-color:#3b82f6;animation:spin 1s linear infinite;">
+                </div>
+                <div
+                    style="position:absolute;inset:8px;border-radius:50%;border:2px solid rgba(59,130,246,0.07);border-bottom-color:#60a5fa;animation:spin 1.5s linear reverse infinite;">
+                </div>
+                <div
+                    style="position:absolute;inset:16px;border-radius:50%;border:1px solid rgba(59,130,246,0.1);border-left-color:#93c5fd;animation:spin 2s linear infinite;">
+                </div>
+            </div>
+            <!-- Title -->
+            <div>
+                <div
+                    style="font-size:14px;font-weight:800;color:#f8fafc;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;">
+                    🌿 Amazon Basin GeoAI</div>
+                <div style="font-size:11px;color:#475569;letter-spacing:0.5px;">Deforestation Risk Prediction Engine
+                </div>
+            </div>
+            <!-- Progressive status -->
+            <div id="loadStatus" style="font-size:12px;color:#60a5fa;letter-spacing:0.5px;min-width:260px;">Loading
+                Amazon Basin data...</div>
+            <!-- Progress bar -->
+            <div style="width:240px;height:3px;background:rgba(255,255,255,0.07);border-radius:3px;overflow:hidden;">
+                <div id="loadBar"
+                    style="height:100%;width:5%;background:linear-gradient(90deg,#3b82f6,#60a5fa);border-radius:3px;transition:width 0.5s ease;">
+                </div>
+            </div>
+        </div>
     </div>
 
     <div id="deck-container"></div>
@@ -1517,6 +1546,17 @@
                 <line x1="12" y1="15" x2="12" y2="3"></line>
             </svg>
             Export Vulnerable Zones
+        </button>
+
+        <button onclick="resetCamera()"
+            style="background:rgba(255,255,255,0.04);color:#94a3b8;border:1px solid rgba(255,255,255,0.08);padding:10px;border-radius:12px;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.2s;width:100%;display:flex;align-items:center;justify-content:center;gap:7px;letter-spacing:0.5px;"
+            onmouseover="this.style.background='rgba(59,130,246,0.1)';this.style.color='#60a5fa';this.style.borderColor='rgba(59,130,246,0.3)'"
+            onmouseout="this.style.background='rgba(255,255,255,0.04)';this.style.color='#94a3b8';this.style.borderColor='rgba(255,255,255,0.08)'">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                <path d="M3 3v5h5" />
+            </svg>
+            Reset Camera View
         </button>
     </div>
 
