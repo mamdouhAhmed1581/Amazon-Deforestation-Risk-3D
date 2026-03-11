@@ -2188,7 +2188,7 @@
         </div>
 
         <div class="analysis-card">
-            <div class="sidebar-section-title">Explainable AI Drivers</div>
+            <div class="sidebar-section-title">AI Risk Explanation</div>
             <div class="explain-list">
                 <div class="explain-row">
                     <div class="explain-label"><span id="expLabel1">Local hotspot density</span><span
@@ -2434,7 +2434,12 @@
                         </div>
                         <div class="modal-text">
                             <div class="highlight-box">
-                                <b>Platform Goal:</b>
+                                <p
+                                    style="font-size: 14px; color: #60a5fa; line-height: 1.5; margin-bottom: 8px; font-weight: 600;">
+                                    This platform integrates AI-based deforestation prediction with spatial analysis and
+                                    interactive visualization to support environmental decision-making.
+                                </p>
+                                <b>Operational Objective:</b>
                                 We developed a GeoAI platform that integrates satellite data, machine learning
                                 prediction,
                                 and spatial analysis to identify and prioritize likely future forest loss zones.
@@ -3173,20 +3178,16 @@
                     const pointScore = getPointScore(object);
                     const validationEvidence = getValidationEvidence(object);
                     const distanceToRoadKm = getDistanceToRoadKm(object);
+                    const probability = getProbabilityPercent(pointScore);
                     return {
-                        html: `<div style="line-height:1.6">
-                            <b style="color:#3b82f6">Risk Score:</b> ${(getProbabilityPercent(pointScore) / 100).toFixed(2)}<br>
-                            <span style="color:#94a3b8">Class:</span> ${getRiskClassText(pointScore)}<br>
+                        html: `<div style="line-height:1.6; padding: 4px;">
+                            <div style="font-weight:bold; color:#ef4444; border-bottom:1px solid rgba(255,255,255,0.1); margin-bottom:5px; padding-bottom:3px">Risk Profile</div>
+                            <span style="color:#94a3b8">Risk Score:</span> <span style="font-family:'Courier New',monospace; font-weight:bold">${(probability / 100).toFixed(2)}</span><br>
                             <span style="color:#94a3b8">Prediction Year:</span> ${object.event_year}<br>
                             <span style="color:#94a3b8">Distance to Road:</span> ${distanceToRoadKm !== null ? distanceToRoadKm.toFixed(1) : '--'} km<br>
-                            <span style="color:#94a3b8">Scenario:</span> ${SCENARIO_CONFIG[currentScenario].label}<br>
-                            <span style="color:#94a3b8">Observed Forest Loss:</span> ${validationEvidence.observedForestLoss ? 'YES' : 'NO'}<br>
-                            <span style="color:#94a3b8">Satellite Validation:</span> ${validationEvidence.satelliteValidation}<br>
-                            <span style="color:#94a3b8">Lat:</span> ${object.lat.toFixed(4)}<br>
-                            <span style="color:#94a3b8">Lon:</span> ${object.lon.toFixed(4)}<br>
-                            <div style="font-size:10px; margin-top:5px; color:#60a5fa">Click for full analysis</div>
+                            <div style="font-size:10px; margin-top:5px; color:#60a5fa">Click for detailed decision metrics</div>
                           </div>`,
-                        style: { color: 'white' }
+                        style: { color: 'white', backgroundColor: 'rgba(15, 23, 42, 0.95)', border: '1px solid #334155' }
                     };
                 }
             });
@@ -3512,10 +3513,10 @@
             const temporalPersistence = clamp01((target.event_year - 2001) / (2030 - 2001));
 
             const rawDrivers = [
-                { label: 'Local hotspot density', value: Math.max(0.12, localHotspotDensity * 1.8) },
-                { label: 'Frontier exposure', value: Math.max(0.1, frontierExposure) },
-                { label: 'Terrain accessibility', value: Math.max(0.08, terrainAccessibility) },
-                { label: 'Temporal persistence', value: Math.max(0.08, (temporalPersistence * 0.55) + ((regionAverageRisk - 140) / 45) * 0.45) }
+                { label: 'Road proximity', value: Math.max(0.12, localHotspotDensity * 1.8) },
+                { label: 'Population pressure', value: Math.max(0.1, frontierExposure) },
+                { label: 'Historical forest loss', value: Math.max(0.08, (temporalPersistence * 0.55) + ((regionAverageRisk - 140) / 45) * 0.45) },
+                { label: 'Elevation vulnerability', value: Math.max(0.08, terrainAccessibility) }
             ];
 
             const total = rawDrivers.reduce((sum, item) => sum + item.value, 0) || 1;
