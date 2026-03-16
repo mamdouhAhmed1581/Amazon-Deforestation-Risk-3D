@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Scenario Simulator — GeoAI Deforestation Platform</title>
+    <meta name="description" content="Simulate environmental scenarios and predict deforestation impact">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/platform.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .page-header { margin-bottom: 28px; }
+        .page-header h1 { font-size: 28px; font-weight: 800; color: #f8fafc; letter-spacing: -0.5px; margin-bottom: 6px; }
+        .page-header p { font-size: 14px; color: #64748b; font-weight: 500; }
+        .scenario-controls { display: flex; flex-direction: column; gap: 28px; }
+        .scenario-result-box {
+            background: rgba(239, 68, 68, 0.05);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            margin-top: 16px;
+        }
+        .scenario-result-box.positive {
+            background: rgba(34, 197, 94, 0.05);
+            border-color: rgba(34, 197, 94, 0.2);
+        }
+        .result-big { font-size: 48px; font-weight: 800; line-height: 1; margin-bottom: 8px; }
+        .result-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #64748b; }
+        .comparison-cards { display: grid; grid-template-columns: 1fr 80px 1fr; gap: 16px; align-items: center; margin-top: 24px; }
+        .comp-card { background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(255,255,255,0.06); border-radius: 16px; padding: 20px; text-align: center; }
+        .comp-arrow { text-align: center; font-size: 28px; color: #64748b; }
+        .comp-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #64748b; margin-bottom: 12px; }
+        .comp-value { font-size: 32px; font-weight: 800; color: #f8fafc; }
+        .policy-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        .policy-option:hover {
+            border-color: rgba(59, 130, 246, 0.2);
+        }
+        .policy-option.active {
+            border-color: rgba(34, 197, 94, 0.3);
+            background: rgba(34, 197, 94, 0.05);
+        }
+        .policy-label { font-size: 13px; font-weight: 600; color: #e2e8f0; }
+        .policy-desc { font-size: 11px; color: #64748b; margin-top: 4px; }
+
+        /* ===== Premium Loading Overlay ===== */
+        #loadingOverlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at 50% 50%, #0a1120, #050a14);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #loadingOverlay.fade-out { opacity: 0; pointer-events: none; }
+        .loader-viz { position: relative; width: 80px; height: 80px; margin-bottom: 24px; }
+        .loader-ring {
+            position: absolute; inset: 0; border: 2px solid rgba(59, 130, 246, 0.1);
+            border-top-color: #3b82f6; border-radius: 50%;
+            animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        }
+        .loader-ring-inner {
+            position: absolute; inset: 12px; border: 2px solid rgba(16, 185, 129, 0.1);
+            border-top-color: #10b981; border-radius: 50%;
+            animation: spin 0.8s cubic-bezier(0.5, 0, 0.5, 1) infinite reverse;
+        }
+        #loadingOverlay p {
+            color: #94a3b8; font-size: 14px; font-weight: 500; letter-spacing: 0.5px;
+            animation: pulse-text 2s ease-in-out infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes pulse-text { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+    </style>
+</head>
+<body>
+    <nav class="platform-nav">
+        <a href="index.html" class="nav-brand">
+            <div class="nav-brand-icon">AI</div>
+            <div class="nav-brand-text">Geo<span>AI</span> Platform</div>
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html"><span class="nav-icon">📊</span> Dashboard</a></li>
+            <li><a href="spatial-analysis.html"><span class="nav-icon">🗺️</span> Spatial Analysis</a></li>
+            <li><a href="ai-model.html"><span class="nav-icon">🧠</span> AI Model</a></li>
+            <li><a href="scenario-simulator.html" class="active"><span class="nav-icon">⚡</span> Simulator</a></li>
+            <li><a href="reports.html"><span class="nav-icon">📄</span> Reports</a></li>
+            <li><a href="project-details.html"><span class="nav-icon">📋</span> Project Details</a></li>
+        </ul>
+        <div class="nav-status"><div class="nav-status-dot"></div> Simulator Ready</div>
+    </nav>
+
+    <!-- Loading Screen -->
+    <div id="loadingOverlay">
+        <div class="loader-viz">
+            <div class="loader-ring"></div>
+            <div class="loader-ring-inner"></div>
+        </div>
+        <p>Configuring Scenario Engine...</p>
+    </div>
+
+    <div class="page-container">
+        <div class="page-header">
+            <h1>⚡ Scenario Simulator</h1>
+            <p>Modify environmental variables and visualize their predicted impact on deforestation risk</p>
+        </div>
+
+        <div class="content-grid sidebar-layout">
+            <!-- Left: Controls -->
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+                <!-- Scenario Sliders -->
+                <div class="chart-box">
+                    <h3>🎛️ Environmental Variables</h3>
+                    <div class="scenario-controls">
+                        <div class="slider-group">
+                            <div class="slider-label">
+                                <span>🛤️ Road Expansion</span>
+                                <span class="slider-val" id="roadVal">+20%</span>
+                            </div>
+                            <input type="range" class="range-slider" id="roadSlider" min="-50" max="100" value="20" oninput="updateScenario()">
+                            <div style="display: flex; justify-content: space-between; font-size: 10px; color: #475569; margin-top: 4px;">
+                                <span>-50% (Reduced)</span><span>0%</span><span>+100% (Major Growth)</span>
+                            </div>
+                        </div>
+                        <div class="slider-group">
+                            <div class="slider-label">
+                                <span>👥 Population Pressure</span>
+                                <span class="slider-val" id="popVal">+15%</span>
+                            </div>
+                            <input type="range" class="range-slider" id="popSlider" min="-30" max="80" value="15" oninput="updateScenario()">
+                            <div style="display: flex; justify-content: space-between; font-size: 10px; color: #475569; margin-top: 4px;">
+                                <span>-30%</span><span>0%</span><span>+80%</span>
+                            </div>
+                        </div>
+                        <div class="slider-group">
+                            <div class="slider-label">
+                                <span>🔥 Fire Frequency</span>
+                                <span class="slider-val" id="fireVal">+10%</span>
+                            </div>
+                            <input type="range" class="range-slider" id="fireSlider" min="-40" max="60" value="10" oninput="updateScenario()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Protection Policies -->
+                <div class="chart-box">
+                    <h3>🛡️ Protection Policies</h3>
+                    <div class="policy-option active" onclick="togglePolicy(this)">
+                        <div>
+                            <div class="policy-label">🌿 Strict Forest Reserve</div>
+                            <div class="policy-desc">Complete ban on logging in protected areas</div>
+                        </div>
+                        <div class="toggle-switch active"></div>
+                    </div>
+                    <div class="policy-option" onclick="togglePolicy(this)">
+                        <div>
+                            <div class="policy-label">🚧 Road Construction Ban</div>
+                            <div class="policy-desc">No new roads within 50km of reserves</div>
+                        </div>
+                        <div class="toggle-switch"></div>
+                    </div>
+                    <div class="policy-option" onclick="togglePolicy(this)">
+                        <div>
+                            <div class="policy-label">📡 Satellite Monitoring</div>
+                            <div class="policy-desc">Real-time deforestation alert system</div>
+                        </div>
+                        <div class="toggle-switch"></div>
+                    </div>
+                    <div class="policy-option" onclick="togglePolicy(this)">
+                        <div>
+                            <div class="policy-label">💰 Carbon Credit Incentive</div>
+                            <div class="policy-desc">Financial incentives for forest preservation</div>
+                        </div>
+                        <div class="toggle-switch"></div>
+                    </div>
+                </div>
+
+                <!-- Presets -->
+                <div class="chart-box">
+                    <h3>⚙️ Quick Scenarios</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px;">
+                        <button class="btn btn-danger" onclick="setPreset('worst')">🔴 Worst Case</button>
+                        <button class="btn btn-success" onclick="setPreset('best')">🟢 Best Case</button>
+                        <button class="btn btn-primary" onclick="setPreset('current')">🔵 Current Trend</button>
+                        <button class="btn btn-ghost" onclick="setPreset('reset')">⚪ Reset</button>
+                    </div>
+                    <button class="btn btn-primary" style="width: 100%; height: 48px; font-weight: 800; border-radius: 12px; box-shadow: 0 8px 16px rgba(59, 130, 246, 0.2);" onclick="applyToDashboard()">
+                        🛰️ Apply to Live Dashboard
+                    </button>
+                </div>
+            </div>
+
+            <!-- Right: Results -->
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+                <!-- Impact Result -->
+                <div class="chart-box">
+                    <h3>📊 Predicted Impact</h3>
+                    <div class="scenario-result-box" id="resultBox">
+                        <div class="result-big" id="resultValue" style="color: #ef4444;">+12.4%</div>
+                        <div class="result-label">Predicted Deforestation Change</div>
+                    </div>
+                    <div class="comparison-cards">
+                        <div class="comp-card">
+                            <div class="comp-title">Baseline</div>
+                            <div class="comp-value" style="color: #3b82f6;">63.8%</div>
+                            <div style="font-size: 10px; color: #64748b; margin-top: 4px;">HIGH RISK AREA</div>
+                        </div>
+                        <div class="comp-arrow">→</div>
+                        <div class="comp-card">
+                            <div class="comp-title">Simulated</div>
+                            <div class="comp-value" id="simValue" style="color: #ef4444;">76.2%</div>
+                            <div style="font-size: 10px; color: #64748b; margin-top: 4px;">HIGH RISK AREA</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Impact Chart -->
+                <div class="chart-box">
+                    <h3>📈 Deforestation Projection (2025–2035)</h3>
+                    <canvas id="projectionChart" height="220"></canvas>
+                </div>
+
+                <!-- Socio-Economic Impact -->
+                <div class="chart-box">
+                    <h3>👥 Socio-Economic Indicators</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 8px;">
+                        <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.1); border-radius: 12px; padding: 14px; text-align: center;">
+                            <div style="font-size: 10px; color: #10b981; font-weight: 700; text-transform: uppercase;">Carbon Credits</div>
+                            <div style="font-size: 20px; font-weight: 800; color: #f8fafc; margin: 4px 0;" id="carbonVal">$4.2M</div>
+                            <div style="font-size: 9px; color: #64748b;">EST. ANNUAL OFFSET</div>
+                        </div>
+                        <div style="background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.1); border-radius: 12px; padding: 14px; text-align: center;">
+                            <div style="font-size: 10px; color: #f59e0b; font-weight: 700; text-transform: uppercase;">Affeclted Pop.</div>
+                            <div style="font-size: 20px; font-weight: 800; color: #f8fafc; margin: 4px 0;" id="socialVal">12.5k</div>
+                            <div style="font-size: 9px; color: #64748b;">DISPLACEMENT RISK</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Zone Changes -->
+                <div class="chart-box">
+                    <h3>🎯 Risk Zone Changes</h3>
+                    <div class="metric-row">
+                        <span class="metric-name">🔴 High Risk Zones</span>
+                        <span class="metric-val" id="highZones" style="color: #ef4444;">+8,420 cells</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-name">🟡 Medium Risk Zones</span>
+                        <span class="metric-val" id="medZones" style="color: #f59e0b;">+3,210 cells</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-name">🟢 Low Risk Zones</span>
+                        <span class="metric-val" id="lowZones" style="color: #22c55e;">-11,630 cells</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-name">📉 Forest Area at Risk</span>
+                        <span class="metric-val" id="forestArea">~24,300 km²</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let projChart;
+        function initChart() {
+            const ctx = document.getElementById('projectionChart').getContext('2d');
+            projChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['2025', '2026', '2027', '2028', '2029', '2030', '2031', '2032', '2033', '2034', '2035'],
+                    datasets: [
+                        {
+                            label: 'Baseline',
+                            data: [63.8, 64.2, 64.8, 65.3, 65.9, 66.4, 67.0, 67.5, 68.1, 68.6, 69.2],
+                            borderColor: '#3b82f6',
+                            borderWidth: 2,
+                            borderDash: [6, 3],
+                            pointRadius: 0,
+                            fill: false,
+                            tension: 0.3
+                        },
+                        {
+                            label: 'Simulated',
+                            data: [63.8, 65.5, 67.8, 69.8, 71.4, 73.0, 74.2, 75.1, 75.8, 76.0, 76.2],
+                            borderColor: '#ef4444',
+                            backgroundColor: 'rgba(239, 68, 68, 0.08)',
+                            borderWidth: 3,
+                            pointRadius: 3,
+                            pointBackgroundColor: '#ef4444',
+                            fill: true,
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { labels: { color: '#94a3b8', font: { family: 'Inter', size: 11 } } }
+                    },
+                    scales: {
+                        x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#64748b', font: { size: 10 } } },
+                        y: {
+                            title: { display: true, text: 'High Risk Area %', color: '#64748b', font: { family: 'Inter', size: 11 } },
+                            grid: { color: 'rgba(255,255,255,0.04)' },
+                            ticks: { color: '#64748b', font: { size: 10 } },
+                            min: 50, max: 100
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateScenario() {
+            const road = parseInt(document.getElementById('roadSlider').value);
+            const pop = parseInt(document.getElementById('popSlider').value);
+            const fire = parseInt(document.getElementById('fireSlider').value);
+            document.getElementById('roadVal').textContent = (road >= 0 ? '+' : '') + road + '%';
+            document.getElementById('popVal').textContent = (pop >= 0 ? '+' : '') + pop + '%';
+            document.getElementById('fireVal').textContent = (fire >= 0 ? '+' : '') + fire + '%';
+
+            const activePolicies = document.querySelectorAll('.policy-option.active').length;
+            const policyReduction = activePolicies * 3.5;
+            const impact = (road * 0.47 + pop * 0.07 + fire * 0.22) * 0.15 - policyReduction;
+            const change = Math.round(impact * 10) / 10;
+            const baseline = 63.8;
+            const simulated = Math.round((baseline + change) * 10) / 10;
+
+            const resultBox = document.getElementById('resultBox');
+            const resultVal = document.getElementById('resultValue');
+            resultVal.textContent = (change >= 0 ? '+' : '') + change + '%';
+            resultVal.style.color = change >= 0 ? '#ef4444' : '#22c55e';
+            resultBox.className = 'scenario-result-box' + (change < 0 ? ' positive' : '');
+
+            document.getElementById('simValue').textContent = simulated + '%';
+            document.getElementById('simValue').style.color = change >= 0 ? '#ef4444' : '#22c55e';
+
+            const highChange = Math.round(change * 680);
+            const medChange = Math.round(change * 260);
+            const lowChange = -(highChange + medChange);
+            document.getElementById('highZones').textContent = (highChange >= 0 ? '+' : '') + highChange.toLocaleString() + ' cells';
+            document.getElementById('medZones').textContent = (medChange >= 0 ? '+' : '') + medChange.toLocaleString() + ' cells';
+            document.getElementById('lowZones').textContent = lowChange.toLocaleString() + ' cells';
+            document.getElementById('forestArea').textContent = '~' + Math.round(Math.abs(change) * 1960).toLocaleString() + ' km²';
+
+            // Update chart
+            if (projChart) {
+                const simData = [baseline];
+                for (let i = 1; i <= 10; i++) {
+                    const progress = i / 10;
+                    simData.push(Math.round((baseline + change * (0.3 + 0.7 * Math.pow(progress, 0.7))) * 10) / 10);
+                }
+                projChart.data.datasets[1].data = simData;
+                projChart.data.datasets[1].borderColor = change >= 0 ? '#ef4444' : '#22c55e';
+                projChart.data.datasets[1].backgroundColor = change >= 0 ? 'rgba(239,68,68,0.08)' : 'rgba(34,197,94,0.08)';
+                projChart.data.datasets[1].pointBackgroundColor = change >= 0 ? '#ef4444' : '#22c55e';
+                projChart.update('none');
+            }
+        }
+
+        function togglePolicy(el) {
+            el.classList.toggle('active');
+            el.querySelector('.toggle-switch').classList.toggle('active');
+            updateScenario();
+        }
+
+        function setPreset(type) {
+            const road = document.getElementById('roadSlider');
+            const pop = document.getElementById('popSlider');
+            const fire = document.getElementById('fireSlider');
+            const policies = document.querySelectorAll('.policy-option');
+
+            if (type === 'worst') {
+                road.value = 80; pop.value = 60; fire.value = 50;
+                policies.forEach(p => { p.classList.remove('active'); p.querySelector('.toggle-switch').classList.remove('active'); });
+            } else if (type === 'best') {
+                road.value = -40; pop.value = -20; fire.value = -30;
+                policies.forEach(p => { p.classList.add('active'); p.querySelector('.toggle-switch').classList.add('active'); });
+            } else if (type === 'current') {
+                road.value = 20; pop.value = 15; fire.value = 10;
+                policies[0].classList.add('active'); policies[0].querySelector('.toggle-switch').classList.add('active');
+                for (let i = 1; i < policies.length; i++) { policies[i].classList.remove('active'); policies[i].querySelector('.toggle-switch').classList.remove('active'); }
+            } else {
+                road.value = 0; pop.value = 0; fire.value = 0;
+                policies.forEach(p => { p.classList.remove('active'); p.querySelector('.toggle-switch').classList.remove('active'); });
+            }
+            updateScenario();
+        }
+
+        function applyToDashboard() {
+            const road = parseInt(document.getElementById('roadSlider').value);
+            const pop = parseInt(document.getElementById('popSlider').value);
+            const fire = parseInt(document.getElementById('fireSlider').value);
+            const policies = Array.from(document.querySelectorAll('.policy-option.active')).map(p => p.querySelector('.policy-label').textContent.trim());
+            
+            const simulationState = {
+                road,
+                pop,
+                fire,
+                policies,
+                timestamp: Date.now()
+            };
+            
+            localStorage.setItem('geoai_sim_state', JSON.stringify(simulationState));
+            
+            const btn = event.currentTarget;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '✅ Applied Successfully!';
+            btn.style.background = '#22c55e';
+            
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.background = '';
+                // Optional: redirect to dashboard
+                // window.location.href = 'index.html';
+            }, 2000);
+        }
+
+        initChart();
+        updateScenario();
+
+        // Hide loading
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const overlay = document.getElementById('loadingOverlay');
+                if (overlay) overlay.classList.add('fade-out');
+            }, 800);
+        });
+    </script>
+</body>
+</html>

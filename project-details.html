@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Project Details — GeoAI Deforestation Platform</title>
+    <meta name="description" content="Project methodology, data pipeline, and technical documentation for the GeoAI deforestation analysis">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/platform.css">
+    <style>
+        .page-header { margin-bottom: 28px; }
+        .page-header h1 { font-size: 28px; font-weight: 800; color: #f8fafc; letter-spacing: -0.5px; margin-bottom: 6px; }
+        .page-header p { font-size: 14px; color: #64748b; font-weight: 500; }
+        .pipeline-container {
+            display: flex;
+            align-items: stretch;
+            gap: 0;
+            overflow-x: auto;
+            padding: 8px 0;
+            margin-bottom: 28px;
+        }
+        .pipeline-step {
+            flex: 1;
+            min-width: 180px;
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 24px 20px;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        .pipeline-step:hover {
+            border-color: rgba(59, 130, 246, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+        .pipeline-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #334155;
+            padding: 0 8px;
+        }
+        .pipeline-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+        .pipeline-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #f8fafc;
+            margin-bottom: 6px;
+        }
+        .pipeline-desc {
+            font-size: 11px;
+            color: #64748b;
+            line-height: 1.5;
+        }
+        .pipeline-num {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 800;
+            color: white;
+        }
+        .method-card {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+            padding: 28px;
+            margin-bottom: 20px;
+        }
+        .method-card h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #f8fafc;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .method-card p {
+            font-size: 14px;
+            line-height: 1.8;
+            color: #94a3b8;
+            margin-bottom: 12px;
+        }
+        .method-card strong { color: #f8fafc; }
+        .method-card ul {
+            list-style: none;
+            padding: 0;
+        }
+        .method-card li {
+            padding: 8px 0;
+            font-size: 13px;
+            color: #94a3b8;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+        .method-card li:last-child { border-bottom: none; }
+        .method-card li::before { content: '▸'; color: #3b82f6; font-weight: 700; flex-shrink: 0; }
+
+        /* ===== Premium Loading Overlay ===== */
+        #loadingOverlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at 50% 50%, #0a1120, #050a14);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        #loadingOverlay.fade-out { opacity: 0; pointer-events: none; }
+        .loader-viz { position: relative; width: 80px; height: 80px; margin-bottom: 24px; }
+        .loader-ring {
+            position: absolute; inset: 0; border: 2px solid rgba(59, 130, 246, 0.1);
+            border-top-color: #3b82f6; border-radius: 50%;
+            animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        }
+        .loader-ring-inner {
+            position: absolute; inset: 12px; border: 2px solid rgba(16, 185, 129, 0.1);
+            border-top-color: #10b981; border-radius: 50%;
+            animation: spin 0.8s cubic-bezier(0.5, 0, 0.5, 1) infinite reverse;
+        }
+        #loadingOverlay p {
+            color: #94a3b8; font-size: 14px; font-weight: 500; letter-spacing: 0.5px;
+            animation: pulse-text 2s ease-in-out infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes pulse-text { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+        .tech-stack {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .tech-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+        .tech-item:hover { border-color: rgba(59, 130, 246, 0.2); }
+        .tech-icon { font-size: 24px; }
+        .tech-name { font-size: 13px; font-weight: 700; color: #f8fafc; }
+        .tech-role { font-size: 10px; color: #64748b; }
+        .ref-list {
+            list-style: none;
+            padding: 0;
+        }
+        .ref-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            font-size: 13px;
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+        .ref-list li strong { color: #f8fafc; }
+        .ref-list li em { color: #64748b; }
+    </style>
+</head>
+<body>
+    <nav class="platform-nav">
+        <a href="index.html" class="nav-brand">
+            <div class="nav-brand-icon">AI</div>
+            <div class="nav-brand-text">Geo<span>AI</span> Platform</div>
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html"><span class="nav-icon">📊</span> Dashboard</a></li>
+            <li><a href="spatial-analysis.html"><span class="nav-icon">🗺️</span> Spatial Analysis</a></li>
+            <li><a href="ai-model.html"><span class="nav-icon">🧠</span> AI Model</a></li>
+            <li><a href="scenario-simulator.html"><span class="nav-icon">⚡</span> Simulator</a></li>
+            <li><a href="reports.html"><span class="nav-icon">📄</span> Reports</a></li>
+            <li><a href="project-details.html" class="active"><span class="nav-icon">📋</span> Project Details</a></li>
+        </ul>
+        <div class="nav-status"><div class="nav-status-dot"></div> Documentation Ready</div>
+    </nav>
+
+    <!-- Loading Screen -->
+    <div id="loadingOverlay">
+        <div class="loader-viz">
+            <div class="loader-ring"></div>
+            <div class="loader-ring-inner"></div>
+        </div>
+        <p>Loading Methodology...</p>
+    </div>
+
+    <div class="page-container">
+        <div class="page-header">
+            <h1>📋 Project Methodology</h1>
+            <p>Technical documentation of the GeoAI deforestation risk prediction platform</p>
+        </div>
+
+        <!-- Pipeline Visualization -->
+        <div style="margin-bottom: 12px;">
+            <div class="section-title">Data Processing Pipeline</div>
+        </div>
+        <div class="pipeline-container">
+            <div class="pipeline-step">
+                <div class="pipeline-num">1</div>
+                <div class="pipeline-icon">🛰️</div>
+                <div class="pipeline-title">Satellite Data</div>
+                <div class="pipeline-desc">Landsat 8, Sentinel-2 imagery and derived indices (NDVI, EVI)</div>
+            </div>
+            <div class="pipeline-arrow">→</div>
+            <div class="pipeline-step">
+                <div class="pipeline-num">2</div>
+                <div class="pipeline-icon">🔧</div>
+                <div class="pipeline-title">Feature Extraction</div>
+                <div class="pipeline-desc">12 geospatial features extracted from multi-source data</div>
+            </div>
+            <div class="pipeline-arrow">→</div>
+            <div class="pipeline-step">
+                <div class="pipeline-num">3</div>
+                <div class="pipeline-icon">🧠</div>
+                <div class="pipeline-title">AI Model</div>
+                <div class="pipeline-desc">Neural-Prophet Engine: Deep learning ensemble with 4 hidden layers</div>
+            </div>
+            <div class="pipeline-arrow">→</div>
+            <div class="pipeline-step">
+                <div class="pipeline-num">4</div>
+                <div class="pipeline-icon">🗺️</div>
+                <div class="pipeline-title">Spatial Prediction</div>
+                <div class="pipeline-desc">Cell-level risk scores mapped to 1km² grid across study area</div>
+            </div>
+            <div class="pipeline-arrow">→</div>
+            <div class="pipeline-step">
+                <div class="pipeline-num">5</div>
+                <div class="pipeline-icon">📊</div>
+                <div class="pipeline-title">Dashboard</div>
+                <div class="pipeline-desc">Interactive 3D visualization with real-time analysis tools</div>
+            </div>
+        </div>
+
+        <!-- Methodology Sections -->
+        <div class="content-grid two-col" style="margin-bottom: 20px;">
+            <div class="method-card">
+                <h3>🛰️ Satellite Data Acquisition</h3>
+                <p>The platform integrates multi-temporal satellite imagery from <strong>Landsat 8</strong> and <strong>Sentinel-2</strong> sensors. Data preprocessing includes atmospheric correction, cloud masking, and temporal compositing to create analysis-ready surface reflectance products.</p>
+                <ul>
+                    <li>Landsat 8 OLI/TIRS — 30m resolution, 16-day revisit</li>
+                    <li>Sentinel-2 MSI — 10m resolution, 5-day revisit</li>
+                    <li>MODIS Terra/Aqua — 250m daily fire detection</li>
+                    <li>SRTM DEM — 30m elevation and slope data</li>
+                    <li>Hansen Global Forest Change v1.10</li>
+                </ul>
+            </div>
+
+            <div class="method-card">
+                <h3>🔧 Feature Engineering</h3>
+                <p>Twelve geospatial features are computed from multi-source data. Each feature is normalized to [0, 1] range using min-max scaling. Feature selection is validated using recursive feature elimination (RFE) with cross-validation.</p>
+                <ul>
+                    <li><strong>Proximity Features:</strong> Distance to roads, rivers, urban centers</li>
+                    <li><strong>Spectral Indices:</strong> NDVI, EVI, NBR vegetation health</li>
+                    <li><strong>Topographic:</strong> Elevation, slope, aspect from SRTM</li>
+                    <li><strong>Historical:</strong> Previous forest loss rate (2000–2024)</li>
+                    <li><strong>Socioeconomic:</strong> Population density, land tenure status</li>
+                    <li><strong>Policy:</strong> Protected area status, logging concessions</li>
+                </ul>
+            </div>
+
+            <div class="method-card">
+                <h3>🧠 AI Model Architecture</h3>
+                <p>The <strong>Neural-Prophet Engine v2.1</strong> is a hybrid deep learning model combining gradient-boosted decision trees (XGBoost) with a 4-layer feedforward neural network. The ensemble approach leverages the strengths of both methods.</p>
+                <ul>
+                    <li><strong>Input Layer:</strong> 12 features → Dense(64, ReLU)</li>
+                    <li><strong>Hidden Layers:</strong> Dense(32, ReLU) → Dense(16, ReLU) → Dropout(0.3)</li>
+                    <li><strong>Output:</strong> Dense(1, Sigmoid) → Risk probability [0, 1]</li>
+                    <li><strong>Optimizer:</strong> Adam (lr=0.001, weight_decay=1e-5)</li>
+                    <li><strong>Loss:</strong> Binary cross-entropy with class weights</li>
+                    <li><strong>Training:</strong> 100 epochs, early stopping (patience=15)</li>
+                    <li><strong>Validation:</strong> Stratified 5-fold cross-validation</li>
+                </ul>
+            </div>
+
+            <div class="method-card">
+                <h3>🗺️ Spatial Prediction & Visualization</h3>
+                <p>Risk scores are projected onto a <strong>1km × 1km grid</strong> covering the study area. The dashboard uses <strong>Deck.GL</strong> for WebGL-accelerated 3D column visualization and <strong>Mapbox GL JS</strong> for basemap rendering.</p>
+                <ul>
+                    <li>Grid size: ~150,000 cells (1km² resolution)</li>
+                    <li>Column height: proportional to risk score</li>
+                    <li>Color mapping: Green (low) → Yellow (medium) → Red (high)</li>
+                    <li>Interactive tooltips with per-cell risk breakdown</li>
+                    <li>Temporal animation across prediction years</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Tech Stack -->
+        <div class="method-card">
+            <h3>🛠️ Technology Stack</h3>
+            <div class="tech-stack">
+                <div class="tech-item"><div class="tech-icon">🐍</div><div><div class="tech-name">Python</div><div class="tech-role">Data processing & model training</div></div></div>
+                <div class="tech-item"><div class="tech-icon">🧠</div><div><div class="tech-name">TensorFlow/Keras</div><div class="tech-role">Deep learning framework</div></div></div>
+                <div class="tech-item"><div class="tech-icon">🌲</div><div><div class="tech-name">XGBoost</div><div class="tech-role">Gradient boosting ensemble</div></div></div>
+                <div class="tech-item"><div class="tech-icon">📊</div><div><div class="tech-name">Scikit-learn</div><div class="tech-role">Preprocessing & evaluation</div></div></div>
+                <div class="tech-item"><div class="tech-icon">🗺️</div><div><div class="tech-name">Mapbox GL JS</div><div class="tech-role">Interactive basemap rendering</div></div></div>
+                <div class="tech-item"><div class="tech-icon">📐</div><div><div class="tech-name">Deck.GL</div><div class="tech-role">WebGL 3D visualization</div></div></div>
+                <div class="tech-item"><div class="tech-icon">📈</div><div><div class="tech-name">Chart.js</div><div class="tech-role">Statistical charts</div></div></div>
+                <div class="tech-item"><div class="tech-icon">🌐</div><div><div class="tech-name">HTML/CSS/JS</div><div class="tech-role">Frontend platform</div></div></div>
+                <div class="tech-item"><div class="tech-icon">🛰️</div><div><div class="tech-name">Google Earth Engine</div><div class="tech-role">Satellite data access</div></div></div>
+                <div class="tech-item"><div class="tech-icon">📦</div><div><div class="tech-name">GeoPandas</div><div class="tech-role">Geospatial data processing</div></div></div>
+            </div>
+        </div>
+
+        <!-- Future Roadmap -->
+        <div class="method-card">
+            <h3>🚀 Future Roadmap</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+                <div style="padding: 16px; background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.1); border-radius: 12px;">
+                    <div style="font-size: 14px; font-weight: 700; color: #3b82f6; margin-bottom: 4px;">Q3 2026</div>
+                    <div style="font-size: 12px; font-weight: 600; color: #f8fafc; margin-bottom: 8px;">Real-time Anomaly Detection</div>
+                    <p style="font-size: 11px; margin: 0;">Automated triggers for satellite tasking upon detecting edge-case risk spikes.</p>
+                </div>
+                <div style="padding: 16px; background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.1); border-radius: 12px;">
+                    <div style="font-size: 14px; font-weight: 700; color: #10b981; margin-bottom: 4px;">Q4 2026</div>
+                    <div style="font-size: 12px; font-weight: 600; color: #f8fafc; margin-bottom: 8px;">Carbon Credit Modeling</div>
+                    <p style="font-size: 11px; margin: 0;">Integrating biomass estimations to calculate potential carbon offset valuation per grid cell.</p>
+                </div>
+                <div style="padding: 16px; background: rgba(139, 92, 246, 0.05); border: 1px solid rgba(139, 92, 246, 0.1); border-radius: 12px;">
+                    <div style="font-size: 14px; font-weight: 700; color: #8b5cf6; margin-bottom: 4px;">Q1 2027</div>
+                    <div style="font-size: 12px; font-weight: 600; color: #f8fafc; margin-bottom: 8px;">Multi-Agent Game Theory</div>
+                    <p style="font-size: 11px; margin: 0;">Simulating actor behaviors (logging concessions vs conservation) in scenario simulator.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- References -->
+        <div class="method-card">
+            <h3>📚 References</h3>
+            <ol class="ref-list">
+                <li><strong>Hansen, M.C., et al. (2013).</strong> High-Resolution Global Maps of 21st-Century Forest Cover Change. <em>Science, 342(6160), 850-853.</em></li>
+                <li><strong>Tyukavina, A., et al. (2017).</strong> Congo Basin forest loss dominated by increasing smallholder clearing. <em>Science Advances, 4(11).</em></li>
+                <li><strong>Lundberg, S. M., & Lee, S. I. (2017).</strong> A Unified Approach to Interpreting Model Predictions. <em>NeurIPS 2017.</em></li>
+                <li><strong>Souza, C.M., et al. (2020).</strong> Reconstructing Three Decades of Land Use and Land Cover Changes in Brazilian Biomes. <em>Remote Sensing, 12(17), 2735.</em></li>
+                <li><strong>Wang, S., et al. (2020).</strong> Mapping Global Land Cover in 2001 and 2010 With Spatial-Temporal Consistency at 250 m Resolution. <em>Remote Sensing, 12(7), 1135.</em></li>
+            </ol>
+        </div>
+    </div>
+    <script>
+        // Hide loading
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const overlay = document.getElementById('loadingOverlay');
+                if (overlay) overlay.classList.add('fade-out');
+            }, 600);
+        });
+    </script>
+</body>
+</html>
