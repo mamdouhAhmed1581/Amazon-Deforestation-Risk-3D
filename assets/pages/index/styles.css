@@ -68,44 +68,6 @@ body::after {
   display: none;
 }
 
-#hudScanningLine {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(0, 242, 255, 0.2),
-    transparent
-  );
-  z-index: 5;
-  pointer-events: none;
-  animation: scan-line 12s linear infinite;
-  filter: blur(1px);
-}
-
-@keyframes scan-line {
-  0% {
-    transform: translateY(-10vh);
-    opacity: 0;
-  }
-
-  5% {
-    opacity: 1;
-  }
-
-  95% {
-    opacity: 1;
-  }
-
-  100% {
-    transform: translateY(110vh);
-    opacity: 0;
-  }
-}
-
 #deck-container {
   width: 100vw;
   height: 100vh;
@@ -3317,8 +3279,8 @@ body.ui-ready #columnPanel .panel-title {
 }
 
 .nav-links li:nth-child(6) .nav-icon i {
-  color: #ec4899;
-  filter: drop-shadow(0 0 5px rgba(236, 72, 153, 0.8));
+  color: #ef4444;
+  filter: drop-shadow(0 0 5px rgba(239, 68, 68, 0.8));
 }
 
 /* ===== Platform Navigation HUD Overhaul ===== */
@@ -6423,4 +6385,33 @@ body:not(.column-panel-collapsed) .column-panel-toggle:hover {
 
 #columnPanel .accordion-icon i {
   line-height: 1 !important;
+}
+
+#statsHUD {
+  --stats-left: 50%;
+  --stats-shift-x: -50%;
+  --stats-width: min(1040px, calc(100vw - 560px));
+}
+
+@media (max-width: 1280px) {
+  #statsHUD {
+    --stats-left: 18px;
+    --stats-shift-x: 0%;
+    --stats-width: calc(100vw - 36px);
+  }
+}
+
+/* ===== Dynamic Stats Reveal ===== */
+#statsHUD {
+  left: var(--stats-left, 50%) !important;
+  right: auto !important;
+  width: var(--stats-width, min(1040px, calc(100vw - 560px))) !important;
+  opacity: var(--stats-reveal, 0) !important;
+  transform: translateX(var(--stats-shift-x, -50%)) translateY(calc((1 - var(--stats-reveal, 0)) * 18px)) !important;
+  transition: none !important;
+  will-change: opacity, transform;
+}
+
+body.ui-ready #statsHUD {
+  animation: none !important;
 }

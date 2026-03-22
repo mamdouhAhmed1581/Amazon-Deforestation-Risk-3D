@@ -17,6 +17,10 @@ let deckInstance
         let currentViewState = null
         let uiReady = false
         let introRevealProgress = 1
+        let columnRevealState = null
+        let columnRevealFrameId = null
+        let statsRevealState = null
+        let statsRevealFrameId = null
         let alertRevealEnabled = false
         let hotspotPulseFrame = null
         let hotspotPulseLastTick = 0
@@ -31,7 +35,6 @@ let deckInstance
             protected: true,
             urban: false
         }
-
         const DEFAULT_VIEW_STATE = {
             longitude: -62.73,
             latitude: -10.95,
@@ -39,7 +42,6 @@ let deckInstance
             pitch: 62,
             bearing: -14
         };
-
         const AMAZON_FOCUS_VIEW = {
             longitude: -61.8,
             latitude: -10.2,
@@ -47,14 +49,12 @@ let deckInstance
             pitch: 58,
             bearing: -22
         };
-
         const DATA_BOUNDS = {
             minLat: -13.6,
             maxLat: -8.4,
             minLon: -66.4,
             maxLon: -60.2
         };
-
         const SCENARIO_CONFIG = {
             baseline: {
                 label: 'Baseline',
@@ -73,7 +73,6 @@ let deckInstance
                 insight: 'Custom scenario imported from the GeoAI Simulator.'
             }
         };
-
         const DEFAULT_SIMULATION_STATE = {
             road: 20,
             pop: 15,
@@ -81,10 +80,8 @@ let deckInstance
             policies: ['Strict Forest Reserve'],
             timestamp: 0
         };
-
         let simulationState = { ...DEFAULT_SIMULATION_STATE };
         const COLUMN_PANEL_STORAGE_KEY = 'geoai.columnPanelCollapsed';
-
         const PERFORMANCE_CONFIG = {
             quality: {
                 label: 'Quality',
@@ -114,14 +111,12 @@ let deckInstance
                 timelineInterval: 80
             }
         };
-
         const VALIDATION_STATUS_STYLE = {
             confirmed: { label: 'Confirmed loss proxy', color: [56, 189, 248] },
             overpredicted: { label: 'Overpredicted risk', color: [245, 158, 11] },
-            missed: { label: 'Missed loss proxy', color: [244, 114, 182] },
+            missed: { label: 'Missed loss proxy', color: [220, 38, 38] },
             stable: { label: 'Stable agreement', color: [148, 163, 184] }
         };
-
         const DEMO_DATA = [
             { lat: -11.9182632848, lon: -63.8722379103, risk_score: 166, risk_norm: 0.9325842697, elevation: 3730, color: [0, 180, 0, 200] },
             { lat: -12.4057789895, lon: -60.8067370032, risk_score: 175, risk_norm: 0.9831460674, elevation: 3932, color: [220, 0, 0, 230] },
@@ -159,8 +154,6 @@ let deckInstance
             { lat: -9.7, lon: -62.9, risk_score: 163, risk_norm: 0.91, elevation: 3630, color: [100, 150, 0, 180] },
             { lat: -10.9, lon: -60.5, risk_score: 179, risk_norm: 1.0, elevation: 3990, color: [255, 0, 0, 255] }
         ];
-
-
         // Map styles
         function createRasterStyle(tileUrl, attribution = "") {
             return {
@@ -182,24 +175,20 @@ let deckInstance
                 }]
             };
         }
-
         const MAP_STYLES = {
             dark: createRasterStyle("https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png", "CARTO"),
             terrain: createRasterStyle("https://tile.opentopomap.org/{z}/{x}/{y}.png", "OpenTopoMap"),
             satellite: createRasterStyle("https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", "Esri")
         };
         const MAPBOX_TOKEN = "pk.eyJ1IjoibWFtZG91aGFobWVkMTU4MSIsImEiOiJjbTduaXVndjEwMDRsMm9zYXVhcHJ3eGt6In0.H_fBihpC9-p5Qp7q_WKgVw";
-
         function assignEventYear(point) {
             const latSeed = Math.round(Math.abs(point.lat) * 1000);
             const lonSeed = Math.round(Math.abs(point.lon) * 1000);
             return 2001 + ((latSeed * 31 + lonSeed * 17) % 30);
         }
-
         async function loadForestData() {
             const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
             const timeoutId = controller ? setTimeout(() => controller.abort(), 12000) : null;
-
             try {
                 const response = await fetch("forest_data_clean.json", {
                     signal: controller ? controller.signal : undefined,
@@ -215,18 +204,15 @@ let deckInstance
                 }
             }
         }
-
         function initializeDashboard(data) {
             if (appInitialized) return;
             appInitialized = true;
             dataGlobal = data;
             initSpatialLayers();
             syncSimulatorState();
-
             dataGlobal.forEach(point => {
                 point.event_year = assignEventYear(point);
             });
-
             deckInstance = new deck.DeckGL({
                 container: "deck-container",
                 mapStyle: MAP_STYLES.dark,
@@ -259,7 +245,6 @@ let deckInstance
                     const distanceToRoadKm = getDistanceToRoadKm(object);
                     const regionPoints = getLocalRegionPoints(object);
                     const drivers = buildExplanationDrivers(object, regionPoints);
-
                     let driversHtml = '<div style="margin-top:8px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.1)">';
                     drivers.slice(0, 3).forEach(d => {
                         driversHtml += `<div style="display:flex; justify-content:space-between; font-size:10px; margin-bottom:2px;">
@@ -268,12 +253,11 @@ let deckInstance
                         </div>`;
                     });
                     driversHtml += '</div>';
-
                     return {
                         html: `<div style="line-height:1.6; min-width:180px;">
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                                 <b style="color:#3b82f6; font-size:14px;">Risk Assessment</b>
-                                <span style="background:${pointScore > 170 ? '#ef4444' : (pointScore > 165 ? '#f59e0b' : '#22c55e')}; padding:2px 6px; border-radius:4px; font-size:9px; font-weight:800; color:white;">
+                                <span style="background:${pointScore > 170 ? '#dc2626' : (pointScore > 165 ? '#f59e0b' : '#22c55e')}; padding:2px 6px; border-radius:4px; font-size:9px; font-weight:800; color:white;">
                                     ${getRiskClassText(pointScore).toUpperCase()}
                                 </span>
                             </div>
@@ -285,7 +269,6 @@ let deckInstance
                             <span style="color:#94a3b8; font-size:11px;">Scenario: <b style="color:#f8fafc">${SCENARIO_CONFIG[currentScenario].label}</b></span><br>
                             
                             ${driversHtml}
-
                             <div style="margin-top:8px; font-size:10px; color:#64748b; background:rgba(255,255,255,0.05); padding:6px; border-radius:6px;">
                                 <b>Satellite Validation:</b> ${validationEvidence.observedForestLoss ? 'Evidence Detected' : 'No Evidence'}<br>
                                 <span style="font-size:9px; opacity:0.8">${validationEvidence.satelliteValidation}</span>
@@ -297,7 +280,6 @@ let deckInstance
                     };
                 }
             });
-
             const mapboxMap = deckInstance && deckInstance.map;
             if (mapboxMap && typeof mapboxMap.once === 'function') {
                 mapboxMap.once('idle', () => {
@@ -308,7 +290,6 @@ let deckInstance
                     }
                 });
             }
-
             try {
                 // Consolidate intro: call ONLY startAnimation which handles growColumns internally
                 startAnimation();
@@ -317,19 +298,16 @@ let deckInstance
             }
             hideLoadingOverlay();
         }
-
         function hideLoadingOverlay() {
             setTimeout(() => {
                 document.getElementById("loadingOverlay").classList.add("fade-out");
             }, 500);
         }
-
         function showLoadingError(message, allowRecovery = false) {
             const overlay = document.getElementById("loadingOverlay");
             overlay.classList.remove("fade-out");
             overlay.classList.add("error");
             overlay.querySelector("p").innerText = message;
-
             let actions = overlay.querySelector(".loading-actions");
             if (!actions) {
                 actions = document.createElement("div");
@@ -337,18 +315,15 @@ let deckInstance
                 overlay.appendChild(actions);
             }
             actions.innerHTML = "";
-
             if (!allowRecovery) {
                 return;
             }
-
             const pickFileBtn = document.createElement("button");
             pickFileBtn.className = "loading-action-btn";
             pickFileBtn.type = "button";
             pickFileBtn.innerText = "Choose JSON File";
             pickFileBtn.onclick = promptForJsonFile;
             actions.appendChild(pickFileBtn);
-
             const demoBtn = document.createElement("button");
             demoBtn.className = "loading-action-btn";
             demoBtn.type = "button";
@@ -356,7 +331,6 @@ let deckInstance
             demoBtn.onclick = () => initializeDashboard(DEMO_DATA.map(point => ({ ...point })));
             actions.appendChild(demoBtn);
         }
-
         function promptForJsonFile() {
             const input = document.createElement("input");
             input.type = "file";
@@ -375,7 +349,6 @@ let deckInstance
             };
             input.click();
         }
-
         function bootstrapApp() {
             initializeColumnPanel();
             const columnPanel = document.getElementById('columnPanel');
@@ -397,13 +370,11 @@ let deckInstance
             updateSideTrajectoryChart();
             bindGlobalShortcuts();
             handleDashboardEntryHash();
-
             const autoFallback = () => {
                 if (appInitialized) return;
                 console.warn("Bootstrap: Activating Autonomous Demo Mode.");
                 const msg = document.getElementById('loadingMsg');
                 if (msg) msg.innerText = "Connection restricted. Activating Local Preview Mode...";
-
                 setTimeout(() => {
                     if (!appInitialized) {
                         initializeDashboard(DEMO_DATA.map(p => ({ ...p })));
@@ -419,9 +390,7 @@ let deckInstance
                     }
                 }, 1200);
             };
-
             let loadTimeout = setTimeout(autoFallback, 4500);
-
             loadForestData()
                 .then(data => {
                     clearTimeout(loadTimeout);
@@ -434,7 +403,6 @@ let deckInstance
                     autoFallback();
                 });
         }
-
         function bindGlobalShortcuts() {
             document.addEventListener('keydown', event => {
                 if (event.key !== 'Escape') return;
@@ -452,50 +420,85 @@ let deckInstance
                 closeMapControlsMenu();
             });
         }
-
         function setSecondaryReady(ready) {
             document.body.classList.toggle('secondary-ready', ready);
         }
+        function setStatsReveal(value) {
+            const clamped = Math.max(0, Math.min(1, Number(value) || 0));
+            document.documentElement.style.setProperty('--stats-reveal', clamped.toFixed(3));
+        }
+        function stopStatsReveal() {
+            if (statsRevealFrameId) {
+                cancelAnimationFrame(statsRevealFrameId);
+                statsRevealFrameId = null;
+            }
+            statsRevealState = null;
+        }
 
+        function startStatsReveal(duration = 320) {
+            stopStatsReveal();
+            const currentValue = Math.max(
+                0,
+                Math.min(1, parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--stats-reveal')) || 0)
+            );
+            statsRevealState = {
+                startTime: performance.now(),
+                duration,
+                startValue: currentValue
+            };
+            statsRevealFrameId = requestAnimationFrame(animateStatsReveal);
+        }
+
+        function animateStatsReveal(now) {
+            if (!statsRevealState) return;
+
+            const state = statsRevealState;
+            const elapsed = Math.max(0, (typeof now === 'number' ? now : performance.now()) - state.startTime);
+            const t = Math.min(elapsed / state.duration, 1);
+            const eased = t * t * (3 - 2 * t);
+            const value = state.startValue + (1 - state.startValue) * eased;
+
+            setStatsReveal(value);
+
+            if (t < 1) {
+                statsRevealFrameId = requestAnimationFrame(animateStatsReveal);
+            } else {
+                statsRevealFrameId = null;
+                statsRevealState = null;
+                setStatsReveal(1);
+            }
+        }
         function getRiskClassText(score) {
             if (score > 170) return 'High';
             if (score > 165) return 'Medium';
             return 'Low';
         }
-
         function getProbabilityPercent(score) {
             const normalized = Math.max(0, Math.min(1, (score - 140) / 45));
             return Math.round(normalized * 100);
         }
-
         function getConfidencePercent(score) {
             return Math.min(99, Math.max(72, Math.round(((score - 140) / 45) * 100)));
         }
-
         function getColorForScore(score) {
-            if (score > 170) return [239, 68, 68];
+            if (score > 170) return [220, 38, 38];
             if (score > 165) return [251, 146, 60];
             return [34, 197, 94];
         }
-
         function clamp01(value) {
             return Math.max(0, Math.min(1, value));
         }
-
         function getPointScore(point, scenario = currentScenario) {
             if (point && point.__scenarioScores && point.__scenarioScores[scenario]) {
                 return point.__scenarioScores[scenario];
             }
-
             const baseScore = point.risk_score;
             if (scenario === 'baseline') {
                 return baseScore;
             }
-
             const frontierExposure = clamp01((point.lon - DATA_BOUNDS.minLon) / (DATA_BOUNDS.maxLon - DATA_BOUNDS.minLon));
             const terrainAccessibility = 1 - clamp01((point.elevation || 0) / 4000);
             const structuralPressure = clamp01((((point.risk_norm || 0.5) * 0.55) + (frontierExposure * 0.25) + (terrainAccessibility * 0.2)));
-
             let adjustedScore = baseScore;
             if (scenario === 'road') {
                 adjustedScore += (frontierExposure * 7.5) + (terrainAccessibility * 3.5) + (structuralPressure * 2.5);
@@ -507,27 +510,21 @@ let deckInstance
                 const popFactor = simulationState.pop / 100;
                 const fireFactor = simulationState.fire / 100;
                 const policyReduction = (simulationState.policies || []).length * 4.0;
-
                 const roadImpact = (frontierExposure * 12 * roadFactor) + (terrainAccessibility * 6 * roadFactor);
                 const popImpact = (structuralPressure * 8 * popFactor);
                 const fireImpact = (point.risk_norm * 10 * fireFactor);
-
                 adjustedScore += (roadImpact + popImpact + fireImpact) - policyReduction;
             }
-
             return Math.max(140, Math.min(185, adjustedScore));
         }
-
         function getDisplayMetricValue(point) {
             const score = getPointScore(point);
             if (currentMetric === 'probability') return getProbabilityPercent(score);
             if (currentMetric === 'confidence') return getConfidencePercent(score);
             return score;
         }
-
         function getRevealFactor(point) {
             if (!point) return 0;
-
             if (uiReady) {
                 if (currentYear >= 2030) return 1;
                 const age = currentYear - point.event_year;
@@ -536,18 +533,15 @@ let deckInstance
                 const t = age / 1.2;
                 return t * t * (3 - 2 * t);
             }
-
             const score = getPointScore(point);
             let revealStart = 0.55;
             if (score > 170) revealStart = 0.05;
             else if (score > 165) revealStart = 0.35;
             else revealStart = 0.65;
-
             const revealWindow = 0.35;
             const normalized = Math.max(0, Math.min(1, (introRevealProgress - revealStart) / revealWindow));
             return normalized * normalized * (3 - 2 * normalized);
         }
-
         function getMetricHeight(point) {
             const score = getPointScore(point);
             if (currentMetric === 'probability') {
@@ -556,18 +550,15 @@ let deckInstance
             if (currentMetric === 'confidence') {
                 return Math.max(600, getConfidencePercent(score) * 24) * getRevealFactor(point);
             }
-
             let baseHeight = 600;
             if (score > 170) baseHeight = 3000;
             else if (score > 165) baseHeight = 1500;
             return baseHeight * getRevealFactor(point);
         }
-
         function normalizeSimulationState() {
             if (!simulationState || typeof simulationState !== 'object') {
                 simulationState = { ...DEFAULT_SIMULATION_STATE };
             }
-
             simulationState.road = Number.isFinite(Number(simulationState.road))
                 ? Number(simulationState.road)
                 : DEFAULT_SIMULATION_STATE.road;
@@ -580,10 +571,8 @@ let deckInstance
             simulationState.policies = Array.isArray(simulationState.policies)
                 ? [...new Set(simulationState.policies)]
                 : [...DEFAULT_SIMULATION_STATE.policies];
-
             return simulationState;
         }
-
         function getSimulationPreviewMetrics() {
             const state = normalizeSimulationState();
             if (!dataGlobal || !dataGlobal.length) {
@@ -601,31 +590,26 @@ let deckInstance
                         )
                     )
                 );
-
                 return {
                     baseline,
                     simulated: custom,
                     delta: custom - baseline
                 };
             }
-
             const visible = dataGlobal.filter(point => point.event_year <= Math.ceil(currentYear));
             if (!visible.length) {
                 return { baseline: 0, simulated: 0, delta: 0 };
             }
-
             const baselineMean = visible.reduce((sum, point) => sum + getPointScore(point, 'baseline'), 0) / visible.length;
             const simulatedMean = visible.reduce((sum, point) => sum + getPointScore(point, 'simulated'), 0) / visible.length;
             const baseline = getProbabilityPercent(baselineMean);
             const simulated = getProbabilityPercent(simulatedMean);
-
             return {
                 baseline,
                 simulated,
                 delta: simulated - baseline
             };
         }
-
         function getScenarioPoint(point) {
             const scenarioScore = getPointScore(point);
             return {
@@ -634,12 +618,10 @@ let deckInstance
                 __scenarioColor: getColorForScore(scenarioScore)
             };
         }
-
         let lastRenderedYearCeil = null;
         let lastRenderedScenario = null;
         let lastRenderedMinRisk = null;
         let cachedScenarioData = [];
-
         function getVisibleScenarioData() {
             const ceilYear = Math.ceil(currentYear);
             if (ceilYear === lastRenderedYearCeil && currentScenario === lastRenderedScenario && minRiskThreshold === lastRenderedMinRisk) {
@@ -648,28 +630,23 @@ let deckInstance
             lastRenderedYearCeil = ceilYear;
             lastRenderedScenario = currentScenario;
             lastRenderedMinRisk = minRiskThreshold;
-
             cachedScenarioData = dataGlobal
                 .filter(point => point.event_year <= ceilYear)
                 .map(getScenarioPoint)
                 .filter(point => point.__scenarioScore >= minRiskThreshold);
-
             return cachedScenarioData;
         }
-
         function getScenarioImpactMetrics(activeData) {
             const baselineData = dataGlobal
                 .filter(point => point.event_year <= currentYear)
                 .map(point => ({ ...point, __baselineScore: getPointScore(point, 'baseline') }))
                 .filter(point => point.__baselineScore >= minRiskThreshold);
-
             const baselineHigh = baselineData.filter(point => point.__baselineScore > 170).length;
             const activeHigh = activeData.filter(point => getPointScore(point) > 170).length;
             const baselineMean = baselineData.length ? baselineData.reduce((sum, point) => sum + point.__baselineScore, 0) / baselineData.length : 140;
             const activeMean = activeData.length ? activeData.reduce((sum, point) => sum + getPointScore(point), 0) / activeData.length : 140;
             const baselinePressure = getProbabilityPercent(baselineMean);
             const activePressure = getProbabilityPercent(activeMean);
-
             return {
                 labels: ['High Risk', 'Mean Pressure'],
                 values: [
@@ -678,7 +655,6 @@ let deckInstance
                 ]
             };
         }
-
         function initSpatialLayers() {
             generatedSpatialLayers = {
                 roads: [
@@ -699,20 +675,17 @@ let deckInstance
                 ]
             };
         }
-
         function getValidationScore(point) {
             const frontier = clamp01((point.lon - DATA_BOUNDS.minLon) / (DATA_BOUNDS.maxLon - DATA_BOUNDS.minLon));
             const accessibility = 1 - clamp01((point.elevation || 0) / 4000);
             return clamp01((point.risk_norm * 0.62) + (frontier * 0.22) + (accessibility * 0.16));
         }
-
         function getValidationEvidence(point) {
             const predictedHighRisk = getPointScore(point) > 170;
             const validationScore = getValidationScore(point);
             const observedForestLoss = validationScore > 0.68;
             const fireHotspot = validationScore > 0.61;
             const satelliteValidation = validationScore > 0.64 ? 'Matched' : 'Partial';
-
             let status = 'Stable agreement';
             if (predictedHighRisk && observedForestLoss) {
                 status = 'Confirmed loss proxy';
@@ -721,7 +694,6 @@ let deckInstance
             } else if (!predictedHighRisk && observedForestLoss) {
                 status = 'Missed loss proxy';
             }
-
             return {
                 observedForestLoss,
                 fireHotspot,
@@ -730,7 +702,6 @@ let deckInstance
                 validationScore
             };
         }
-
         function pointToSegmentDistanceKm(px, py, ax, ay, bx, by) {
             const abx = bx - ax;
             const aby = by - ay;
@@ -744,7 +715,6 @@ let deckInstance
             const dy = (py - closestY) * 110.57;
             return Math.sqrt((dx * dx) + (dy * dy));
         }
-
         function getDistanceToRoadKm(point) {
             if (!generatedSpatialLayers || !generatedSpatialLayers.roads) return null;
             let minDistance = Number.POSITIVE_INFINITY;
@@ -757,19 +727,16 @@ let deckInstance
             });
             return Number.isFinite(minDistance) ? minDistance : null;
         }
-
         function toggleMetricsPopup(show) {
             const popup = document.getElementById('metricsPopup');
             if (!popup) return;
             popup.classList.toggle('active', show);
         }
-
         function getRegionName(lat, lon) {
             const vertical = lat < -11.1 ? 'Southern' : (lat < -9.9 ? 'Central' : 'Northern');
             const horizontal = lon < -64.2 ? 'Frontier' : (lon < -62.2 ? 'Core' : 'Eastern');
             return `Rondonia ${vertical} ${horizontal}`;
         }
-
         function getLocalRegionPoints(target, radius = 0.45) {
             const latMin = target.lat - radius;
             const latMax = target.lat + radius;
@@ -783,7 +750,6 @@ let deckInstance
                 point.lon <= lonMax
             ).map(getScenarioPoint);
         }
-
         function buildExplanationDrivers(target, regionPoints) {
             const regionAverageRisk = regionPoints.length
                 ? regionPoints.reduce((sum, point) => sum + getPointScore(point), 0) / regionPoints.length
@@ -794,69 +760,58 @@ let deckInstance
             const frontierExposure = clamp01((target.lon - DATA_BOUNDS.minLon) / (DATA_BOUNDS.maxLon - DATA_BOUNDS.minLon));
             const terrainAccessibility = 1 - clamp01(target.elevation / 4000);
             const temporalPersistence = clamp01((target.event_year - 2001) / (2030 - 2001));
-
             // Generate deterministic percentages matching the requested feature priority
             // 42%, 31%, 18%, 9% roughly, adapted by the specific point
             const proximityFactor = Math.max(0.25, Math.min(0.55, localHotspotDensity * 1.8 + 0.15));
             const lossFactor = Math.max(0.15, Math.min(0.40, frontierExposure * 1.2));
             const popFactor = Math.max(0.08, Math.min(0.25, terrainAccessibility * 0.9));
             const elevFactor = Math.max(0.02, Math.min(0.15, temporalPersistence * 0.5));
-
             const rawDrivers = [
                 { label: 'Road proximity', value: proximityFactor },
                 { label: 'Previous forest loss', value: lossFactor },
                 { label: 'Population pressure', value: popFactor },
                 { label: 'Elevation', value: elevFactor }
             ];
-
             const total = rawDrivers.reduce((sum, item) => sum + item.value, 0) || 1;
             return rawDrivers.map(item => ({
                 label: item.label,
                 percent: Math.round((item.value / total) * 100)
             }));
         }
-
         function updateExplainabilityPanel(drivers) {
             drivers.slice(0, 4).forEach((driver, index) => {
                 const slot = index + 1;
                 const lab = document.getElementById(`expLabel${slot}`);
                 const pct = document.getElementById(`expPct${slot}`);
                 const fill = document.getElementById(`expFill${slot}`);
-
                 if (lab) lab.innerText = driver.label;
                 if (pct) pct.innerText = `${driver.percent}%`;
                 if (fill) fill.style.width = `${driver.percent}%`;
             });
         }
-
         function updateRegionAnalysis(target, regionPoints) {
             const highRiskPoints = regionPoints.filter(point => getPointScore(point) > 170).length;
             const averageRisk = regionPoints.length
                 ? regionPoints.reduce((sum, point) => sum + getPointScore(point), 0) / regionPoints.length
                 : getPointScore(target);
             const estimatedAreaKm2 = (highRiskPoints * 0.04).toFixed(1);
-
             const n = document.getElementById('regionName');
             const h = document.getElementById('regionHighPoints');
             const r = document.getElementById('regionAvgRisk');
             const a = document.getElementById('regionArea');
-
             if (n) n.innerText = getRegionName(target.lat, target.lon);
             if (h) h.innerText = highRiskPoints.toLocaleString();
             if (r) r.innerText = (getProbabilityPercent(averageRisk) / 100).toFixed(2);
             if (a) a.innerText = `${estimatedAreaKm2} km²`;
         }
-
         let sideTrajectoryChartInstance = null;
         function updateSideTrajectoryChart(point = null) {
             const ctx = document.getElementById('sideTrajectoryChart');
             if (!ctx) return;
             const meta = document.getElementById('sideTrajectoryMeta');
-
             if (sideTrajectoryChartInstance) {
                 sideTrajectoryChartInstance.destroy();
             }
-
             const years = [2030, 2031, 2032, 2033, 2034, 2035];
             const sourcePoint = point || (() => {
                 const activeData = Array.isArray(dataGlobal) ? getVisibleScenarioData() : [];
@@ -866,7 +821,6 @@ let deckInstance
                 }
                 return null;
             })();
-
             const fallbackRisk = 162;
             const pointScore = sourcePoint ? getPointScore(sourcePoint) : fallbackRisk;
             const baseProb = getProbabilityPercent(pointScore);
@@ -877,27 +831,24 @@ let deckInstance
                 const yearTrend = (year - 2030) * trendStrength;
                 return Math.min(100, Math.max(0, baseProb + yearTrend));
             });
-
             if (meta) {
                 meta.innerText = sourcePoint
                     ? `${getRegionName(sourcePoint.lat, sourcePoint.lon)} under ${SCENARIO_CONFIG[currentScenario].label}: projected probability trend from 2030 to 2035.`
                     : `Active scene baseline under ${SCENARIO_CONFIG[currentScenario].label}: reference probability trend from 2030 to 2035.`;
             }
-
             const context = ctx.getContext('2d');
             let gradientFill = 'rgba(59, 130, 246, 0.16)';
             if (context) {
                 const gradient = context.createLinearGradient(0, 0, 0, 160);
                 if (pointScore > 170) {
-                    gradient.addColorStop(0, 'rgba(239, 68, 68, 0.34)');
-                    gradient.addColorStop(1, 'rgba(239, 68, 68, 0.02)');
+                    gradient.addColorStop(0, 'rgba(220, 38, 38, 0.34)');
+                    gradient.addColorStop(1, 'rgba(220, 38, 38, 0.02)');
                 } else {
                     gradient.addColorStop(0, 'rgba(59, 130, 246, 0.28)');
                     gradient.addColorStop(1, 'rgba(59, 130, 246, 0.02)');
                 }
                 gradientFill = gradient;
             }
-
             sideTrajectoryChartInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
@@ -959,7 +910,6 @@ let deckInstance
                 }
             });
         }
-
         function updateInsightBox(activeData, selectedPoint = null, regionPoints = []) {
             const insight = document.getElementById('insightText');
             if (!insight) return;
@@ -967,7 +917,6 @@ let deckInstance
             const contextTail = validationLayerEnabled
                 ? ` Validation proxy is active, and ${activeLayerCount} derived spatial context layers are visible.`
                 : (activeLayerCount ? ` ${activeLayerCount} derived spatial context layers are visible.` : '');
-
             if (selectedPoint) {
                 const regionName = getRegionName(selectedPoint.lat, selectedPoint.lon);
                 const highShare = regionPoints.length
@@ -976,25 +925,21 @@ let deckInstance
                 insight.innerHTML = `<strong>${regionName}</strong> remains sensitive under the <strong>${SCENARIO_CONFIG[currentScenario].label}</strong> case. Local hotspot share is <strong>${highShare}%</strong>, while terrain accessibility and frontier exposure continue to shape pressure in this sector.${contextTail}`;
                 return;
             }
-
             if (!activeData.length) {
                 insight.innerHTML = `No visible cells currently pass the selected filters. Adjust year or risk threshold to refresh the GeoAI summary.`;
                 return;
             }
-
             const highCount = activeData.filter(point => getPointScore(point) > 170).length;
             const mediumCount = activeData.filter(point => getPointScore(point) > 165 && getPointScore(point) <= 170).length;
             const averageRisk = activeData.reduce((sum, point) => sum + getPointScore(point), 0) / activeData.length;
             const dominantBand = highCount >= mediumCount ? 'high-risk' : 'medium-risk';
             insight.innerHTML = `Under <strong>${SCENARIO_CONFIG[currentScenario].label}</strong>, the visible scene is dominated by <strong>${dominantBand}</strong> activity. Mean predicted pressure is <strong>${(getProbabilityPercent(averageRisk) / 100).toFixed(2)}</strong>, with clustering strongest across accessible low-relief frontier sectors.${contextTail}`;
         }
-
         function buildSpatialAnalysisUrl(point = selectedAnalysisPoint) {
             const targetUrl = new URL('spatial-analysis.html', window.location.href);
             targetUrl.searchParams.set('mode', currentMode);
             targetUrl.searchParams.set('year', Math.floor(currentYear).toString());
             targetUrl.searchParams.set('scenario', currentScenario);
-
             if (point) {
                 const pointScore = getPointScore(point);
                 targetUrl.searchParams.set('lat', point.lat.toFixed(4));
@@ -1003,10 +948,8 @@ let deckInstance
                 targetUrl.searchParams.set('prob', getProbabilityPercent(pointScore).toFixed(1));
                 targetUrl.searchParams.set('class', getRiskClassText(pointScore));
             }
-
             return targetUrl.toString();
         }
-
         function getModeLabel(mode = currentMode) {
             switch (mode) {
                 case '3d':
@@ -1021,19 +964,16 @@ let deckInstance
                     return 'Scene';
             }
         }
-
         function syncColumnScaleUI() {
             const el = document.getElementById('columnScaleValue');
             const slider = document.getElementById('columnScaleSlider');
             if (el) el.innerText = `${manualHeightScale.toFixed(2)}x`;
             if (slider) slider.value = manualHeightScale.toFixed(1);
         }
-
         function syncRiskThresholdUI() {
             const el = document.getElementById('riskThresholdValue');
             const valueLabel = minRiskThreshold === 0 ? 'All' : `${minRiskThreshold}+`;
             if (el) el.innerText = valueLabel;
-
             const b1 = document.getElementById('riskAllBtn');
             const b2 = document.getElementById('riskMedBtn');
             const b3 = document.getElementById('riskHighBtn');
@@ -1041,25 +981,21 @@ let deckInstance
             if (b2) b2.classList.toggle('active', minRiskThreshold === 165);
             if (b3) b3.classList.toggle('active', minRiskThreshold === 170);
         }
-
         function syncHeatmapIntensityUI() {
             const el = document.getElementById('heatIntensityValue');
             const slider = document.getElementById('heatIntensitySlider');
             if (el) el.innerText = `${heatmapIntensity.toFixed(2)}x`;
             if (slider) slider.value = heatmapIntensity.toFixed(1);
         }
-
         function syncPerformanceUI() {
             const el = document.getElementById('performanceValue');
             if (el) el.innerText = PERFORMANCE_CONFIG[performanceMode].label;
-
             const b1 = document.getElementById('perfQualityBtn');
             const b2 = document.getElementById('perfBalancedBtn');
             const b3 = document.getElementById('perfFastBtn');
             if (b1) b1.classList.toggle('active', performanceMode === 'quality');
             if (b2) b2.classList.toggle('active', performanceMode === 'balanced');
             if (b3) b3.classList.toggle('active', performanceMode === 'fast');
-
             // New UI buttons from Step 431
             const pq = document.getElementById('perfQuality');
             const pb = document.getElementById('perfBalanced');
@@ -1068,64 +1004,51 @@ let deckInstance
             if (pb) pb.classList.toggle('active', performanceMode === 'balanced');
             if (pf) pf.classList.toggle('active', performanceMode === 'fast');
         }
-
         function syncScenarioUI() {
             const el = document.getElementById('scenarioValue');
             if (el) el.innerText = SCENARIO_CONFIG[currentScenario].label;
-
             const b1 = document.getElementById('scenarioBaselineBtn');
             const b2 = document.getElementById('scenarioRoadBtn');
             const b3 = document.getElementById('scenarioProtectionBtn');
-
             if (b1) b1.classList.toggle('active', currentScenario === 'baseline');
             if (b2) b2.classList.toggle('active', currentScenario === 'road');
             if (b3) b3.classList.toggle('active', currentScenario === 'protection');
-
             const simBtn = document.getElementById('scenarioSimBtn');
             if (simBtn) {
                 simBtn.classList.toggle('active', currentScenario === 'simulated');
                 simBtn.style.display = simulationState ? 'inline-block' : 'none';
             }
         }
-
         function syncScenarioControlUI() {
             const state = normalizeSimulationState();
-
             const roadSlider = document.getElementById('scenarioRoadSlider');
             const popSlider = document.getElementById('scenarioPopSlider');
             const fireSlider = document.getElementById('scenarioFireSlider');
-
             if (roadSlider) roadSlider.value = String(state.road);
             if (popSlider) popSlider.value = String(state.pop);
             if (fireSlider) fireSlider.value = String(state.fire);
-
             const roadValue = document.getElementById('scenarioRoadValue');
             const popValue = document.getElementById('scenarioPopValue');
             const fireValue = document.getElementById('scenarioFireValue');
-
             if (roadValue) roadValue.innerText = `${state.road >= 0 ? '+' : ''}${state.road}%`;
             if (popValue) popValue.innerText = `${state.pop >= 0 ? '+' : ''}${state.pop}%`;
             if (fireValue) fireValue.innerText = `${state.fire >= 0 ? '+' : ''}${state.fire}%`;
-
             const policyMap = {
                 'Strict Forest Reserve': 'scenarioPolicyReserveBtn',
                 'Road Construction Ban': 'scenarioPolicyRoadBanBtn',
                 'Satellite Monitoring': 'scenarioPolicyMonitoringBtn',
                 'Carbon Credit Incentive': 'scenarioPolicyCarbonBtn'
             };
-
             Object.entries(policyMap).forEach(([policyName, buttonId]) => {
                 const button = document.getElementById(buttonId);
                 if (button) {
                     button.classList.toggle('active', state.policies.includes(policyName));
                 }
             });
-
             const preview = getSimulationPreviewMetrics();
             const beforeValue = document.getElementById('scenarioBeforeValue');
             const afterValue = document.getElementById('scenarioAfterValue');
             const deltaValue = document.getElementById('scenarioDeltaValue');
-
             if (beforeValue) beforeValue.innerText = `${preview.baseline}%`;
             if (afterValue) afterValue.innerText = `${preview.simulated}%`;
             if (deltaValue) {
@@ -1133,7 +1056,6 @@ let deckInstance
                 deltaValue.style.color = preview.delta >= 0 ? '#fca5a5' : '#86efac';
             }
         }
-
         function syncSimulatorState() {
             const savedState = localStorage.getItem('geoai_sim_state');
             if (savedState) {
@@ -1143,7 +1065,6 @@ let deckInstance
                         ...JSON.parse(savedState)
                     };
                     console.log('GeoAI: Custom simulation state loaded', simulationState);
-
                     // Add SIM button to UI if not present
                     const roadBtn = document.getElementById('scenarioRoadBtn');
                     if (roadBtn && !document.getElementById('scenarioSimBtn')) {
@@ -1154,7 +1075,6 @@ let deckInstance
                         simBtn.onclick = () => setScenario('simulated');
                         roadBtn.parentNode.appendChild(simBtn);
                     }
-
                     // Auto-switch to simulated if it's fresh (last 2 minutes)
                     if (Date.now() - simulationState.timestamp < 120000) {
                         setScenario('simulated');
@@ -1167,7 +1087,6 @@ let deckInstance
             syncScenarioUI();
             syncScenarioControlUI();
         }
-
         function persistSimulationState({ switchToSimulated = true } = {}) {
             normalizeSimulationState();
             simulationState.timestamp = Date.now();
@@ -1176,29 +1095,24 @@ let deckInstance
             } catch (error) {
                 console.warn('Simulation state persistence unavailable.', error);
             }
-
             syncScenarioControlUI();
-
             if (appInitialized) {
                 if (switchToSimulated) {
                     setScenario('simulated');
                 } else {
                     syncScenarioUI();
-                    renderLayers();
                 }
             } else if (switchToSimulated) {
                 currentScenario = 'simulated';
                 syncScenarioUI();
             }
         }
-
         function updateScenarioControl(field, value) {
             markAnalysisReady();
             normalizeSimulationState();
             simulationState[field] = parseInt(value, 10);
             persistSimulationState({ switchToSimulated: true });
         }
-
         function toggleScenarioPolicy(policyName, button) {
             markAnalysisReady();
             const state = normalizeSimulationState();
@@ -1207,60 +1121,49 @@ let deckInstance
             } else {
                 state.policies.push(policyName);
             }
-
             if (button) {
                 button.classList.toggle('active', state.policies.includes(policyName));
             }
-
             persistSimulationState({ switchToSimulated: true });
         }
-
         function resetScenarioControls() {
             simulationState = { ...DEFAULT_SIMULATION_STATE, timestamp: Date.now() };
             syncScenarioControlUI();
             persistSimulationState({ switchToSimulated: false });
             setScenario('baseline');
         }
-
         function syncLayerUI() {
             const enabledCount = Object.values(spatialLayersVisible).filter(Boolean).length;
             const el = document.getElementById('layerValue');
             if (el) el.innerText = `${enabledCount} Active`;
-
             const b1 = document.getElementById('layerRoadsBtn');
             const b2 = document.getElementById('layerRiversBtn');
             const b3 = document.getElementById('layerProtectedBtn');
             const b4 = document.getElementById('layerUrbanBtn');
             const b5 = document.getElementById('validationLayerBtn');
-
             if (b1) b1.classList.toggle('active', spatialLayersVisible.roads);
             if (b2) b2.classList.toggle('active', spatialLayersVisible.rivers);
             if (b3) b3.classList.toggle('active', spatialLayersVisible.protected);
             if (b4) b4.classList.toggle('active', spatialLayersVisible.urban);
             if (b5) b5.classList.toggle('active', validationLayerEnabled);
         }
-
         function syncInsightVisibility() {
             document.body.classList.toggle('insight-active', Boolean(selectedAnalysisPoint));
         }
-
         function markAnalysisReady() {
             document.body.classList.add('analysis-ready');
         }
-
         function setColumnScale(value) {
             markAnalysisReady();
             manualHeightScale = Math.max(0.2, Math.min(2.4, parseFloat(value)));
             syncColumnScaleUI();
             if (currentMode === '3d') {
-                requestAnimationFrame(growColumns);
+                startColumnReveal();
             }
         }
-
         function adjustColumnScale(delta) {
             setColumnScale((manualHeightScale + delta).toFixed(1));
         }
-
         function setHeatmapIntensity(value) {
             markAnalysisReady();
             heatmapIntensity = Math.max(0.4, Math.min(3.0, parseFloat(value)));
@@ -1269,27 +1172,23 @@ let deckInstance
                 renderLayers();
             }
         }
-
         function setPerformanceMode(mode) {
             if (!PERFORMANCE_CONFIG[mode]) return;
             performanceMode = mode;
             syncPerformanceUI();
             renderLayers();
         }
-
         function getPriorityText(score) {
             if (score > 170) return 'Immediate';
             if (score > 165) return 'Priority';
             return 'Routine';
         }
-
         function setMinimumRisk(value) {
             markAnalysisReady();
             minRiskThreshold = value;
             syncRiskThresholdUI();
             renderLayers();
         }
-
         function setScenario(scenario) {
             if (!SCENARIO_CONFIG[scenario]) return;
             markAnalysisReady();
@@ -1300,14 +1199,12 @@ let deckInstance
                 toggleSidebar(true, selectedAnalysisPoint);
             }
         }
-
         function toggleSpatialLayer(layerName) {
             markAnalysisReady();
             spatialLayersVisible[layerName] = !spatialLayersVisible[layerName];
             syncLayerUI();
             renderLayers();
         }
-
         function refreshSelectedSidebarPoint() {
             if (!selectedAnalysisPoint) return;
             const activeTab = document.querySelector('#analysisSidebar .tab-content.active')?.id || 'tab-overview';
@@ -1321,7 +1218,6 @@ let deckInstance
             renderLayers();
             refreshSelectedSidebarPoint();
         }
-
         function toggleMapControlsMenu(event) {
             if (event) {
                 event.stopPropagation();
@@ -1330,14 +1226,12 @@ let deckInstance
             if (!controls) return;
             controls.classList.toggle('active');
         }
-
         function closeMapControlsMenu() {
             const controls = document.getElementById('mapControls');
             if (controls) {
                 controls.classList.remove('active');
             }
         }
-
         function applyViewState(viewState, transitionDuration = 860) {
             const adjustedDuration = Math.round(transitionDuration * PERFORMANCE_CONFIG[performanceMode].cameraTransition);
             currentViewState = { ...viewState };
@@ -1348,7 +1242,6 @@ let deckInstance
                 }
             });
         }
-
         function stopAutoRotate() {
             autoRotateEnabled = false;
             if (autoRotateFrame) {
@@ -1361,7 +1254,6 @@ let deckInstance
                 btn.innerText = 'Auto Rotate Off';
             }
         }
-
         function setInterfaceReady(ready) {
             uiReady = ready;
             document.body.classList.toggle('ui-ready', ready);
@@ -1369,20 +1261,19 @@ let deckInstance
                 setSecondaryReady(false);
             }
         }
-
         function resetCamera() {
             stopAutoRotate();
             applyViewState(DEFAULT_VIEW_STATE, 820);
         }
-
         function focusAmazon() {
             stopAutoRotate();
             applyViewState(AMAZON_FOCUS_VIEW, 920);
         }
-
         function replayIntro() {
             stopAutoRotate();
             setInterfaceReady(false);
+            stopStatsReveal();
+            setStatsReveal(0);
             introHeightScale = 0;
             introRevealProgress = 0;
             alertRevealEnabled = false;
@@ -1391,18 +1282,15 @@ let deckInstance
             document.getElementById('timelineYear').innerText = 2030;
             startAnimation();
         }
-
         function toggleAutoRotate() {
             if (autoRotateEnabled) {
                 stopAutoRotate();
                 return;
             }
-
             autoRotateEnabled = true;
             const btn = document.getElementById('autoRotateBtn');
             btn.classList.add('active');
             btn.innerText = 'Auto Rotate On';
-
             const rotate = () => {
                 if (!autoRotateEnabled) return;
                 const base = currentViewState || DEFAULT_VIEW_STATE;
@@ -1416,15 +1304,12 @@ let deckInstance
                 }, 0);
                 autoRotateFrame = requestAnimationFrame(rotate);
             };
-
             rotate();
         }
-
         let lastRenderedDataResult = null;
         let lastPerformanceMode = null;
         let lastRenderMode = null;
         let lastActiveDataRef = null;
-
         function getRenderData(activeData) {
             if (activeData === lastActiveDataRef && performanceMode === lastPerformanceMode && currentMode === lastRenderMode && lastRenderedDataResult) {
                 return lastRenderedDataResult;
@@ -1432,7 +1317,6 @@ let deckInstance
             lastActiveDataRef = activeData;
             lastPerformanceMode = performanceMode;
             lastRenderMode = currentMode;
-
             let resultData;
             if (currentMode === '3d') {
                 const stride = PERFORMANCE_CONFIG[performanceMode].threeDStride;
@@ -1448,22 +1332,17 @@ let deckInstance
             lastRenderedDataResult = resultData;
             return resultData;
         }
-
         let lastRenderedDataResult_FOR_UI = null;
         let lastUIUpdateYear = null;
-
         function renderLayers() {
             if (!deckInstance) return;
-
             const activeData = getVisibleScenarioData();
             const renderData = getRenderData(activeData);
             const pulse = 1 + Math.sin(Date.now() / 420) * 0.04;
-
             const currentFloorYear = Math.floor(currentYear);
             if (activeData !== lastRenderedDataResult_FOR_UI || currentFloorYear !== lastUIUpdateYear) {
                 lastRenderedDataResult_FOR_UI = activeData;
                 lastUIUpdateYear = currentFloorYear;
-
                 let low = 0, medium = 0, high = 0;
                 activeData.forEach(p => {
                     const pointScore = getPointScore(p);
@@ -1471,44 +1350,34 @@ let deckInstance
                     else if (pointScore <= 170) medium++;
                     else high++;
                 });
-
                 // Update all 7 stats
                 const totalAreaEl = document.getElementById("totalArea");
                 if (totalAreaEl) totalAreaEl.textContent = activeData.length > 0 ? (activeData.length * 0.04).toLocaleString(undefined, { maximumFractionDigits: 0 }) + " km²" : "0 km²";
-
                 const highRiskCountEl = document.getElementById("highRiskCount");
                 if (highRiskCountEl) highRiskCountEl.textContent = high.toLocaleString();
-
                 const midRiskCountEl = document.getElementById("midRiskCount");
                 if (midRiskCountEl) midRiskCountEl.textContent = medium.toLocaleString();
-
                 const lowRiskCountEl = document.getElementById("lowRiskCount");
                 if (lowRiskCountEl) lowRiskCountEl.textContent = low.toLocaleString();
-
                 const deforestProbEl = document.getElementById("deforestProb");
                 if (deforestProbEl) {
                     const avgProb = activeData.length > 0 ? (activeData.reduce((sum, p) => sum + getProbabilityPercent(getPointScore(p)), 0) / activeData.length) : 0;
                     deforestProbEl.textContent = avgProb.toFixed(1) + "%";
                 }
-
                 const predictionConfidenceEl = document.getElementById("predictionConfidence");
                 if (predictionConfidenceEl) {
                     const conf = activeData.length > 0 ? (high / activeData.length > 0.3 ? 88.4 : 94.2) : 0;
                     predictionConfidenceEl.textContent = conf + "%";
                 }
-
                 updateChartState(low, medium, high, activeData.length || 1);
                 updateKpiState(activeData, high);
                 updateAlertState(activeData, high);
                 if (selectedAnalysisPoint) {
                     updateInsightBox(activeData, selectedAnalysisPoint, getLocalRegionPoints(selectedAnalysisPoint));
-
                 } else {
                     updateInsightBox(activeData);
-
                 }
             }
-
             let layer;
             const layers = [];
             if (currentMode === "3d") {
@@ -1519,7 +1388,7 @@ let deckInstance
                     getElevation: d => getMetricHeight(d),
                     getFillColor: d => {
                         const val = getPointScore(d);
-                        if (val > 170) return [239, 68, 68, 255]; // High
+                        if (val > 170) return [220, 38, 38, 255]; // High
                         if (val > 165) return [251, 146, 60, 255]; // Medium (Warmer)
                         return [74, 222, 128, 255]; // Low (Vibrant Green)
                     },
@@ -1549,15 +1418,14 @@ let deckInstance
                         getFillColor: 600
                     }
                 });
-
                 // Add Red Glow for High Risk points
                 const glowLayer = new deck.ScatterplotLayer({
                     id: "risk-glow-layer",
                     data: renderData.filter(d => getPointScore(d) > 170),
                     getPosition: d => [d.lon, d.lat],
-                    getFillColor: [239, 68, 68, 40],
-                    getRadius: 800 * pulse, // Use pulse for dynamic glow
-                    opacity: 0.15 * pulse,
+                    getFillColor: [220, 38, 38, 40],
+                    getRadius: 700 * pulse, // Use pulse for dynamic glow
+                    opacity: 0.1 * pulse,
                     stroked: false,
                     filled: true,
                     radiusMinPixels: 0,
@@ -1613,7 +1481,7 @@ let deckInstance
                     getFillColor: d => {
                         const reveal = getRevealFactor(d);
                         const pointScore = getPointScore(d);
-                        const color = pointScore > 170 ? [239, 68, 68] : [251, 146, 60];
+                        const color = pointScore > 170 ? [220, 38, 38] : [251, 146, 60];
                         return [color[0], color[1], color[2], Math.round(40 + reveal * 210)];
                     },
                     getRadius: d => {
@@ -1636,7 +1504,6 @@ let deckInstance
                     radiusMaxPixels: 10
                 });
             }
-
             if (spatialLayersVisible.roads && generatedSpatialLayers) {
                 layers.push(new deck.PathLayer({
                     id: 'roads-layer',
@@ -1648,7 +1515,6 @@ let deckInstance
                     opacity: 0.7
                 }));
             }
-
             if (spatialLayersVisible.rivers && generatedSpatialLayers) {
                 layers.push(new deck.PathLayer({
                     id: 'rivers-layer',
@@ -1660,7 +1526,6 @@ let deckInstance
                     opacity: 0.6
                 }));
             }
-
             if (spatialLayersVisible.protected && generatedSpatialLayers) {
                 layers.push(new deck.PolygonLayer({
                     id: 'protected-layer',
@@ -1674,7 +1539,6 @@ let deckInstance
                     filled: true
                 }));
             }
-
             if (spatialLayersVisible.urban && generatedSpatialLayers) {
                 layers.push(new deck.ScatterplotLayer({
                     id: 'urban-layer',
@@ -1688,7 +1552,6 @@ let deckInstance
                     filled: true
                 }));
             }
-
             if (validationLayerEnabled) {
                 const validationData = renderData.filter((_, index) => index % PERFORMANCE_CONFIG[performanceMode].validationStride === 0);
                 layers.push(new deck.ScatterplotLayer({
@@ -1701,7 +1564,6 @@ let deckInstance
                     radiusMaxPixels: 6,
                     opacity: 0.32
                 }));
-
                 layers.push(new deck.ScatterplotLayer({
                     id: 'validation-fire-layer',
                     data: validationData.filter(point => getValidationEvidence(point).fireHotspot),
@@ -1713,11 +1575,9 @@ let deckInstance
                     opacity: 0.38
                 }));
             }
-
             layers.push(layer);
             deckInstance.setProps({ layers });
             syncScenarioControlUI();
-
             if ((currentMode === 'hotspot' || currentMode === '3d') && uiReady) {
                 if (!hotspotPulseFrame) {
                     hotspotPulseFrame = requestAnimationFrame(() => {
@@ -1734,26 +1594,21 @@ let deckInstance
                 hotspotPulseFrame = null;
             }
         }
-
         function updateYear(val) {
             markAnalysisReady();
             currentYear = parseFloat(val);
             document.getElementById("timelineYear").innerText = Math.floor(currentYear);
             renderLayers();
         }
-
         let playAnimationStartTime = 0;
         let playAnimationStartYear = 2001;
-
         function animateTimeline() {
             if (!isPlaying) return;
             const now = performance.now();
             const elapsed = now - playAnimationStartTime;
-
             // Adjust speed (years per second). Faster in "fast" mode.
             const yearsPerSec = performanceMode === 'fast' ? 5 : (performanceMode === 'quality' ? 2 : 3.5);
             currentYear = playAnimationStartYear + (elapsed / 1000) * yearsPerSec;
-
             if (currentYear >= 2030) {
                 currentYear = 2030;
                 document.getElementById("timeSlider").value = 2030;
@@ -1762,13 +1617,11 @@ let deckInstance
                 togglePlay(); // stop
                 return;
             }
-
             document.getElementById("timeSlider").value = currentYear;
             document.getElementById("timelineYear").innerText = Math.floor(currentYear);
             renderLayers();
             requestAnimationFrame(animateTimeline);
         }
-
         function togglePlay() {
             markAnalysisReady();
             if (isPlaying) {
@@ -1784,43 +1637,61 @@ let deckInstance
                 playAnimationStartTime = performance.now();
                 playAnimationStartYear = currentYear;
                 isPlaying = true;
-
                 document.getElementById("playBtn").innerText = "Pause";
-                document.getElementById("playBtn").style.background = "rgba(239, 68, 68, 0.15)";
+                document.getElementById("playBtn").style.background = "rgba(220, 38, 38, 0.15)";
                 document.getElementById("playBtn").style.color = "#f87171";
-                document.getElementById("playBtn").style.border = "1px solid rgba(239, 68, 68, 0.3)";
-
+                document.getElementById("playBtn").style.border = "1px solid rgba(220, 38, 38, 0.3)";
                 requestAnimationFrame(animateTimeline);
             }
         }
+        function startColumnReveal(duration = 560) {
+            if (columnRevealFrameId) {
+                cancelAnimationFrame(columnRevealFrameId);
+                columnRevealFrameId = null;
+            }
 
-        function growColumns() {
-            // Smoothly animate both progress and height scale
-            const progressTarget = 1.0;
-            const heightTarget = manualHeightScale;
+            columnRevealState = {
+                startTime: performance.now(),
+                duration,
+                startReveal: Math.max(0, Math.min(1, introRevealProgress)),
+                startHeight: Math.max(0, introHeightScale),
+                revealStats: !uiReady
+            };
 
-            const progressDelta = progressTarget - introRevealProgress;
-            const heightDelta = heightTarget - introHeightScale;
+            columnRevealFrameId = requestAnimationFrame(growColumns);
+        }
 
-            // Accelerated progression (0.35) for instant "NASA-style" feedback
-            introRevealProgress += progressDelta * 0.35;
-            introHeightScale += heightDelta * 0.35;
+        function growColumns(now) {
+            if (!columnRevealState) return;
+
+            const state = columnRevealState;
+            const elapsed = Math.max(0, (typeof now === 'number' ? now : performance.now()) - state.startTime);
+            const t = Math.min(elapsed / state.duration, 1);
+            const eased = t * t * (3 - 2 * t);
+
+            introRevealProgress = state.startReveal + (1 - state.startReveal) * eased;
+            introHeightScale = state.startHeight + (manualHeightScale - state.startHeight) * eased;
 
             if (currentMode === '3d' || currentMode === '2d') {
                 renderLayers();
             }
 
-            if (Math.abs(progressDelta) > 0.005 || Math.abs(heightDelta) > 0.005) {
-                requestAnimationFrame(growColumns);
+            if (t < 1) {
+                columnRevealFrameId = requestAnimationFrame(growColumns);
             } else {
+                const shouldRevealStats = Boolean(state.revealStats);
+                columnRevealFrameId = null;
+                columnRevealState = null;
                 introRevealProgress = 1.0;
                 introHeightScale = manualHeightScale;
                 setInterfaceReady(true);
                 alertRevealEnabled = true;
                 renderLayers();
+                if (shouldRevealStats) {
+                    setTimeout(() => startStatsReveal(360), 120);
+                }
             }
         }
-
         function toggleAccordion(headerElement) {
             headerElement.classList.toggle('collapsed');
             const body = headerElement.nextElementSibling;
@@ -1828,7 +1699,6 @@ let deckInstance
                 body.classList.toggle('collapsed');
             }
         }
-
         function setAccordionExpanded(headerElement, expanded) {
             if (!headerElement) return;
             headerElement.classList.toggle('collapsed', !expanded);
@@ -1837,22 +1707,18 @@ let deckInstance
                 body.classList.toggle('collapsed', !expanded);
             }
         }
-
         function setColumnPanelCollapsed(collapsed, persist = true) {
             const panel = document.getElementById('columnPanel');
             const toggle = document.getElementById('columnPanelToggle');
             const icon = document.getElementById('columnPanelToggleIcon');
             if (!panel || !toggle) return;
-
             panel.classList.toggle('panel-collapsed', collapsed);
             document.body.classList.toggle('column-panel-collapsed', collapsed);
             toggle.setAttribute('aria-expanded', String(!collapsed));
             toggle.setAttribute('aria-label', collapsed ? 'Open visualization controls' : 'Collapse visualization controls');
-
             if (icon) {
                 icon.className = collapsed ? 'fas fa-chevron-right' : 'fas fa-chevron-left';
             }
-
             if (persist) {
                 try {
                     localStorage.setItem(COLUMN_PANEL_STORAGE_KEY, collapsed ? '1' : '0');
@@ -1861,11 +1727,9 @@ let deckInstance
                 }
             }
         }
-
         function initializeColumnPanel() {
             setColumnPanelCollapsed(true, false);
         }
-
         function toggleColumnPanel(forceState) {
             const panel = document.getElementById('columnPanel');
             if (!panel) return;
@@ -1874,23 +1738,18 @@ let deckInstance
                 : !panel.classList.contains('panel-collapsed');
             setColumnPanelCollapsed(collapsed);
         }
-
         function updateMetric(metric) {
             currentMetric = metric;
             renderLayers();
         }
-
         function switchTab(tabId) {
             const tabs = document.querySelectorAll('.tab-content');
             tabs.forEach(tab => tab.classList.remove('active'));
-
             const btns = document.querySelectorAll('.tab-btn');
             btns.forEach(btn => btn.classList.remove('active'));
-
             const activeTab = document.getElementById(tabId);
             if (!activeTab) return;
             activeTab.classList.add('active');
-
             // Find the active button based on onclick attribute mapping
             btns.forEach(btn => {
                 if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(tabId)) {
@@ -1898,7 +1757,6 @@ let deckInstance
                 }
             });
         }
-
         function ensureSidebarOpen(tabId = 'tab-overview') {
             const sidebar = document.getElementById('analysisSidebar');
             const icon = document.getElementById('toggleIconSide');
@@ -1910,49 +1768,41 @@ let deckInstance
             }
             switchTab(tabId);
         }
-
         function setDashboardHash(hash) {
             const normalizedHash = hash.startsWith('#') ? hash : `#${hash}`;
             if (window.location.hash === normalizedHash) return;
-
             if (window.history && typeof window.history.replaceState === 'function') {
                 window.history.replaceState(null, '', `${window.location.pathname}${window.location.search}${normalizedHash}`);
             } else {
                 window.location.hash = normalizedHash;
             }
         }
-
         function openModelWorkspace(syncHash = true) {
             if (syncHash) {
                 setDashboardHash('#model');
             }
             ensureSidebarOpen('tab-model');
         }
-
         function openSpatialAnalysisPage(point = selectedAnalysisPoint) {
             window.location.href = buildSpatialAnalysisUrl(point);
         }
-
         function hideSpatialHoverTooltip() {
             const tooltip = document.getElementById('spatialHoverTooltip');
             if (!tooltip) return;
             tooltip.classList.remove('visible');
             tooltip.setAttribute('aria-hidden', 'true');
         }
-
         function showSpatialHoverTooltip(info) {
             const tooltip = document.getElementById('spatialHoverTooltip');
             if (!tooltip || !info || !info.object) {
                 hideSpatialHoverTooltip();
                 return;
             }
-
             const point = info.object;
             const pointScore = getPointScore(point);
             const probability = getProbabilityPercent(pointScore);
             const x = Math.min((info.x ?? 0) + 18, Math.max(20, window.innerWidth - 220));
             const y = Math.max((info.y ?? 0) - 10, 20);
-
             tooltip.innerHTML = `
                 <div class="spatial-hover-kicker">Hover</div>
                 <div class="spatial-hover-title">Spatial Analysis</div>
@@ -1963,7 +1813,6 @@ let deckInstance
             tooltip.classList.add('visible');
             tooltip.setAttribute('aria-hidden', 'false');
         }
-
         function handleSpatialHover(info) {
             if (!info || !info.object) {
                 hideSpatialHoverTooltip();
@@ -1973,7 +1822,6 @@ let deckInstance
         }
         function getSelectedPointExportRecord(point = selectedAnalysisPoint) {
             if (!point) return null;
-
             const score = getPointScore(point);
             const probability = getProbabilityPercent(score);
             const regionPoints = getLocalRegionPoints(point);
@@ -1983,7 +1831,6 @@ let deckInstance
             const localHighShare = regionPoints.length
                 ? Math.round((regionPoints.filter(item => getPointScore(item) > 170).length / regionPoints.length) * 100)
                 : 0;
-
             return {
                 latitude: point.lat.toFixed(4),
                 longitude: point.lon.toFixed(4),
@@ -2006,7 +1853,6 @@ let deckInstance
                 validation_status: validationEvidence.status
             };
         }
-
         function downloadTextFile(filename, content, mimeType) {
             const blob = new Blob([content], { type: mimeType });
             const url = URL.createObjectURL(blob);
@@ -2016,7 +1862,6 @@ let deckInstance
             link.click();
             window.setTimeout(() => URL.revokeObjectURL(url), 1000);
         }
-
         function buildCsvContent(record) {
             const headers = Object.keys(record);
             const escapeCsv = value => {
@@ -2025,7 +1870,6 @@ let deckInstance
             };
             return `${headers.join(',')}\n${headers.map(key => escapeCsv(record[key])).join(',')}\n`;
         }
-
         function escapeHtml(value) {
             return String(value ?? '')
                 .replace(/&/g, '&amp;')
@@ -2034,7 +1878,6 @@ let deckInstance
                 .replace(/"/g, '&quot;')
                 .replace(/'/g, '&#39;');
         }
-
         function buildRiskReportMarkup(record) {
             const hasPoint = Boolean(record);
             const title = hasPoint
@@ -2078,13 +1921,11 @@ let deckInstance
                         ? 'Prioritize monitoring and validate the surrounding cluster before the next cycle.'
                         : 'Maintain surveillance and keep the area in the regular review queue.')
                 : 'Review the current scene summary and switch to a point selection to export a focused report.';
-
             return `
                 <div style="box-sizing:border-box;padding:28px;background:#070b13;color:#e2e8f0;font-family:Inter,Arial,sans-serif;">
                     <div style="color:#67e8f9;font-size:10px;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;">AI Deforestation Risk Report</div>
                     <div style="margin-top:10px;color:#f8fbff;font-size:26px;font-weight:800;line-height:1.1;">${escapeHtml(title)}</div>
                     <div style="margin-top:7px;color:#8ea4be;font-size:12px;line-height:1.55;">${escapeHtml(subtitle)}</div>
-
                     <div style="margin-top:18px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;">
                         ${metrics.map(item => `
                             <div style="padding:14px 15px;border-radius:16px;background:rgba(15,23,42,0.78);border:1px solid rgba(96,165,250,0.14);">
@@ -2093,7 +1934,6 @@ let deckInstance
                             </div>
                         `).join('')}
                     </div>
-
                     <div style="margin-top:12px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;">
                         ${details.map(item => `
                             <div style="padding:13px 14px;border-radius:14px;background:rgba(10,16,28,0.86);border:1px solid rgba(71,85,105,0.18);">
@@ -2102,7 +1942,6 @@ let deckInstance
                             </div>
                         `).join('')}
                     </div>
-
                     <div style="margin-top:14px;padding:16px;border-radius:16px;background:linear-gradient(180deg,rgba(8,16,29,0.95),rgba(10,17,31,0.86));border:1px solid rgba(34,197,94,0.16);">
                         <div style="color:#86efac;font-size:10px;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;">Recommended action</div>
                         <div style="margin-top:8px;color:#e2e8f0;font-size:13px;font-weight:600;line-height:1.65;">${escapeHtml(recommendation)}</div>
@@ -2110,20 +1949,16 @@ let deckInstance
                 </div>
             `;
         }
-
         function exportSelectedPointData(format) {
             const record = getSelectedPointExportRecord();
             if (!record) {
                 return;
             }
-
             const suffix = `${record.latitude}_${record.longitude}_${Math.round(Number(record.risk_score))}`;
-
             if (format === 'csv') {
                 downloadTextFile(`geoai_point_${suffix}.csv`, buildCsvContent(record), 'text/csv');
                 return;
             }
-
             if (format === 'geojson') {
                 const geojson = {
                     type: 'FeatureCollection',
@@ -2139,7 +1974,6 @@ let deckInstance
                 downloadTextFile(`geoai_point_${suffix}.geojson`, JSON.stringify(geojson, null, 2), 'application/geo+json');
             }
         }
-
         function syncReportExportPanel(point = selectedAnalysisPoint) {
             const card = document.getElementById('reportExportCard');
             const title = document.getElementById('reportExportTitle');
@@ -2149,21 +1983,17 @@ let deckInstance
             const csvBtn = document.getElementById('reportCsvBtn');
             const geoBtn = document.getElementById('reportGeoJsonBtn');
             const pdfBtn = document.getElementById('reportPdfBtn');
-
             if (!card || !title || !subtitle || !toggle || !options || !csvBtn || !geoBtn || !pdfBtn) {
                 return;
             }
-
             const hasPoint = Boolean(point);
             const score = hasPoint ? getPointScore(point) : null;
             const label = hasPoint ? `${getRiskClassText(score)}-risk column` : 'Select a column to export';
             const details = hasPoint
                 ? `${getRegionName(point.lat, point.lon)} | LAT ${point.lat.toFixed(2)} | LON ${point.lon.toFixed(2)} | ${SCENARIO_CONFIG[currentScenario].label}`
                 : 'CSV, GeoJSON, and PDF become available once a point is selected.';
-
             card.classList.toggle('is-disabled', !hasPoint);
             card.classList.toggle('expanded', hasPoint);
-
             title.innerText = label;
             subtitle.innerText = details;
             toggle.disabled = !hasPoint;
@@ -2173,7 +2003,6 @@ let deckInstance
             pdfBtn.disabled = !hasPoint;
             options.setAttribute('aria-hidden', hasPoint ? 'false' : 'true');
         }
-
         function toggleReportExportPanel(forceState) {
             const card = document.getElementById('reportExportCard');
             if (!card || card.classList.contains('is-disabled')) return;
@@ -2184,17 +2013,14 @@ let deckInstance
             if (toggle) toggle.setAttribute('aria-expanded', String(expand));
             if (options) options.setAttribute('aria-hidden', String(!expand));
         }
-
         function handleSpatialColumnClick(info) {
             if (!info || !info.object) {
                 hideSpatialHoverTooltip();
                 return;
             }
-
             hideSpatialHoverTooltip();
             toggleSidebar(true, info.object);
         }
-
         function openScenarioWorkbench(syncHash = true) {
             if (syncHash) {
                 setDashboardHash('#scenario');
@@ -2206,39 +2032,34 @@ let deckInstance
                 header.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
             }
         }
-
         function handleDashboardEntryHash() {
             const hash = (window.location.hash || '').toLowerCase();
-
             if (hash === '#model') {
                 openModelWorkspace(false);
                 return;
             }
-
             if (hash === '#insights') {
                 ensureSidebarOpen('tab-insights');
                 return;
             }
-
             if (hash === '#region') {
                 ensureSidebarOpen('tab-region');
                 return;
             }
-
             if (hash === '#scenario' || hash === '#simulator') {
                 openScenarioWorkbench(false);
             }
         }
-
         function startAnimation() {
             stopAutoRotate();
             setInterfaceReady(false);
+            stopStatsReveal();
+            setStatsReveal(0);
             introRevealProgress = 0;
             alertRevealEnabled = false;
             const introStageLabel = document.getElementById('introStageLabel');
             let frame = 0;
-            const totalFrames = 80; // Faster glide for responsive feel
-
+            const totalFrames = 60; // Faster glide for responsive feel
             const introKeyframes = [
                 {
                     stop: 0.0,
@@ -2281,19 +2102,15 @@ let deckInstance
                     }
                 }
             ];
-
             function easeInOutCubic(x) {
                 return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
             }
-
             function easeOutCubic(x) {
                 return 1 - Math.pow(1 - x, 3);
             }
-
             function lerp(a, b, t) {
                 return a + (b - a) * t;
             }
-
             function interpolateKeyframes(progress) {
                 for (let index = 0; index < introKeyframes.length - 1; index++) {
                     const current = introKeyframes[index];
@@ -2310,16 +2127,12 @@ let deckInstance
                         };
                     }
                 }
-
                 return { ...introKeyframes[introKeyframes.length - 1].view };
             }
-
             function animate() {
                 frame++;
                 const progress = Math.min(frame / totalFrames, 1);
-                const reveal = progress < 0.5 ? 0 : easeOutCubic((progress - 0.5) / 0.5);
                 const { longitude, latitude, zoom, pitch, bearing } = interpolateKeyframes(progress);
-
                 if (introStageLabel) {
                     let stageText = 'Global View';
                     if (progress > 0.24) stageText = 'South America';
@@ -2328,13 +2141,9 @@ let deckInstance
                     introStageLabel.innerText = stageText;
                     introStageLabel.classList.toggle('active', progress < 0.96);
                 }
-
-                if (currentMode === '3d') {
-                    introRevealProgress = 0; // Completely hide during glide
-                    introHeightScale = 0;
-                    if (frame % 4 === 0) renderLayers();
-                }
-
+                introRevealProgress = 0;
+                introHeightScale = 0;
+                if (frame % 4 === 0) renderLayers();
                 deckInstance.setProps({
                     initialViewState: {
                         latitude,
@@ -2345,7 +2154,6 @@ let deckInstance
                     }
                 });
                 currentViewState = { latitude, longitude, zoom, pitch, bearing };
-
                 if (progress < 1) {
                     requestAnimationFrame(animate);
                 } else {
@@ -2357,18 +2165,11 @@ let deckInstance
                         }
                     });
                     currentViewState = DEFAULT_VIEW_STATE;
-
-                    // Trigger growth immediately
-                    requestAnimationFrame(growColumns);
-
                     if (introStageLabel) {
                         introStageLabel.innerText = 'Scene Synchronized';
                         introStageLabel.classList.remove('active');
                     }
-
-                    alertRevealEnabled = true;
-                    setInterfaceReady(true);
-
+                    startColumnReveal();
                     setTimeout(() => {
                         const visibleData = dataGlobal;
                         updateAlertState(visibleData, 847); // Initial state sync
@@ -2376,43 +2177,33 @@ let deckInstance
                     }, 100);
                 }
             }
-
             requestAnimationFrame(animate);
         }
-
         function setMode(mode) {
             if (!deckInstance) return
-
             markAnalysisReady();
             currentMode = mode
-
             if (mode === '3d') {
                 if (!Number.isFinite(manualHeightScale) || manualHeightScale < 0.2) {
                     manualHeightScale = 1.2;
                 }
                 syncColumnScaleUI();
-                requestAnimationFrame(growColumns);
+                startColumnReveal();
             }
-
             // Update button states
             const btnId = { '3d': 'btn3d', '2d': 'btn2d', 'heat': 'btnHeat', 'hotspot': 'btnHotspot' };
-
             // Update modeSwitcher buttons if they exist
             document.querySelectorAll('#modeSwitcher button').forEach(b => b.classList.remove('active'));
-
             // Update individual buttons anywhere in the DOM
             Object.values(btnId).forEach(id => {
                 const btn = document.getElementById(id);
                 if (btn) btn.classList.remove('active');
             });
-
             const activeBtn = document.getElementById(btnId[mode]);
             if (activeBtn) activeBtn.classList.add('active');
-
             // Re-render layer for current mode
             renderLayers();
         }
-
         function updateChartState(low, medium, high, total) {
             const title = document.querySelector("#chartContainer .chart-header");
             const caption = document.querySelector("#chartContainer .panel-note");
@@ -2436,8 +2227,8 @@ let deckInstance
                         `High (${((high / total) * 100).toFixed(1)}%)`
                     ];
                     riskChartInstance.data.datasets[0].data = [low, medium, high];
-                    riskChartInstance.data.datasets[0].backgroundColor = ['rgba(34,197,94,0.82)', 'rgba(245,158,11,0.82)', 'rgba(239,68,68,0.82)'];
-                    riskChartInstance.data.datasets[0].borderColor = ['#22c55e', '#f59e0b', '#ef4444'];
+                    riskChartInstance.data.datasets[0].backgroundColor = ['rgba(34,197,94,0.82)', 'rgba(245,158,11,0.82)', 'rgba(220, 38, 38,0.82)'];
+                    riskChartInstance.data.datasets[0].borderColor = ['#22c55e', '#f59e0b', '#dc2626'];
                 } else {
                     const impact = getScenarioImpactMetrics(getVisibleScenarioData());
                     if (title) title.innerText = 'Scenario Impact';
@@ -2445,31 +2236,26 @@ let deckInstance
                     riskChartInstance.config.type = 'bar';
                     riskChartInstance.data.labels = impact.labels;
                     riskChartInstance.data.datasets[0].data = impact.values;
-                    riskChartInstance.data.datasets[0].backgroundColor = impact.values.map(value => value >= 0 ? 'rgba(239,68,68,0.78)' : 'rgba(34,197,94,0.78)');
-                    riskChartInstance.data.datasets[0].borderColor = impact.values.map(value => value >= 0 ? '#ef4444' : '#22c55e');
+                    riskChartInstance.data.datasets[0].backgroundColor = impact.values.map(value => value >= 0 ? 'rgba(220, 38, 38,0.78)' : 'rgba(34,197,94,0.78)');
+                    riskChartInstance.data.datasets[0].borderColor = impact.values.map(value => value >= 0 ? '#dc2626' : '#22c55e');
                 }
                 riskChartInstance.update();
             } else {
                 buildChart(low, medium, high, total);
             }
         }
-
         function buildChart(low, medium, high, total) {
             const riskChartEl = document.getElementById("riskChart");
             if (!riskChartEl) return;
             const ctx = riskChartEl.getContext("2d");
-
             const title = document.querySelector("#chartContainer .chart-header");
             const caption = document.querySelector("#chartContainer .panel-note");
-
             if (title) title.innerText = currentScenario === 'baseline' ? 'Risk Distribution' : 'Scenario Impact';
             if (caption) caption.innerText = currentScenario === 'baseline'
                 ? (validationLayerEnabled ? 'Visible class distribution with validation proxy enabled.' : 'Baseline class distribution for the visible scene.')
                 : `Delta versus baseline under ${SCENARIO_CONFIG[currentScenario].label}.`;
-
             const impact = getScenarioImpactMetrics(getVisibleScenarioData());
             const isBaseline = currentScenario === 'baseline';
-
             riskChartInstance = new Chart(ctx, {
                 type: isBaseline ? 'doughnut' : 'bar',
                 data: {
@@ -2481,11 +2267,11 @@ let deckInstance
                     datasets: [{
                         data: isBaseline ? [low, medium, high] : impact.values,
                         backgroundColor: isBaseline
-                            ? ['rgba(34,197,94,0.82)', 'rgba(245,158,11,0.82)', 'rgba(239,68,68,0.82)']
-                            : impact.values.map(value => value >= 0 ? 'rgba(239,68,68,0.78)' : 'rgba(34,197,94,0.78)'),
+                            ? ['rgba(34,197,94,0.82)', 'rgba(245,158,11,0.82)', 'rgba(220, 38, 38,0.82)']
+                            : impact.values.map(value => value >= 0 ? 'rgba(220, 38, 38,0.78)' : 'rgba(34,197,94,0.78)'),
                         borderColor: isBaseline
-                            ? ['#22c55e', '#f59e0b', '#ef4444']
-                            : impact.values.map(value => value >= 0 ? '#ef4444' : '#22c55e'),
+                            ? ['#22c55e', '#f59e0b', '#dc2626']
+                            : impact.values.map(value => value >= 0 ? '#dc2626' : '#22c55e'),
                         borderWidth: 1.5,
                         hoverOffset: 6,
                         spacing: 2
@@ -2525,7 +2311,6 @@ let deckInstance
                 }
             })
         }
-
         const INSIGHT_TEMPLATES = {
             cluster: "ALERT: High-density risk cluster identified in sector [SECTOR]. Probability of localized forest loss exceeds 85%. Immediate verification recommended.",
             proximity: "MISSION ADVISORY: Detected significant spatial pressure near [NEARBY_FEATURE]. Corridor expansion confirmed. Escalation window: 72 hours.",
@@ -2533,13 +2318,10 @@ let deckInstance
             nominal: "STATUS: SCANNING. Monitoring nominal basin conditions. No critical clusters dominating current viewport.",
             selected: "OBJECTIVE ANALYSIS: Point [COORDS] showing [PROB]% risk under current propulsion. Primary driver: infrastructure proximity."
         };
-
         function updateInsightBox(activeData, targetObj = null, regionPoints = []) {
             const insightText = document.getElementById('insightText');
             if (!insightText) return;
-
             let message = INSIGHT_TEMPLATES.nominal;
-
             if (targetObj) {
                 const prob = getProbabilityPercent(getPointScore(targetObj));
                 message = INSIGHT_TEMPLATES.selected
@@ -2553,7 +2335,6 @@ let deckInstance
                     message = INSIGHT_TEMPLATES.scenario.replace('[SCENARIO]', SCENARIO_CONFIG[currentScenario].label);
                 }
             }
-
             // Simple typewriter effect for HUD immersion
             if (insightText.getAttribute('data-last-msg') !== message) {
                 insightText.setAttribute('data-last-msg', message);
@@ -2569,7 +2350,6 @@ let deckInstance
                 type();
             }
         }
-
         function updateKpiState(activeData, highCount) {
             const averageScore = activeData.length
                 ? activeData.reduce((sum, point) => sum + getPointScore(point), 0) / activeData.length
@@ -2577,28 +2357,22 @@ let deckInstance
             const baseConfidence = getProbabilityPercent(averageScore);
             const highBias = activeData.length ? Math.round((highCount / activeData.length) * 8) : 0;
             const confidence = Math.max(72, Math.min(99, baseConfidence + highBias));
-
             const confEl = document.getElementById("predictionConfidence");
             if (confEl) confEl.innerText = `${confidence}%`;
-
             const aucEl = document.getElementById("aucScore");
             if (aucEl) aucEl.innerText = "0.82";
         }
-
         function updateAlertState(activeData, highCount) {
             const banner = document.getElementById('alertBanner');
             if (!banner) return;
             const headline = document.getElementById('alertHeadline');
             const meta = document.getElementById('alertMeta');
             const icon = banner.querySelector('.alert-icon');
-
             if (!alertRevealEnabled) {
                 banner.classList.remove('active');
                 return;
             }
-
             banner.classList.add('active');
-
             if (!activeData.length || highCount === 0) {
                 banner.classList.add('low');
                 if (headline) headline.innerText = 'Monitoring nominal basin conditions';
@@ -2606,7 +2380,6 @@ let deckInstance
                 if (icon) icon.innerText = 'i';
                 return;
             }
-
             const highest = activeData.reduce((max, point) => getPointScore(point) > getPointScore(max) ? point : max, activeData[0]);
             const probability = getProbabilityPercent(getPointScore(highest));
             if (banner) banner.classList.remove('low');
@@ -2614,7 +2387,6 @@ let deckInstance
             if (meta) meta.innerText = `Scenario: ${SCENARIO_CONFIG[currentScenario].label} | Probability: ${probability}% | Target Year: ${highest.event_year}`;
             if (icon) icon.innerText = '!';
         }
-
         function toggleMapStyle(style) {
             if (!deckInstance) return;
             const mapboxMap = deckInstance.map;
@@ -2623,32 +2395,25 @@ let deckInstance
                 closeMapControlsMenu();
                 return;
             }
-
             pendingMapStyle = null;
             deckInstance.setProps({
                 mapStyle: MAP_STYLES[style] || MAP_STYLES.dark
             });
-
             document.getElementById('styleDark').classList.toggle('active', style === 'dark');
             document.getElementById('styleTerrain').classList.toggle('active', style === 'terrain');
             document.getElementById('styleSatellite').classList.toggle('active', style === 'satellite');
             closeMapControlsMenu();
-
             if (mapboxMap && typeof mapboxMap.once === 'function') {
                 mapboxMap.once('idle', () => renderLayers());
                 return;
             }
-
             renderLayers();
         }
-
         function toggleSidebar(show, obj = null) {
             const sidebar = document.getElementById('analysisSidebar');
             if (show === undefined) show = !sidebar.classList.contains('active');
-
             const icon = document.getElementById('toggleIconSide');
             if (icon) icon.className = show ? 'fas fa-chevron-right' : 'fas fa-chevron-left';
-
             if (show) {
                 sidebar.classList.add('active');
             } else {
@@ -2658,10 +2423,8 @@ let deckInstance
                 syncInsightVisibility();
                 updateSideTrajectoryChart();
                 updateInsightBox(getVisibleScenarioData());
-
                 switchTab('tab-overview');
             }
-
             if (show && obj) {
                 markAnalysisReady();
                 selectedAnalysisPoint = obj;
@@ -2674,7 +2437,6 @@ let deckInstance
                 const regionPoints = getLocalRegionPoints(obj);
                 const drivers = buildExplanationDrivers(obj, regionPoints);
                 const validationEvidence = getValidationEvidence(obj);
-
                 const sc = document.getElementById('sideCoords');
                 const ss = document.getElementById('sideRiskScore');
                 const sy = document.getElementById('sideYear');
@@ -2682,7 +2444,6 @@ let deckInstance
                 const sp = document.getElementById('sidePriority');
                 const sw = document.getElementById('sideWindow');
                 const sf = document.getElementById('sideConfidence');
-
                 if (sc) sc.innerText = `LAT ${obj.lat.toFixed(4)} | LON ${obj.lon.toFixed(4)}`;
                 if (ss) ss.innerText = `${probability}%`;
                 if (sy) sy.innerText = obj.event_year;
@@ -2690,14 +2451,12 @@ let deckInstance
                 if (sp) sp.innerText = priority;
                 if (sw) sw.innerText = pointScore > 170 ? '24 hrs' : (pointScore > 165 ? '72 hrs' : '7 days');
                 if (sf) sf.innerText = `${confidence}%`;
-
                 const meterFill = document.getElementById('riskMeterFill');
                 if (meterFill) {
                     const riskPercent = Math.min(((pointScore - 140) / (185 - 140)) * 100, 100);
                     meterFill.style.width = riskPercent + '%';
-                    meterFill.style.background = pointScore > 170 ? '#ef4444' : (pointScore > 165 ? '#f59e0b' : '#22c55e');
+                    meterFill.style.background = pointScore > 170 ? '#dc2626' : (pointScore > 165 ? '#f59e0b' : '#22c55e');
                 }
-
                 let advice = "";
                 if (pointScore > 170) {
                     advice = `<b>CRITICAL THREAT:</b> ${SCENARIO_CONFIG[currentScenario].label} pushes this cell into immediate response range. Prioritize drone verification and corridor monitoring.`;
@@ -2711,20 +2470,16 @@ let deckInstance
                 }
                 const sa = document.getElementById('sideAdvice');
                 if (sa) sa.innerHTML = advice;
-
                 const so = document.getElementById('sideObservedLoss');
                 const sh = document.getElementById('sideFireHotspot');
                 const sv = document.getElementById('sideSatelliteValidation');
                 const st = document.getElementById('sideValidationStatus');
-
                 if (so) so.innerText = validationEvidence.observedForestLoss ? 'YES' : 'NO';
                 if (sh) sh.innerText = validationEvidence.fireHotspot ? 'YES' : 'NO';
                 if (sv) sv.innerText = validationEvidence.satelliteValidation;
                 if (st) st.innerText = validationEvidence.status;
-
                 // Update Side Trajectory Chart
                 updateSideTrajectoryChart(obj);
-
                 document.getElementById('sideValidationSummary').innerHTML = validationEvidence.observedForestLoss
                     ? `<b>Prediction vs Observation:</b> High predicted risk aligns with observed forest loss evidence. This supports model validity for this cell.`
                     : `<b>Prediction vs Observation:</b> No strong observed loss proxy is visible for this cell yet. This may indicate early warning or overprediction.`;
@@ -2736,12 +2491,10 @@ let deckInstance
                 }
                 updateInsightBox(getVisibleScenarioData(), obj, regionPoints);
                 syncReportExportPanel(obj);
-
                 // Default to point analysis first, with AI insights available in the adjacent tab.
                 switchTab('tab-overview');
             }
         }
-
         function toggleModal(show) {
             const modal = document.getElementById('modalOverlay');
             if (show) {
@@ -2752,7 +2505,6 @@ let deckInstance
                 setTimeout(() => modal.style.display = 'none', 400);
             }
         }
-
         window.addEventListener('error', event => {
             console.error('Unhandled error:', event.error || event.message);
             const message = event && event.message
@@ -2762,7 +2514,6 @@ let deckInstance
                 showLoadingError(message, true);
             }
         });
-
         window.addEventListener('unhandledrejection', event => {
             const reason = event.reason && event.reason.message ? event.reason.message : String(event.reason || 'Unknown promise rejection');
             console.error('Unhandled rejection:', event.reason);
@@ -2770,7 +2521,6 @@ let deckInstance
                 showLoadingError(`Startup error: ${reason}`, true);
             }
         });
-
         window.addEventListener('hashchange', handleDashboardEntryHash);
         function generateRiskReport() {
             const record = getSelectedPointExportRecord();
@@ -2781,13 +2531,11 @@ let deckInstance
             const filename = record
                 ? `GeoAI_Risk_Report_lat-${record.latitude}_lon-${record.longitude}_${Math.round(Number(record.risk_score))}.pdf`
                 : `GeoAI_Scene_Report_${currentMode}_${currentScenario}_${Math.floor(currentYear)}.pdf`;
-
             const JsPDF = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
             if (typeof JsPDF !== 'function') {
                 console.error('jsPDF unavailable. PDF export cannot continue.');
                 return;
             }
-
             const hasPoint = Boolean(record);
             const score = hasPoint ? Number(record.risk_score) : null;
             const data = hasPoint
@@ -2835,7 +2583,6 @@ let deckInstance
                     ],
                     recommendation: 'Review the current scene summary and switch to a point selection to export a focused report.'
                 };
-
             const doc = new JsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
             const pageWidth = doc.internal.pageSize.getWidth();
             const pageHeight = doc.internal.pageSize.getHeight();
@@ -2851,14 +2598,12 @@ let deckInstance
                 info: [125, 211, 252],
                 success: [74, 222, 128]
             };
-
             const drawRoundedPanel = (x, y, w, h, fill, stroke) => {
                 doc.setFillColor(fill[0], fill[1], fill[2]);
                 doc.setDrawColor(stroke[0], stroke[1], stroke[2]);
                 doc.setLineWidth(0.35);
                 doc.roundedRect(x, y, w, h, 4, 4, 'FD');
             };
-
             const addWrappedText = (text, x, y, size, color, options = {}) => {
                 const bold = Boolean(options.bold);
                 const maxWidth = options.maxWidth || contentWidth;
@@ -2872,7 +2617,6 @@ let deckInstance
                 const height = lines.length * size * 0.3528 * lineHeightFactor;
                 return y + height + bottomGap;
             };
-
             const drawMetricCard = (x, y, item) => {
                 drawRoundedPanel(x, y, cardWidth, summaryHeight, [14, 21, 37], [30, 41, 59]);
                 doc.setFont('helvetica', 'bold');
@@ -2885,7 +2629,6 @@ let deckInstance
                 const valueLines = doc.splitTextToSize(String(item.value), cardWidth - 8);
                 doc.text(valueLines, x + 4, y + 12.5, { lineHeightFactor: 1.05 });
             };
-
             const drawDetailCard = (x, y, item) => {
                 drawRoundedPanel(x, y, cardWidth, detailHeight, [10, 16, 28], [51, 65, 85]);
                 doc.setFont('helvetica', 'bold');
@@ -2897,18 +2640,14 @@ let deckInstance
                 const valueLines = doc.splitTextToSize(String(item.value), cardWidth - 8);
                 doc.text(valueLines, x + 4, y + 10.5, { lineHeightFactor: 1.04 });
             };
-
             const footerLabel = hasPoint
                 ? `${record.mode} | ${record.metric}`
                 : `${getModeLabel(currentMode)} | ${SCENARIO_CONFIG[currentScenario].label}`;
-
             doc.setFillColor(7, 11, 19);
             doc.rect(0, 0, pageWidth, pageHeight, 'F');
-
             doc.setDrawColor(30, 41, 59);
             doc.setLineWidth(0.5);
             doc.roundedRect(margin, 11, contentWidth, pageHeight - 22, 4, 4, 'S');
-
             let cursorY = 20;
             cursorY = addWrappedText('AI Deforestation Risk Report', margin, cursorY, 9, [103, 232, 249], {
                 bold: true,
@@ -2927,7 +2666,6 @@ let deckInstance
                 lineHeightFactor: 1.15,
                 bottomGap: 6
             });
-
             const metricY = cursorY;
             data.metrics.slice(0, 2).forEach((item, index) => {
                 drawMetricCard(margin + (index * (cardWidth + gridGap)), metricY, item);
@@ -2935,20 +2673,17 @@ let deckInstance
             data.metrics.slice(2, 4).forEach((item, index) => {
                 drawMetricCard(margin + (index * (cardWidth + gridGap)), metricY + summaryHeight + gridGap, item);
             });
-
             const detailY = metricY + (summaryHeight * 2) + gridGap + 8;
             data.details.forEach((item, index) => {
                 const row = Math.floor(index / 2);
                 const col = index % 2;
                 drawDetailCard(margin + (col * (cardWidth + gridGap)), detailY + (row * (detailHeight + gridGap)), item);
             });
-
             const detailRows = Math.ceil(data.details.length / 2);
             const detailsBlockHeight = (detailRows * (detailHeight + gridGap)) - gridGap;
             const recommendationY = detailY + detailsBlockHeight + 8;
             const recommendationText = doc.splitTextToSize(data.recommendation, contentWidth - 10);
             const recommendationHeight = Math.max(26, (recommendationText.length * 4.8) + 12);
-
             drawRoundedPanel(margin, recommendationY, contentWidth, recommendationHeight, [8, 16, 29], [34, 197, 94]);
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(8);
@@ -2958,12 +2693,10 @@ let deckInstance
             doc.setFontSize(11);
             doc.setTextColor(226, 232, 240);
             doc.text(recommendationText, margin + 4, recommendationY + 11, { lineHeightFactor: 1.15 });
-
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(7.5);
             doc.setTextColor(120, 140, 165);
             doc.text(`Generated from live dashboard context | ${footerLabel}`, margin, pageHeight - 8);
-
             doc.save(filename);
             return;
         }
@@ -2973,23 +2706,7 @@ let deckInstance
             console.error('Bootstrap failed:', error);
             showLoadingError(`Startup error: ${error.message}`, true);
         }
-
         window.onfocus = () => {
             if (appInitialized) syncSimulatorState();
         };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
