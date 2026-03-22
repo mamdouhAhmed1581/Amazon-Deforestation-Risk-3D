@@ -1,593 +1,220 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>AI Model — GeoAI Deforestation Platform</title>
-    <meta name="description" content="AI model architecture, metrics, and explainability for deforestation risk prediction">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/platform.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        .nn-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 48px;
-            padding: 48px;
-            background: rgba(15, 23, 42, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            border-radius: 16px;
-            margin: 16px 0;
-            position: relative;
-            overflow: hidden;
-        }
-        #nnCanvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
-            opacity: 0.6;
-        }
-        .data-stream-bg {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: -1;
-            opacity: 0.05;
-        }
-        .nn-layer {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 12px;
-            position: relative;
-            z-index: 1;
-        }
-        .nn-layer-label {
-            font-size: 9px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #64748b;
-            margin-bottom: 4px;
-        }
-        .nn-node {
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .nn-node:hover {
-            transform: scale(1.4);
-        }
-        .nn-node.input { background: #3b82f6; box-shadow: 0 0 12px rgba(59, 130, 246, 0.5); }
-        .nn-node.hidden { background: #8b5cf6; box-shadow: 0 0 12px rgba(139, 92, 246, 0.5); }
-        .nn-node.output { background: #ef4444; box-shadow: 0 0 12px rgba(239, 68, 68, 0.5); }
-        .nn-arrow {
-            display: flex;
-            align-items: center;
-            color: #334155;
-            font-size: 20px;
-        }
-        .feature-bar-container {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
-        .feature-bar {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .feature-bar-name {
-            width: 160px;
-            font-size: 12px;
-            color: #cbd5e1;
-            font-weight: 600;
-            flex-shrink: 0;
-        }
-        .feature-bar-track {
-            flex: 1;
-            height: 10px;
-            background: rgba(255, 255, 255, 0.06);
-            border-radius: 999px;
-            overflow: hidden;
-        }
-        .feature-bar-fill {
-            height: 100%;
-            border-radius: 999px;
-            transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-        .feature-bar-val {
-            width: 40px;
-            text-align: right;
-            font-size: 13px;
-            font-weight: 700;
-            color: #f8fafc;
-        }
-        .model-desc-card {
-            background: rgba(59, 130, 246, 0.05);
-            border: 1px solid rgba(59, 130, 246, 0.15);
-            border-radius: 14px;
-            padding: 20px;
-        }
-        .model-desc-card p {
-            font-size: 13px;
-            line-height: 1.7;
-            color: #94a3b8;
-        }
-        .model-desc-card strong {
-            color: #f8fafc;
-        }
-        .accuracy-ring {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            font-weight: 800;
-            color: #22c55e;
-            background: conic-gradient(#22c55e 0% 82%, rgba(255,255,255,0.05) 82% 100%);
-            position: relative;
-        }
-        .accuracy-ring::before {
-            content: '';
-            position: absolute;
-            inset: 8px;
-            border-radius: 50%;
-            background: rgba(15, 23, 42, 0.95);
-        }
-        .accuracy-ring span {
-            position: relative;
-            z-index: 1;
-        }
-        .page-header {
-            margin-bottom: 28px;
-        }
-        .page-header h1 {
-            font-size: 28px;
-            font-weight: 800;
-            color: #f8fafc;
-            letter-spacing: -0.5px;
-            margin-bottom: 6px;
-        }
-        .page-header p {
-            font-size: 14px;
-            color: #64748b;
-            font-weight: 500;
-        }
-    </style>
+  <meta charset="utf-8">
+      <title>AI Model — GeoAI Deforestation Platform</title>
+      <meta name="description" content="AI model architecture, metrics, and explainability for deforestation risk prediction">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+      <link rel="stylesheet" href="assets/css/platform.css">
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="assets/pages/ai-model/styles.css">
 </head>
 <body>
-    <!-- ===== Navigation Bar ===== -->
-    <nav class="platform-nav">
-        <a href="index.html" class="nav-brand">
-            <div class="nav-brand-icon">AI</div>
-            <div class="nav-brand-text">Geo<span>AI</span> Platform</div>
-        </a>
-        <ul class="nav-links">
-            <li><a href="index.html"><span class="nav-icon">📊</span> Dashboard</a></li>
-            <li><a href="spatial-analysis.html"><span class="nav-icon">🗺️</span> Spatial Analysis</a></li>
-            <li><a href="ai-model.html" class="active"><span class="nav-icon">🧠</span> AI Model</a></li>
-            <li><a href="scenario-simulator.html"><span class="nav-icon">⚡</span> Simulator</a></li>
-            <li><a href="reports.html"><span class="nav-icon">📄</span> Reports</a></li>
-            <li><a href="project-details.html"><span class="nav-icon">📋</span> Project Details</a></li>
-        </ul>
-        <div class="nav-status">
-            <div class="nav-status-dot"></div>
-            Model Active
-        </div>
-    </nav>
+  <nav class="platform-nav">
+    <a href="index.html" class="nav-brand">
+      <div class="nav-brand-text">Geo<span>AI</span> Platform</div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="index.html"><span class="nav-icon">📊</span> Dashboard</a></li>
+    </ul>
+    <div class="nav-status">
+      <div class="nav-status-dot"></div>
+      Model Active
+    </div>
+  </nav>
 
-    <!-- ===== Page Content ===== -->
-    <canvas class="data-stream-bg" id="dataStreamCanvas"></canvas>
+  <canvas class="data-stream-bg" id="dataStreamCanvas"></canvas>
 
-    <div class="page-container">
-        <div class="page-header">
-            <h1>🧠 AI Model — Neural-Prophet Engine</h1>
-            <p>Model architecture, performance metrics, and explainability analysis for deforestation risk prediction</p>
-        </div>
-
-        <!-- KPI Metrics -->
-        <div class="kpi-grid">
-            <div class="kpi-card">
-                <div class="kpi-label">Model AUC</div>
-                <div class="kpi-value green">0.82</div>
-                <div class="kpi-change down">▲ Strong</div>
-            </div>
-            <div class="kpi-card">
-                <div class="kpi-label">Precision</div>
-                <div class="kpi-value blue">0.79</div>
-            </div>
-            <div class="kpi-card">
-                <div class="kpi-label">Recall</div>
-                <div class="kpi-value cyan">0.84</div>
-            </div>
-            <div class="kpi-card">
-                <div class="kpi-label">F1-Score</div>
-                <div class="kpi-value amber">0.81</div>
-            </div>
-            <div class="kpi-card">
-                <div class="kpi-label">Training Samples</div>
-                <div class="kpi-value">150,000</div>
-            </div>
-            <div class="kpi-card">
-                <div class="kpi-label">Features Used</div>
-                <div class="kpi-value blue">12</div>
-            </div>
-        </div>
-
-        <!-- Model Architecture + Feature Importance -->
-        <div class="content-grid two-col" style="margin-bottom: 20px;">
-            <!-- Model Architecture -->
-            <div class="chart-box">
-                <h3>🏗️ Model Architecture — Neural-Prophet Engine v2.1</h3>
-                <div class="model-desc-card" style="margin-bottom: 16px;">
-                    <p>A hybrid <strong>deep learning ensemble</strong> combining gradient-boosted decision trees with a 4-layer neural network. The model processes <strong>12 geospatial features</strong> through spatial convolutions to predict cell-level deforestation risk scores ranging from 0–255.</p>
-                </div>
-                <div class="nn-container" id="nnWrapper">
-                    <canvas id="nnCanvas"></canvas>
-                    <div class="nn-layer" data-layer="0">
-                        <div class="nn-layer-label">Input (12)</div>
-                        <div class="nn-node input"></div>
-                        <div class="nn-node input"></div>
-                        <div class="nn-node input"></div>
-                        <div class="nn-node input"></div>
-                        <div class="nn-node input"></div>
-                        <div class="nn-node input"></div>
-                    </div>
-                    <div class="nn-layer" data-layer="1">
-                        <div class="nn-layer-label">Hidden 1 (64)</div>
-                        <div class="nn-node hidden"></div>
-                        <div class="nn-node hidden"></div>
-                        <div class="nn-node hidden"></div>
-                        <div class="nn-node hidden"></div>
-                        <div class="nn-node hidden"></div>
-                    </div>
-                    <div class="nn-layer" data-layer="2">
-                        <div class="nn-layer-label">Hidden 2 (32)</div>
-                        <div class="nn-node hidden"></div>
-                        <div class="nn-node hidden"></div>
-                        <div class="nn-node hidden"></div>
-                        <div class="nn-node hidden"></div>
-                    </div>
-                    <div class="nn-layer" data-layer="3">
-                        <div class="nn-layer-label">Hidden 3 (16)</div>
-                        <div class="nn-node hidden"></div>
-                        <div class="nn-node hidden"></div>
-                        <div class="nn-node hidden"></div>
-                    </div>
-                    <div class="nn-layer" data-layer="4">
-                        <div class="nn-layer-label">Output (1)</div>
-                        <div class="nn-node output"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Feature Importance -->
-            <div class="chart-box">
-                <h3>📊 Feature Importance (SHAP Values)</h3>
-                <div class="feature-bar-container" id="featureBars">
-                    <!-- Filled by JS -->
-                </div>
-                <div class="model-desc-card" style="margin-top: 20px;">
-                    <p>Feature importance is calculated using <strong>SHAP (SHapley Additive exPlanations)</strong>, which provides a unified measure of feature contribution. <strong>Road proximity</strong> is the strongest predictor, consistent with empirical deforestation research in the Amazon Basin.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- ROC Curve + Confusion Matrix -->
-        <div class="content-grid two-col" style="margin-bottom: 20px;">
-            <!-- ROC Curve -->
-            <div class="chart-box">
-                <h3>📈 ROC Curve (Receiver Operating Characteristic)</h3>
-                <canvas id="rocChart" height="280"></canvas>
-                <div style="display: flex; gap: 16px; margin-top: 12px;">
-                    <div class="badge badge-green">AUC = 0.82</div>
-                    <div class="badge badge-blue">Threshold = 0.5</div>
-                </div>
-            </div>
-
-            <!-- Confusion Matrix -->
-            <div class="chart-box">
-                <h3>🎯 Confusion Matrix</h3>
-                <div style="display: flex; align-items: center; gap: 24px; margin-top: 8px;">
-                    <div style="flex: 1;">
-                        <div style="text-align: center; margin-bottom: 8px; font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 1px;">Predicted</div>
-                        <div class="matrix-grid">
-                            <div class="matrix-label"></div>
-                            <div class="matrix-label">Positive</div>
-                            <div class="matrix-label">Negative</div>
-                            <div class="matrix-label" style="writing-mode: vertical-rl; transform: rotate(180deg);">Actual</div>
-                            <div class="matrix-cell matrix-tp">
-                                <div style="font-size: 24px;">12,450</div>
-                                <div style="font-size: 9px; margin-top: 4px; opacity: 0.7;">TRUE POS</div>
-                            </div>
-                            <div class="matrix-cell matrix-fn">
-                                <div style="font-size: 24px;">2,380</div>
-                                <div style="font-size: 9px; margin-top: 4px; opacity: 0.7;">FALSE NEG</div>
-                            </div>
-                            <div class="matrix-label"></div>
-                            <div class="matrix-cell matrix-fp">
-                                <div style="font-size: 24px;">3,290</div>
-                                <div style="font-size: 9px; margin-top: 4px; opacity: 0.7;">FALSE POS</div>
-                            </div>
-                            <div class="matrix-cell matrix-tn">
-                                <div style="font-size: 24px;">131,880</div>
-                                <div style="font-size: 9px; margin-top: 4px; opacity: 0.7;">TRUE NEG</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div style="text-align: center;">
-                        <div class="accuracy-ring">
-                            <span>82%</span>
-                        </div>
-                        <div style="margin-top: 10px; font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 1px;">Overall Accuracy</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Dataset Description + Training Info -->
-        <div class="content-grid two-col">
-            <!-- Dataset Description -->
-            <div class="chart-box">
-                <h3>🗃️ Training Dataset</h3>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Property</th>
-                            <th>Value</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>Data Source</td>
-                            <td><span class="badge badge-blue">Satellite + Census</span></td>
-                        </tr>
-                        <tr>
-                            <td>Total Samples</td>
-                            <td>150,000 grid cells</td>
-                        </tr>
-                        <tr>
-                            <td>Spatial Resolution</td>
-                            <td>1km × 1km</td>
-                        </tr>
-                        <tr>
-                            <td>Temporal Coverage</td>
-                            <td>2000 – 2030 (projected)</td>
-                        </tr>
-                        <tr>
-                            <td>Region</td>
-                            <td>Amazon Basin (Rondônia)</td>
-                        </tr>
-                        <tr>
-                            <td>Features</td>
-                            <td>12 geospatial variables</td>
-                        </tr>
-                        <tr>
-                            <td>Train / Validation / Test</td>
-                            <td>70% / 15% / 15%</td>
-                        </tr>
-                        <tr>
-                            <td>Class Distribution</td>
-                            <td>High: 64% | Med: 21% | Low: 15%</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Feature List -->
-            <div class="chart-box">
-                <h3>🔬 Input Features (12 Variables)</h3>
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Feature</th>
-                            <th>Type</th>
-                            <th>Source</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>Road Proximity</td><td><span class="badge badge-green">Spatial</span></td><td>OpenStreetMap</td></tr>
-                        <tr><td>Previous Forest Loss</td><td><span class="badge badge-red">Temporal</span></td><td>Hansen GFC</td></tr>
-                        <tr><td>Population Pressure</td><td><span class="badge badge-amber">Census</span></td><td>WorldPop</td></tr>
-                        <tr><td>Elevation</td><td><span class="badge badge-green">Spatial</span></td><td>SRTM DEM</td></tr>
-                        <tr><td>Slope</td><td><span class="badge badge-green">Spatial</span></td><td>SRTM DEM</td></tr>
-                        <tr><td>River Distance</td><td><span class="badge badge-green">Spatial</span></td><td>HydroSHEDS</td></tr>
-                        <tr><td>Protected Area</td><td><span class="badge badge-blue">Policy</span></td><td>WDPA</td></tr>
-                        <tr><td>NDVI</td><td><span class="badge badge-green">Spectral</span></td><td>Landsat 8</td></tr>
-                        <tr><td>Soil Moisture</td><td><span class="badge badge-green">Spatial</span></td><td>SMAP</td></tr>
-                        <tr><td>Fire Frequency</td><td><span class="badge badge-red">Temporal</span></td><td>FIRMS</td></tr>
-                        <tr><td>Logging Concessions</td><td><span class="badge badge-blue">Policy</span></td><td>Gov. Data</td></tr>
-                        <tr><td>Urban Proximity</td><td><span class="badge badge-amber">Census</span></td><td>WorldPop</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+  <main class="page-container">
+    <div class="page-header">
+      <h1>🧠 AI Model — Neural-Prophet Engine</h1>
+      <p>Model architecture, performance metrics, and explainability analysis for deforestation risk prediction</p>
     </div>
 
-    <script>
-        // ===== Feature Importance Bars =====
-        const features = [
-            { name: 'Road Proximity', value: 47, color: '#ef4444' },
-            { name: 'Previous Forest Loss', value: 34, color: '#f97316' },
-            { name: 'Population Pressure', value: 7, color: '#eab308' },
-            { name: 'Elevation', value: 13, color: '#3b82f6' },
-            { name: 'Slope', value: 8, color: '#06b6d4' },
-            { name: 'River Distance', value: 11, color: '#10b981' },
-            { name: 'Protected Area', value: 15, color: '#8b5cf6' },
-            { name: 'NDVI', value: 19, color: '#22c55e' },
-            { name: 'Soil Moisture', value: 5, color: '#06b6d4' },
-            { name: 'Fire Frequency', value: 22, color: '#ef4444' },
-            { name: 'Logging Concessions', value: 9, color: '#f59e0b' },
-            { name: 'Urban Proximity', value: 6, color: '#a855f7' }
-        ].sort((a, b) => b.value - a.value);
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Model AUC</div>
+        <div class="kpi-value green">0.82</div>
+        <div class="kpi-change down">▲ Strong</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Precision</div>
+        <div class="kpi-value blue">0.79</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Recall</div>
+        <div class="kpi-value cyan">0.84</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">F1-Score</div>
+        <div class="kpi-value amber">0.81</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Training Samples</div>
+        <div class="kpi-value">150,000</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Features Used</div>
+        <div class="kpi-value blue">12</div>
+      </div>
+    </div>
 
-        const container = document.getElementById('featureBars');
-        features.forEach((f, i) => {
-            const row = document.createElement('div');
-            row.className = 'feature-bar';
-            row.innerHTML = `
-                <div class="feature-bar-name">${f.name}</div>
-                <div class="feature-bar-track">
-                    <div class="feature-bar-fill" style="width: 0%; background: ${f.color};" data-width="${f.value}%"></div>
-                </div>
-                <div class="feature-bar-val">${f.value}%</div>
-            `;
-            container.appendChild(row);
-        });
+    <div class="content-grid two-col" style="margin-bottom: 20px;">
+      <section class="chart-box">
+        <h3>🏗️ Model Architecture — Neural-Prophet Engine v2.1</h3>
+        <div class="model-desc-card" style="margin-bottom: 16px;">
+          <p>A hybrid <strong>deep learning ensemble</strong> combining gradient-boosted decision trees with a 4-layer neural network. The model processes <strong>12 geospatial features</strong> through spatial convolutions to predict cell-level deforestation risk scores ranging from 0–255.</p>
+        </div>
+        <div class="nn-container" id="nnWrapper">
+          <canvas id="nnCanvas"></canvas>
+          <div class="nn-layer" data-layer="0">
+            <div class="nn-layer-label">Input (12)</div>
+            <div class="nn-node input"></div>
+            <div class="nn-node input"></div>
+            <div class="nn-node input"></div>
+            <div class="nn-node input"></div>
+            <div class="nn-node input"></div>
+            <div class="nn-node input"></div>
+          </div>
+          <div class="nn-layer" data-layer="1">
+            <div class="nn-layer-label">Hidden 1 (64)</div>
+            <div class="nn-node hidden"></div>
+            <div class="nn-node hidden"></div>
+            <div class="nn-node hidden"></div>
+            <div class="nn-node hidden"></div>
+            <div class="nn-node hidden"></div>
+          </div>
+          <div class="nn-layer" data-layer="2">
+            <div class="nn-layer-label">Hidden 2 (32)</div>
+            <div class="nn-node hidden"></div>
+            <div class="nn-node hidden"></div>
+            <div class="nn-node hidden"></div>
+            <div class="nn-node hidden"></div>
+          </div>
+          <div class="nn-layer" data-layer="3">
+            <div class="nn-layer-label">Hidden 3 (16)</div>
+            <div class="nn-node hidden"></div>
+            <div class="nn-node hidden"></div>
+            <div class="nn-node hidden"></div>
+          </div>
+          <div class="nn-layer" data-layer="4">
+            <div class="nn-layer-label">Output (1)</div>
+            <div class="nn-node output"></div>
+          </div>
+        </div>
+      </section>
 
-        // Animate bars
-        setTimeout(() => {
-            document.querySelectorAll('.feature-bar-fill').forEach(bar => {
-                bar.style.width = bar.dataset.width;
-            });
-        }, 300);
+      <section class="chart-box">
+        <h3>📊 Feature Importance (SHAP Values)</h3>
+        <div class="feature-bar-container" id="featureBars"></div>
+        <div class="model-desc-card" style="margin-top: 20px;">
+          <p>Feature importance is calculated using <strong>SHAP (SHapley Additive exPlanations)</strong>, which provides a unified measure of feature contribution. <strong>Road proximity</strong> is the strongest predictor, consistent with empirical deforestation research in the Amazon Basin.</p>
+        </div>
+      </section>
+    </div>
 
-        // ===== ROC Curve =====
-        const rocCtx = document.getElementById('rocChart').getContext('2d');
-        new Chart(rocCtx, {
-            type: 'line',
-            data: {
-                labels: Array.from({length: 21}, (_, i) => (i * 0.05).toFixed(2)),
-                datasets: [
-                    {
-                        label: 'ROC Curve (AUC = 0.82)',
-                        data: [0, 0.15, 0.32, 0.48, 0.58, 0.65, 0.71, 0.76, 0.80, 0.83, 0.86, 0.88, 0.90, 0.92, 0.93, 0.95, 0.96, 0.97, 0.98, 0.99, 1.0],
-                        borderColor: '#3b82f6',
-                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                        fill: true,
-                        tension: 0.4,
-                        borderWidth: 3,
-                        pointRadius: 0,
-                        pointHoverRadius: 6,
-                        pointHoverBackgroundColor: '#3b82f6',
-                    },
-                    {
-                        label: 'Random Classifier',
-                        data: Array.from({length: 21}, (_, i) => i * 0.05),
-                        borderColor: 'rgba(255, 255, 255, 0.15)',
-                        borderDash: [8, 4],
-                        borderWidth: 1,
-                        pointRadius: 0,
-                        fill: false,
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        labels: {
-                            color: '#94a3b8',
-                            font: { family: 'Inter', size: 11 }
-                        }
-                    }
-                },
-                scales: {
-                    x: {
-                        title: { display: true, text: 'False Positive Rate', color: '#64748b', font: { family: 'Inter', size: 11 } },
-                        grid: { color: 'rgba(255, 255, 255, 0.04)' },
-                        ticks: { color: '#64748b', font: { size: 10 }, maxTicksLimit: 6 }
-                    },
-                    y: {
-                        title: { display: true, text: 'True Positive Rate', color: '#64748b', font: { family: 'Inter', size: 11 } },
-                        grid: { color: 'rgba(255, 255, 255, 0.04)' },
-                        ticks: { color: '#64748b', font: { size: 10 } }
-                    }
-                }
-            }
-        });
+    <div class="content-grid two-col" style="margin-bottom: 20px;">
+      <section class="chart-box">
+        <h3>📈 ROC Curve (Receiver Operating Characteristic)</h3>
+        <canvas id="rocChart" height="280"></canvas>
+        <div style="display: flex; gap: 16px; margin-top: 12px;">
+          <div class="badge badge-green">AUC = 0.82</div>
+          <div class="badge badge-blue">Threshold = 0.5</div>
+        </div>
+      </section>
 
-        // ===== Neural Network Connections =====
-        function drawNN() {
-            const canvas = document.getElementById('nnCanvas');
-            const ctx = canvas.getContext('2d');
-            const wrapper = document.getElementById('nnWrapper');
-            
-            canvas.width = wrapper.clientWidth;
-            canvas.height = wrapper.clientHeight;
-            
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.lineWidth = 1;
-            
-            const layers = document.querySelectorAll('.nn-layer');
-            for (let i = 0; i < layers.length - 1; i++) {
-                const nodes1 = layers[i].querySelectorAll('.nn-node');
-                const nodes2 = layers[i+1].querySelectorAll('.nn-node');
-                
-                nodes1.forEach(n1 => {
-                    const r1 = n1.getBoundingClientRect();
-                    const rW = wrapper.getBoundingClientRect();
-                    const x1 = r1.left - rW.left + r1.width / 2;
-                    const y1 = r1.top - rW.top + r1.height / 2;
-                    
-                    nodes2.forEach(n2 => {
-                        const r2 = n2.getBoundingClientRect();
-                        const x2 = r2.left - rW.left + r2.width / 2;
-                        const y2 = r2.top - rW.top + r2.height / 2;
-                        
-                        const gradient = ctx.createLinearGradient(x1, y1, x2, y2);
-                        gradient.addColorStop(0, 'rgba(59, 130, 246, 0.1)');
-                        gradient.addColorStop(1, 'rgba(139, 92, 246, 0.1)');
-                        
-                        ctx.strokeStyle = gradient;
-                        ctx.beginPath();
-                        ctx.moveTo(x1, y1);
-                        ctx.lineTo(x2, y2);
-                        ctx.stroke();
-                    });
-                });
-            }
-        }
+      <section class="chart-box">
+        <h3>🎯 Confusion Matrix</h3>
+        <div style="display: flex; align-items: center; gap: 24px; margin-top: 8px;">
+          <div style="flex: 1;">
+            <div style="text-align: center; margin-bottom: 8px; font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 1px;">Predicted</div>
+            <div class="matrix-grid">
+              <div class="matrix-label"></div>
+              <div class="matrix-label">Positive</div>
+              <div class="matrix-label">Negative</div>
+              <div class="matrix-label" style="writing-mode: vertical-rl; transform: rotate(180deg);">Actual</div>
+              <div class="matrix-cell matrix-tp">
+                <div style="font-size: 24px;">12,450</div>
+                <div style="font-size: 9px; margin-top: 4px; opacity: 0.7;">TRUE POS</div>
+              </div>
+              <div class="matrix-cell matrix-fn">
+                <div style="font-size: 24px;">2,380</div>
+                <div style="font-size: 9px; margin-top: 4px; opacity: 0.7;">FALSE NEG</div>
+              </div>
+              <div class="matrix-label"></div>
+              <div class="matrix-cell matrix-fp">
+                <div style="font-size: 24px;">3,290</div>
+                <div style="font-size: 9px; margin-top: 4px; opacity: 0.7;">FALSE POS</div>
+              </div>
+              <div class="matrix-cell matrix-tn">
+                <div style="font-size: 24px;">131,880</div>
+                <div style="font-size: 9px; margin-top: 4px; opacity: 0.7;">TRUE NEG</div>
+              </div>
+            </div>
+          </div>
+          <div style="text-align: center;">
+            <div class="accuracy-ring">
+              <span>82%</span>
+            </div>
+            <div style="margin-top: 10px; font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 1px;">Overall Accuracy</div>
+          </div>
+        </div>
+      </section>
+    </div>
 
-        window.addEventListener('load', () => {
-            setTimeout(drawNN, 1000);
-            setTimeout(() => {
-                const overlay = document.getElementById('loadingOverlay');
-                if (overlay) overlay.classList.add('fade-out');
-            }, 500);
-        });
-        window.addEventListener('resize', drawNN);
-        // Initialize Data Stream Background
-        const dsCanvas = document.getElementById('dataStreamCanvas');
-        if (dsCanvas) {
-            const dctx = dsCanvas.getContext('2d');
-            let dwidth, dheight;
-            const columns = [];
-            
-            const resizeDS = () => {
-                dwidth = dsCanvas.width = window.innerWidth;
-                dheight = dsCanvas.height = window.innerHeight;
-                columns.length = 0;
-                for (let i = 0; i < dwidth / 20; i++) columns.push(Math.random() * dheight);
-            };
+    <div class="content-grid two-col">
+      <section class="chart-box">
+        <h3>🗃️ Training Dataset</h3>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Data Source</td><td><span class="badge badge-blue">Satellite + Census</span></td></tr>
+            <tr><td>Total Samples</td><td>150,000 grid cells</td></tr>
+            <tr><td>Spatial Resolution</td><td>1km × 1km</td></tr>
+            <tr><td>Temporal Coverage</td><td>2000 – 2030 (projected)</td></tr>
+            <tr><td>Region</td><td>Amazon Basin (Rondônia)</td></tr>
+            <tr><td>Features</td><td>12 geospatial variables</td></tr>
+            <tr><td>Train / Validation / Test</td><td>70% / 15% / 15%</td></tr>
+            <tr><td>Class Distribution</td><td>High: 64% | Med: 21% | Low: 15%</td></tr>
+          </tbody>
+        </table>
+      </section>
 
-            const drawDS = () => {
-                dctx.fillStyle = 'rgba(3, 7, 18, 0.15)';
-                dctx.fillRect(0, 0, dwidth, dheight);
-                dctx.fillStyle = '#3b82f6';
-                dctx.font = '10px monospace';
-                columns.forEach((y, i) => {
-                    const text = Math.random() > 0.5 ? '1' : '0';
-                    dctx.fillText(text, i * 20, y);
-                    columns[i] = y > dheight && Math.random() > 0.975 ? 0 : y + 15;
-                });
-                requestAnimationFrame(drawDS);
-            };
+      <section class="chart-box">
+        <h3>🔬 Input Features (12 Variables)</h3>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>Type</th>
+              <th>Source</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Road Proximity</td><td><span class="badge badge-green">Spatial</span></td><td>OpenStreetMap</td></tr>
+            <tr><td>Previous Forest Loss</td><td><span class="badge badge-red">Temporal</span></td><td>Hansen GFC</td></tr>
+            <tr><td>Population Pressure</td><td><span class="badge badge-amber">Census</span></td><td>WorldPop</td></tr>
+            <tr><td>Elevation</td><td><span class="badge badge-green">Spatial</span></td><td>SRTM DEM</td></tr>
+            <tr><td>Slope</td><td><span class="badge badge-green">Spatial</span></td><td>SRTM DEM</td></tr>
+            <tr><td>River Distance</td><td><span class="badge badge-green">Spatial</span></td><td>HydroSHEDS</td></tr>
+            <tr><td>Protected Area</td><td><span class="badge badge-blue">Policy</span></td><td>WDPA</td></tr>
+            <tr><td>NDVI</td><td><span class="badge badge-green">Spectral</span></td><td>Landsat 8</td></tr>
+            <tr><td>Soil Moisture</td><td><span class="badge badge-green">Spatial</span></td><td>SMAP</td></tr>
+            <tr><td>Fire Frequency</td><td><span class="badge badge-red">Temporal</span></td><td>FIRMS</td></tr>
+            <tr><td>Logging Concessions</td><td><span class="badge badge-blue">Policy</span></td><td>Gov. Data</td></tr>
+            <tr><td>Urban Proximity</td><td><span class="badge badge-amber">Census</span></td><td>WorldPop</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+  </main>
 
-            window.addEventListener('resize', resizeDS);
-            resizeDS();
-            drawDS();
-        }
-
-    </script>
+  <script src="assets/pages/ai-model/app.js"></script>
 </body>
 </html>

@@ -3664,7 +3664,7 @@
     <!-- Stats HUD -->
     <div id="statsHUD">
         <div class="stat-card-hud glass-panel">
-            <div id="totalArea" class="stat-card-value">68,500 km²</div>
+            <div id="totalArea" class="stat-card-value">68,500 kmï¿½</div>
             <div class="stat-card-label">Monitored Area</div>
         </div>
         <div class="stat-card-hud glass-panel">
