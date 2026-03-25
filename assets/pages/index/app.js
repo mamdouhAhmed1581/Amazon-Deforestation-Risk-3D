@@ -190,7 +190,7 @@ let deckInstance
             const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
             const timeoutId = controller ? setTimeout(() => controller.abort(), 12000) : null;
             try {
-                const response = await fetch("forest_data_clean.json", {
+                const response = await fetch("data/forest_data_clean.json", {
                     signal: controller ? controller.signal : undefined,
                     cache: "no-store"
                 });
@@ -307,7 +307,13 @@ let deckInstance
             const overlay = document.getElementById("loadingOverlay");
             overlay.classList.remove("fade-out");
             overlay.classList.add("error");
-            overlay.querySelector("p").innerText = message;
+            const messageEl = overlay.querySelector("#loadingMsg") || overlay.querySelector("p");
+            if (messageEl) {
+                messageEl.classList.remove("loading-copy");
+                messageEl.removeAttribute("aria-hidden");
+                messageEl.innerText = message;
+                messageEl.style.display = "block";
+            }
             let actions = overlay.querySelector(".loading-actions");
             if (!actions) {
                 actions = document.createElement("div");
@@ -936,7 +942,7 @@ let deckInstance
             insight.innerHTML = `Under <strong>${SCENARIO_CONFIG[currentScenario].label}</strong>, the visible scene is dominated by <strong>${dominantBand}</strong> activity. Mean predicted pressure is <strong>${(getProbabilityPercent(averageRisk) / 100).toFixed(2)}</strong>, with clustering strongest across accessible low-relief frontier sectors.${contextTail}`;
         }
         function buildSpatialAnalysisUrl(point = selectedAnalysisPoint) {
-            const targetUrl = new URL('spatial-analysis.html', window.location.href);
+            const targetUrl = new URL('pages/spatial-analysis.html', window.location.href);
             targetUrl.searchParams.set('mode', currentMode);
             targetUrl.searchParams.set('year', Math.floor(currentYear).toString());
             targetUrl.searchParams.set('scenario', currentScenario);

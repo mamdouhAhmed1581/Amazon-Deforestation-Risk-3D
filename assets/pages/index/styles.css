@@ -2579,6 +2579,13 @@ body.ui-ready.secondary-ready #columnPanel .panel-title {
   animation: pulse-text 2s ease-in-out infinite;
 }
 
+.loading-copy {
+  display: none;
+}
+
+#loadingOverlay.error .loading-copy {
+  display: block;
+}
 @keyframes pulse-text {
   0%,
   100% {
