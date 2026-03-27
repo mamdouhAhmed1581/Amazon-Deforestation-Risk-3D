@@ -90,8 +90,8 @@
     sub.textContent = 'Server not detected';
     errCard.style.display = 'block';
   } else {
-    /* Server is running or deployed (http/https) – load in iframe */
-    frame.src = 'GeoAI_3D_Map.html';
+    /* Server is running or deployed (http/https) – load the Timeline map since the original 3D Map is missing */
+    frame.src = 'GeoAI_Timeline_FINAL (1).html';
   }
 
   /* Hide overlay when iframe finishes loading */
