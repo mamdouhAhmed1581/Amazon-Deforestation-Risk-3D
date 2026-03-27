@@ -82,20 +82,17 @@
     setTimeout(function(){ fill.style.width=p[0]+'%'; sub.textContent=p[1]; }, p[2]);
   });
 
-  /* Try fetch first (works when a server is running) */
-  fetch('GeoAI_3D_Map.html', { method:'HEAD' })
-    .then(function(r){
-      if(!r.ok) throw new Error('HTTP '+r.status);
-      /* Server is there – load in iframe */
-      frame.src = 'GeoAI_3D_Map.html';
-    })
-    .catch(function(){
-      /* No server – show instructions */
-      fill.style.background = '#ef4444';
-      fill.style.width = '100%';
-      sub.textContent = 'Server not detected';
-      errCard.style.display = 'block';
-    });
+  /* Check if opened directly via file:// protocol */
+  if (window.location.protocol === 'file:') {
+    /* No server – show instructions */
+    fill.style.background = '#ef4444';
+    fill.style.width = '100%';
+    sub.textContent = 'Server not detected';
+    errCard.style.display = 'block';
+  } else {
+    /* Server is running or deployed (http/https) – load in iframe */
+    frame.src = 'GeoAI_3D_Map.html';
+  }
 
   /* Hide overlay when iframe finishes loading */
   frame.addEventListener('load', function(){
